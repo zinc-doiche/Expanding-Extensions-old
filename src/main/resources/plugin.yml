@@ -1,0 +1,4 @@
+name: zinc-plugin
+version: '${version}'
+main: com.github.zinc.ZincPlugin
+api-version: 1.19
