@@ -28,7 +28,6 @@ class PlayerStatusListener: Listener {
             }
         }
         PlayerContainer.add(e.player.name, playerDTO)
-
     }
 
     @EventHandler
@@ -40,7 +39,6 @@ class PlayerStatusListener: Listener {
     fun onStatusChange(e: PlayerStatusChangeEvent) {
         val playerDTO = PlayerContainer[e.player.name] ?: return
         val manager = PlayerStatusManager(playerDTO)
-        PlayerDAO.update(playerDTO)
         e.changes.forEach {
             manager.updateStatus(it.toPair())
             manager.applyStatus(it.key)
