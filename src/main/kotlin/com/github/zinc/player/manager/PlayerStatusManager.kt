@@ -2,7 +2,11 @@ package com.github.zinc.player.manager
 
 import com.github.zinc.player.domain.PlayerDTO
 import com.github.zinc.player.domain.StatusType
+import com.github.zinc.player.event.PlayerLevelUpEvent
+import com.google.common.math.IntMath.pow
 import org.bukkit.attribute.Attribute
+import kotlin.math.ceil
+import kotlin.math.exp
 
 class PlayerStatusManager(
     private val playerDTO: PlayerDTO
@@ -16,6 +20,16 @@ class PlayerStatusManager(
         val swt = playerDTO.playerSwiftness ?: return 0
 
         return str + con + bal + swt
+    }
+
+    fun levelUp(amount: Int = 1) {
+        playerDTO.playerLevel = playerDTO.playerLevel?.plus(amount) ?: return
+
+        PlayerLevelUpEvent(playerEntity).callEvent()
+    }
+
+    fun expUp(amount: Int) {
+        playerDTO.playerExperience = playerDTO.playerExperience?.plus(amount)
     }
 
     fun applyAll() {
@@ -37,18 +51,18 @@ class PlayerStatusManager(
 
     private fun applyStrength() {
         val damageAttr = playerEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) ?: return
-        damageAttr.baseValue = getAdditionalHealth(playerDTO.playerStrength ?: return)
+        damageAttr.baseValue = getAdditionalHealth(playerDTO.playerStrength ?: return) + defaultDamage
     }
 
     private fun applyBalance() {
         val healthAttr = playerEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
-        healthAttr.baseValue = getAdditionalHealth(playerDTO.playerBalance ?: return)
+        healthAttr.baseValue = getAdditionalHealth(playerDTO.playerBalance ?: return) + defaultHealth
         playerEntity.health = healthAttr.baseValue
     }
 
     private fun applySwiftness() {
         val speedAttr = playerEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) ?: return
-        speedAttr.baseValue = getAdditionalHealth(playerDTO.playerSwiftness ?: return)
+        speedAttr.baseValue = getAdditionalHealth(playerDTO.playerSwiftness ?: return) + defaultSpeed
     }
 
     private fun applyConcentration() {
@@ -73,15 +87,24 @@ class PlayerStatusManager(
     }
 
     companion object {
-        private const val defaultDamage = 1.0
-        private const val defaultHealth = 20.0
-        private const val defaultSpeed = 1.0
-        private const val defaultCriticalProbability = 0.0
+        const val defaultDamage = 1.0
+        const val defaultHealth = 20.0
+        const val defaultSpeed = 1.0
+        const val defaultCriticalProbability = 0.0
 
         private const val INTERVAL1 = 150
         private const val INTERVAL2 = 250
         private const val INTERVAL3 = 400
         private const val INTERVAL4 = 550
+
+        fun getMaxExpForNextLevel(level: Int): Int {
+            return when(level){
+                in 0..99 -> (-1/500)*level*level*(level-150) + 100
+                in 100..199 -> (-1/50)*(level-100)*(level-100)*(level-250) + 1100
+                in 200..299 ->(-1/5)*(level-100)*(level-100)*(level-250) + 11100
+                else -> 0
+            }.toInt()
+        }
 
         private fun getAdditionalDamage(strength: Int): Double {
             var damage = 0.0
@@ -108,7 +131,7 @@ class PlayerStatusManager(
                 //max 15 = 1 + 5 + 2 + 1 + 2 + 4
                 // 12/150 ps
             }
-            return damage + defaultDamage
+            return damage
         }
 
         private fun getAdditionalHealth(balance: Int): Double {
@@ -136,7 +159,7 @@ class PlayerStatusManager(
                 //max 60 = 20 + 10 + 6 + 4 + 6 + 14
                 // 42/150 ps
             }
-            return health + defaultHealth
+            return health
         }
 
         //TODO 상대속도 -> 절대속도
@@ -165,7 +188,7 @@ class PlayerStatusManager(
                 //max 3 = 1 + .4 + .2 + .2 + .4 + .8
                 // 2.4/150 ps
             }
-            return speed + defaultSpeed
+            return speed
         }
 
         //활이 메인딜
@@ -194,7 +217,7 @@ class PlayerStatusManager(
                 //max 1 = 0 + .2 + .05 + .05 + .1 + .6
                 // 60/15000 ps
             }
-            return criticalProbability + defaultCriticalProbability
+            return criticalProbability
         }
     }
 }

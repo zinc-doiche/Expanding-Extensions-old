@@ -6,6 +6,7 @@ data class PlayerDTO(
     var playerId: Long? = null,
     var playerName: String? = null,
     var playerLevel: Int? = null,
+    var playerExperience: Int? = null,
     var playerStatusRemain: Int? = null,
     var playerStrength: Int? = null,
     var playerSwiftness: Int? = null,
