@@ -1,5 +1,6 @@
 package com.github.zinc.player.listener
 
+import com.github.zinc.info
 import com.github.zinc.player.PlayerContainer
 import com.github.zinc.player.dao.PlayerDAO
 import com.github.zinc.player.event.PlayerLevelUpEvent
@@ -16,20 +17,22 @@ class PlayerStatusListener: Listener {
 
     @EventHandler
     fun onRespawn(e: PlayerRespawnEvent) {
-        val manager = PlayerStatusManager(PlayerDAO.selectOne(e.player) ?: return)
+        val manager = PlayerStatusManager(PlayerDAO().select(e.player)?.of(e.player) ?: return)
         manager.applyAll()
     }
 
     @EventHandler
     fun onJoin(e: PlayerJoinEvent) {
-        val playerDTO = PlayerDAO.selectOne(e.player) ?: run {
-            PlayerDAO.insert(e.player)
-            PlayerDAO.selectOne(e.player) ?: run {
-                e.player.kick()
-                return
+        PlayerDAO().use { dao ->
+            val playerDTO = dao.select(e.player) ?: run {
+                dao.insert(e.player)
+                dao.select(e.player) ?: run {
+                    e.player.kick()
+                    return
+                }
             }
+            PlayerContainer.add(e.player.name, playerDTO.of(e.player))
         }
-        PlayerContainer.add(e.player.name, playerDTO)
     }
 
     @EventHandler
@@ -46,8 +49,8 @@ class PlayerStatusListener: Listener {
     fun onGetExperience(e: PlayerExpChangeEvent) {
         val playerDTO = PlayerContainer[e.player.name] ?: return
         val manager = PlayerStatusManager(playerDTO)
-        val maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel ?: return)
-        val currExp = e.amount + (playerDTO.playerExperience ?: return)
+        val maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
+        val currExp = e.amount + (playerDTO.playerExperience)
 
         if(maxExp <= currExp) {
             manager.expUp(e.amount)

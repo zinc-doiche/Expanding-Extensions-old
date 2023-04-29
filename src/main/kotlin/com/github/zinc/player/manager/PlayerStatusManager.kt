@@ -11,25 +11,25 @@ import kotlin.math.exp
 class PlayerStatusManager(
     private val playerDTO: PlayerDTO
 ) {
-    private val playerEntity = playerDTO.playerEntity!!
+    private val playerEntity = playerDTO.playerEntity
 
     fun getTotalStatus(): Int {
-        val str = playerDTO.playerStrength ?: return 0
-        val con = playerDTO.playerConcentration ?: return 0
-        val bal = playerDTO.playerBalance ?: return 0
-        val swt = playerDTO.playerSwiftness ?: return 0
+        val str = playerDTO.playerStrength
+        val con = playerDTO.playerConcentration
+        val bal = playerDTO.playerBalance
+        val swt = playerDTO.playerSwiftness
 
         return str + con + bal + swt
     }
 
     fun levelUp(amount: Int = 1) {
-        playerDTO.playerLevel = playerDTO.playerLevel?.plus(amount) ?: return
+        playerDTO.playerLevel += amount
 
         PlayerLevelUpEvent(playerEntity).callEvent()
     }
 
     fun expUp(amount: Int) {
-        playerDTO.playerExperience = playerDTO.playerExperience?.plus(amount)
+        playerDTO.playerExperience += amount
     }
 
     fun applyAll() {
@@ -51,18 +51,18 @@ class PlayerStatusManager(
 
     private fun applyStrength() {
         val damageAttr = playerEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) ?: return
-        damageAttr.baseValue = getAdditionalHealth(playerDTO.playerStrength ?: return) + defaultDamage
+        damageAttr.baseValue = getAdditionalHealth(playerDTO.playerStrength) + defaultDamage
     }
 
     private fun applyBalance() {
         val healthAttr = playerEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
-        healthAttr.baseValue = getAdditionalHealth(playerDTO.playerBalance ?: return) + defaultHealth
+        healthAttr.baseValue = getAdditionalHealth(playerDTO.playerBalance) + defaultHealth
         playerEntity.health = healthAttr.baseValue
     }
 
     private fun applySwiftness() {
         val speedAttr = playerEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) ?: return
-        speedAttr.baseValue = getAdditionalHealth(playerDTO.playerSwiftness ?: return) + defaultSpeed
+        speedAttr.baseValue = getAdditionalHealth(playerDTO.playerSwiftness) + defaultSpeed
     }
 
     private fun applyConcentration() {
@@ -74,15 +74,15 @@ class PlayerStatusManager(
         val amount = change.second
         when(type) {
             StatusType.STRENGTH ->
-                playerDTO.playerStrength = playerDTO.playerStrength?.plus(amount) ?: return
+                playerDTO.playerStrength += amount
             StatusType.BALANCE ->
-                playerDTO.playerBalance = playerDTO.playerBalance?.plus(amount) ?: return
+                playerDTO.playerBalance += amount
             StatusType.SWIFTNESS ->
-                playerDTO.playerSwiftness = playerDTO.playerSwiftness?.plus(amount) ?: return
+                playerDTO.playerSwiftness += amount
             StatusType.CONCENTRATION ->
-                playerDTO.playerConcentration = playerDTO.playerConcentration?.plus(amount) ?: return
+                playerDTO.playerConcentration += amount
             StatusType.REMAIN ->
-                playerDTO.playerStatusRemain = playerDTO.playerStatusRemain?.plus(amount) ?: return
+                playerDTO.playerStatusRemain+= amount
         }
     }
 
@@ -99,9 +99,9 @@ class PlayerStatusManager(
 
         fun getMaxExpForNextLevel(level: Int): Int {
             return when(level){
-                in 0..99 -> (-1/500)*level*level*(level-150) + 100
-                in 100..199 -> (-1/50)*(level-100)*(level-100)*(level-250) + 1100
-                in 200..299 ->(-1/5)*(level-100)*(level-100)*(level-250) + 11100
+                in 0..99 -> (-1/500.0)*level*level*(level-150) + 100
+                in 100..199 -> (-1/50.0)*(level-100)*(level-100)*(level-250) + 1100
+                in 200..299 ->(-1/5.0)*(level-100)*(level-100)*(level-250) + 11100
                 else -> 0
             }.toInt()
         }

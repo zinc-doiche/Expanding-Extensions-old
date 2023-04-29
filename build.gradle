@@ -1,6 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.21'
     id 'java'
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = 'com.github'
@@ -19,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    implementation "org.mybatis:mybatis:3.5.13"
     implementation "com.zaxxer:HikariCP:5.0.1"
     compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

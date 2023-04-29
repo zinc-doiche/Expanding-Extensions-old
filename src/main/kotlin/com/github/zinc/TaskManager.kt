@@ -1,6 +1,5 @@
-package com.github.zinc.database
+package com.github.zinc
 
-import com.github.zinc.plugin
 import com.github.zinc.util.scheduler.asyncLoop
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

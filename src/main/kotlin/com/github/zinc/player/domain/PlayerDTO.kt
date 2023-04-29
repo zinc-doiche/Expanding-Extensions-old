@@ -3,14 +3,14 @@ package com.github.zinc.player.domain
 import org.bukkit.entity.Player
 
 data class PlayerDTO(
-    var playerId: Long? = null,
-    var playerName: String? = null,
-    var playerLevel: Int? = null,
-    var playerExperience: Int? = null,
-    var playerStatusRemain: Int? = null,
-    var playerStrength: Int? = null,
-    var playerSwiftness: Int? = null,
-    var playerConcentration: Int? = null,
-    var playerBalance: Int? = null,
-    var playerEntity: Player? = null
+    var playerId: Long,
+    var playerName: String,
+    var playerLevel: Int,
+    var playerExperience: Int,
+    var playerStatusRemain: Int,
+    var playerStrength: Int,
+    var playerSwiftness: Int,
+    var playerConcentration: Int,
+    var playerBalance: Int,
+    var playerEntity: Player
 )
