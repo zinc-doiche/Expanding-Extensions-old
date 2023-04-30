@@ -1,6 +1,12 @@
 package com.github.zinc
 
+import com.github.zinc.player.PlayerContainer
+import com.github.zinc.player.fx.StatusFx
 import com.github.zinc.util.scheduler.asyncLoop
+import io.github.monun.invfx.InvFX
+import io.github.monun.invfx.openFrame
+import io.github.monun.kommand.kommand
+import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.server.ServerLoadEvent
@@ -11,6 +17,70 @@ class TaskManager: Listener {
     fun onLoaded(e: ServerLoadEvent) {
         asyncLoop(0L, 20L * 60 * 5) {
             updatedTasks.forEach { it.value() }
+        }
+
+        plugin.kommand {
+            register("status", "스테이터스") {
+                then("open") {
+                    executes {
+                        player.openFrame(StatusFx.getStatusFrame(player))
+                    }
+                }
+                then("view") {
+                    executes {
+                        val playerDTO = PlayerContainer[player.name]!!
+                        player.sendMessage(
+                            "${player.name}의 스테이터스 :\n" +
+                            "| Strength: ${playerDTO.playerStrength}\n" +
+                            "| Swiftness: ${playerDTO.playerSwiftness}\n" +
+                            "| Balance: ${playerDTO.playerBalance}\n" +
+                            "| Concentration: ${playerDTO.playerConcentration}\n"
+                        )
+                    }
+                }
+                then("add") {
+                    then("str") {
+                        then("amount" to int(0)) {
+                            requires { player.isOp }
+                            executes {
+                                val playerDTO = PlayerContainer[player.name]!!
+                                val amount: Int = it["amount"]
+                                playerDTO.playerStrength += amount
+                            }
+                        }
+                    }
+                    then("swt") {
+                        then("amount" to int(0)) {
+                            requires { player.isOp }
+                            executes {
+                                val playerDTO = PlayerContainer[player.name]!!
+                                val amount: Int = it["amount"]
+                                playerDTO.playerSwiftness += amount
+                            }
+                        }
+                    }
+                    then("bal") {
+                        then("amount" to int(0)) {
+                            requires { player.isOp }
+                            executes {
+                                val playerDTO = PlayerContainer[player.name]!!
+                                val amount: Int = it["amount"]
+                                playerDTO.playerBalance += amount
+                            }
+                        }
+                    }
+                    then("con") {
+                        then("amount" to int(0)) {
+                            requires { player.isOp }
+                            executes {
+                                val playerDTO = PlayerContainer[player.name]!!
+                                val amount: Int = it["amount"]
+                                playerDTO.playerConcentration += amount
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
