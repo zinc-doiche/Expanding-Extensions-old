@@ -7,7 +7,7 @@ import org.apache.ibatis.session.SqlSession
 import org.bukkit.entity.Player
 
 class PlayerDAO: AutoCloseable {
-    private val sqlSession: SqlSession = MybatisConfig.sqlSessionFactory.openSession()
+    private val sqlSession: SqlSession = MybatisConfig.sqlSessionFactory.openSession(true)
     private val playerMapper: PlayerMapper = sqlSession.getMapper(PlayerMapper::class.java)
 
     fun select(player: Player): PlayerVO? = playerMapper.select(player.name)

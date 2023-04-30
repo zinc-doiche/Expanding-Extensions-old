@@ -24,6 +24,6 @@
     </environments>
 
     <mappers>
-        <mapper resource="awdawdmapper/playerMapper.xml"/>
+        <mapper resource="mybatis/mapper/playerMapper.xml"/>
     </mappers>
 </configuration>

@@ -1,5 +1,6 @@
 package com.github.zinc;
 
+import com.github.zinc.mybatis.MybatisConfig
 import com.github.zinc.player.listener.PlayerStatusListener
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,7 +9,7 @@ class ZincPlugin: JavaPlugin() {
 
     override fun onEnable() {
         plugin = this
-
+        MybatisConfig.init()
         registerAll(
             TaskManager(),
             PlayerStatusListener()

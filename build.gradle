@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     implementation "org.mybatis:mybatis:3.5.13"
-    implementation "com.zaxxer:HikariCP:5.0.1"
+    implementation 'mysql:mysql-connector-java:8.0.33'
     compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
