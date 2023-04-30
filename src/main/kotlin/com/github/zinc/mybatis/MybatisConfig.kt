@@ -1,14 +1,15 @@
 package com.github.zinc.mybatis
 
-import com.github.zinc.mybatis.mapper.classMapper.PlayerMapper
 import com.github.zinc.player.domain.PlayerVO
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import org.apache.ibatis.io.Resources
 import org.apache.ibatis.mapping.Environment
 import org.apache.ibatis.session.Configuration
 import org.apache.ibatis.session.SqlSessionFactory
 import org.apache.ibatis.session.SqlSessionFactoryBuilder
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory
+
 
 object MybatisConfig {
     private const val IDLE = 30
@@ -21,9 +22,9 @@ object MybatisConfig {
     private const val USER = "root"
     private const val PASSWORD = 1234
 
-    val sqlSessionFactory: SqlSessionFactory
+    val sqlSessionFactory: SqlSessionFactory = sqlSessionFactoryByXML()
 
-    init {
+    private fun sqlSessionFactoryByJava(): SqlSessionFactory {
         //hikari config
         val transactionFactory = JdbcTransactionFactory()
         val hikariConfig = HikariConfig().apply {
@@ -46,6 +47,11 @@ object MybatisConfig {
         configuration.isMapUnderscoreToCamelCase = true
         configuration.addMapper(PlayerMapper::class.java)
 
-        sqlSessionFactory = SqlSessionFactoryBuilder().build(configuration)
+        return SqlSessionFactoryBuilder().build(configuration)
+    }
+
+    private fun sqlSessionFactoryByXML(): SqlSessionFactory {
+        val resource = "mybatis-config.xml"
+        return SqlSessionFactoryBuilder().build(Resources.getResourceAsReader(resource))
     }
 }

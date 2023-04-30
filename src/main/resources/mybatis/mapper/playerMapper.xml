@@ -2,12 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.github.zinc.mybatis.mapper.classMapper.PlayerMapper">
+<mapper namespace="com.github.zinc.mybatis.PlayerMapper">
     <insert id="insert">
         insert into tbl_player (player_name) values (#{playerName});
     </insert>
 
-    <select id="select" resultType="com.github.zinc.player.domain.PlayerVO">
+    <select id="select" resultType="playerVO">
         select player_id, player_name, player_level, player_experience, player_status_remain,
         player_strength, player_swiftness, player_concentration, player_balance from tbl_player where player_name = #{playerName}
     </select>

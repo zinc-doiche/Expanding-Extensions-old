@@ -13,4 +13,8 @@ data class PlayerDTO(
     var playerConcentration: Int,
     var playerBalance: Int,
     var playerEntity: Player
-)
+) {
+    override fun toString(): String {
+        return "PlayerDTO(playerId=$playerId, playerName='$playerName', playerLevel=$playerLevel, playerExperience=$playerExperience, playerStatusRemain=$playerStatusRemain, playerStrength=$playerStrength, playerSwiftness=$playerSwiftness, playerConcentration=$playerConcentration, playerBalance=$playerBalance, playerEntity=$playerEntity)"
+    }
+}

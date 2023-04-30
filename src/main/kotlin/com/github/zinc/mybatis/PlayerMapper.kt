@@ -1,4 +1,4 @@
-package com.github.zinc.mybatis.mapper.classMapper
+package com.github.zinc.mybatis
 
 import com.github.zinc.player.domain.PlayerVO
 import org.apache.ibatis.annotations.Mapper

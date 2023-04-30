@@ -24,14 +24,14 @@ class PlayerStatusListener: Listener {
     @EventHandler
     fun onJoin(e: PlayerJoinEvent) {
         PlayerDAO().use { dao ->
-            val playerDTO = dao.select(e.player) ?: run {
+            val playerVO = dao.select(e.player) ?: run {
                 dao.insert(e.player)
                 dao.select(e.player) ?: run {
                     e.player.kick()
                     return
                 }
             }
-            PlayerContainer.add(e.player.name, playerDTO.of(e.player))
+            PlayerContainer.add(e.player.name, playerVO.of(e.player))
         }
     }
 
