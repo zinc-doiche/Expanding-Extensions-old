@@ -1,6 +1,7 @@
 package com.github.zinc;
 
 import com.github.zinc.mybatis.MybatisConfig
+import com.github.zinc.player.command.StatusOpenCommmand
 import com.github.zinc.player.listener.PlayerStatusListener
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,6 +15,7 @@ class ZincPlugin: JavaPlugin() {
             TaskManager(),
             PlayerStatusListener()
         )
+        plugin.getCommand("status")?.setExecutor(StatusOpenCommmand())
     }
 
     override fun onDisable() {
