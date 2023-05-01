@@ -37,7 +37,8 @@ class PlayerStatusListener: Listener {
 
     @EventHandler
     fun onQuit(e: PlayerQuitEvent) {
-        PlayerContainer.remove(e.player.name)
+        val playerDTO = PlayerContainer.remove(e.player.name) ?: return
+        PlayerDAO().update(playerDTO)
     }
 
     @EventHandler

@@ -1,5 +1,6 @@
 package com.github.zinc.player.fx
 
+import com.github.zinc.info
 import com.github.zinc.player.PlayerContainer
 import com.github.zinc.player.domain.PlayerDTO
 import com.github.zinc.player.domain.StatusType
@@ -7,6 +8,7 @@ import com.github.zinc.player.manager.PlayerStatusManager
 import com.github.zinc.util.component.getCustomItem
 import com.github.zinc.util.component.item
 import com.github.zinc.util.component.text
+import com.github.zinc.util.component.texts
 import io.github.monun.invfx.InvFX
 import io.github.monun.invfx.frame.InvFrame
 import io.github.monun.invfx.frame.InvSlot
@@ -47,26 +49,33 @@ object StatusFx {
                     onClick {
                         if(--playerDTO.playerStatusRemain <= 0) {
                             playerDTO.playerStatusRemain = 0
-                            item = clear
+                            for(j in 0..3) this@frame.statusSlot(j) { item = clear }
                             return@onClick
                         }
-                        when(i) {
-                            0 -> playerDTO.playerStrength++
-                            1 -> playerDTO.playerSwiftness++
-                            2 -> playerDTO.playerBalance++
-                            3 -> playerDTO.playerConcentration++
+                        val status = getStatus(i, playerDTO)
+
+                        item = statusIcons[i].clone().apply{
+                            editMeta{
+                                it.lore(texts(text("$status")))
+                            }
                         }
                         this@frame.remainSlot {
-                            item?.editMeta { it.displayName(text("${playerDTO.playerStatusRemain}")) } ?: return@remainSlot
+                            item?.editMeta {
+                                it.displayName(text("잔여스탯: ${playerDTO.playerStatusRemain}"))
+                            } ?: return@remainSlot
                         }
+                        info(i)
                     }
                 }
             }
-            for (i in 0..3) {
-                slot(2*i+1, 1) {
-                    item = statusIcons[i]
+            for (i in 0..3) this.statusSlot(i) {
+                item = statusIcons[i].clone().apply {
+                    editMeta {
+                        it.lore(texts(text("${getStatus(i, playerDTO)}")))
+                    }
                 }
             }
+
 //          if(playerDTO.playerStatusRemain > 0) for (i in 0..3) {
 //                slot(2 * i + 1, 0) {
 //                    item = upIcon
@@ -94,12 +103,29 @@ object StatusFx {
                 if(bal != playerDTO.playerBalance) manager.applyStatus(StatusType.BALANCE)
                 if(con != playerDTO.playerConcentration) manager.applyStatus(StatusType.CONCENTRATION)
             }
+            onOpen {
+
+            }
         }
     }
 
-    fun open() {
-
+    private fun getStatus(i: Int, playerDTO: PlayerDTO) = when(i) {
+        0 -> ++playerDTO.playerStrength
+        1 -> ++playerDTO.playerSwiftness
+        2 -> ++playerDTO.playerBalance
+        3 -> ++playerDTO.playerConcentration
+        else -> 0
     }
 }
 
-private fun  InvFrame.remainSlot(init: InvSlot.() -> Unit) = this.slot(8, 3, init)
+private fun InvFrame.remainSlot(init: InvSlot.() -> Unit) = this.slot(8, 3, init)
+
+/**
+ * 0: str, 1: swt, 2: bal, 3: con
+ */
+private fun InvFrame.statusSlot(x: Int, init: InvSlot.() -> Unit) = this.slot(2*x + 1, 1, init)
+
+private fun InvFrame.strengthSlot(init: InvSlot.() -> Unit) = this.slot(1, 1, init)
+private fun InvFrame.swiftnessSlot(init: InvSlot.() -> Unit) = this.slot(3, 1, init)
+private fun InvFrame.balanceSlot(init: InvSlot.() -> Unit) = this.slot(5, 1, init)
+private fun InvFrame.concentrationSlot(init: InvSlot.() -> Unit) = this.slot(7, 1, init)

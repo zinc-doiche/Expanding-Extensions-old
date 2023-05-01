@@ -11,4 +11,16 @@
         select player_id, player_name, player_level, player_experience, player_status_remain,
         player_strength, player_swiftness, player_concentration, player_balance from tbl_player where player_name = #{playerName}
     </select>
+
+    <update id="update">
+        update tbl_player
+        set player_level = #{playerLevel},
+        player_experience = #{playerExperience},
+        player_status_remain = #{playerStatusRemain},
+        player_strength = #{playerStrength},
+        player_swiftness = #{playerSwiftness},
+        player_concentration = #{playerConcentration},
+        player_balance = #{playerBalance}
+        where player_id = #{playerId}
+    </update>
 </mapper>

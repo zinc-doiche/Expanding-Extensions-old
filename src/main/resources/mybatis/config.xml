@@ -9,6 +9,7 @@
 
     <typeAliases>
         <typeAlias type="com.github.zinc.player.domain.PlayerVO" alias="playerVO"/>
+        <typeAlias type="com.github.zinc.player.domain.PlayerDTO" alias="playerDTO"/>
     </typeAliases>
 
     <environments default="mysql">

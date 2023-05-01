@@ -11,7 +11,7 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
 
-class StatusOpenCommmand: TabExecutor {
+class StatusOpenCommand: TabExecutor {
     override fun onTabComplete(sender: CommandSender, command: Command, label: String, args: Array<out String>): MutableList<String> {
         val list = ArrayList<String>()
         when(args.size) {
@@ -27,7 +27,9 @@ class StatusOpenCommmand: TabExecutor {
         when (args.size) {
             1 -> {
                 when(args[0]) {
-                    "open" -> sender.openFrame(InvFX.frame(4, text("ji")){})
+                    "open" -> {
+                        sender.openFrame(StatusFx.getStatusFrame(sender))
+                    }
                     "view" -> {
                         val playerDTO = PlayerContainer[sender.name]!!
                         sender.sendMessage(
