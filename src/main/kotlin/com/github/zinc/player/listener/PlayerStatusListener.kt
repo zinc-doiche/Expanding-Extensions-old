@@ -44,7 +44,7 @@ class PlayerStatusListener: Listener {
 
     @EventHandler
     fun onLevelUp(e: PlayerLevelUpEvent) {
-
+        PlayerContainer[e.player.name]!!.playerStatusRemain++
     }
 
     @EventHandler
@@ -56,18 +56,19 @@ class PlayerStatusListener: Listener {
         val currExp = e.amount + (playerDTO.playerExperience)
 
         if(maxExp <= currExp) {
-            var excess = maxExp - currExp
+            var excess = currExp - maxExp
             maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
             manager.levelUp()
             if(maxExp > excess) {
-                manager.expUp(excess)
+                playerDTO.playerExperience = excess
                 return
             }
             while (maxExp <= excess) {
                 maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
-                excess = maxExp - currExp
+                excess -= maxExp
                 manager.levelUp()
             }
+            playerDTO.playerExperience = excess
         } else manager.expUp(e.amount)
     }
 
