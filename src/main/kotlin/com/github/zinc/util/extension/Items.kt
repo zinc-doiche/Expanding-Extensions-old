@@ -1,4 +1,4 @@
-package com.github.zinc.util.component
+package com.github.zinc.util.extension
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -18,3 +18,5 @@ internal fun getCustomItem(material: Material, name: String, customModelNumber: 
         }
     }
 }
+
+internal fun isNullOrAir(itemStack: ItemStack?) = itemStack?.type == Material.AIR

@@ -17,4 +17,6 @@ data class PlayerDTO(
     override fun toString(): String {
         return "PlayerDTO(playerId=$playerId, playerName='$playerName', playerLevel=$playerLevel, playerExperience=$playerExperience, playerStatusRemain=$playerStatusRemain, playerStrength=$playerStrength, playerSwiftness=$playerSwiftness, playerConcentration=$playerConcentration, playerBalance=$playerBalance, playerEntity=$playerEntity)"
     }
+
+    fun hasRemain() = playerStatusRemain > 0;
 }

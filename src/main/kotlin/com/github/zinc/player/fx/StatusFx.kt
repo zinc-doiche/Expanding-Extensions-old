@@ -1,14 +1,12 @@
 package com.github.zinc.player.fx
 
-import com.github.zinc.info
 import com.github.zinc.player.PlayerContainer
-import com.github.zinc.player.domain.PlayerDTO
-import com.github.zinc.player.domain.StatusType
+import com.github.zinc.player.fx.StatusFx.clear
 import com.github.zinc.player.manager.PlayerStatusManager
-import com.github.zinc.util.component.getCustomItem
-import com.github.zinc.util.component.item
-import com.github.zinc.util.component.text
-import com.github.zinc.util.component.texts
+import com.github.zinc.util.extension.*
+import com.github.zinc.util.extension.getCustomItem
+import com.github.zinc.util.extension.item
+import com.github.zinc.util.extension.text
 import io.github.monun.invfx.InvFX
 import io.github.monun.invfx.frame.InvFrame
 import io.github.monun.invfx.frame.InvSlot
@@ -18,18 +16,25 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object StatusFx {
-    private val clear = ItemStack(Material.AIR)
+    val clear = ItemStack(Material.AIR)
     private val upIcon: ItemStack = getCustomItem(Material.PAPER, "UP", 1)
     private val downIcon: ItemStack = getCustomItem(Material.PAPER, "DOWN", 2)
 
     private val statusIcons: List<ItemStack> = listOf(
-        getCustomItem(Material.PAPER, "STRENGTH", 3), getCustomItem(Material.PAPER, "SWIFTNESS", 4),
-        getCustomItem(Material.PAPER, "BALANCE", 5), getCustomItem(Material.PAPER, "CONCENTRATION", 6)
+        getCustomItem(Material.PAPER, "STRENGTH", 3),
+        getCustomItem(Material.PAPER, "SWIFTNESS", 4),
+        getCustomItem(Material.PAPER, "BALANCE", 5),
+        getCustomItem(Material.PAPER, "CONCENTRATION", 6)
     )
 
-    private fun getRemainingStatusIcon(player: PlayerDTO): ItemStack = item(Material.BLACK_STAINED_GLASS_PANE) { meta ->
-        meta.displayName(text("잔여스탯: ${player.playerStatusRemain}"))
-        //meta.setCustomModelData(2)
+    private fun getRemainingStatusIcon(remain: Int): ItemStack {
+        return item(
+            if(remain > 0) Material.GREEN_STAINED_GLASS_PANE
+            else Material.RED_STAINED_GLASS_PANE
+        ) { meta ->
+            meta.displayName(text("잔여스탯: $remain"))
+            meta.setCustomModelData(7)
+        }
     }
 
     fun getStatusFrame(player: Player): InvFrame {
@@ -42,88 +47,80 @@ object StatusFx {
         val con = playerDTO.playerConcentration
 
         return InvFX.frame(4, Component.text("${player.name}의 스테이터스")) {
-            if(playerDTO.playerStatusRemain > 0) for (i in 0..3) {
-                slot(2 * i + 1, 0) {
-                    item = upIcon
-
+            for (i in 0..3){
+                slot(2*i + 1, 0) {
+                    item = if(playerDTO.hasRemain()) upIcon else clear
                     onClick {
-                        if(--playerDTO.playerStatusRemain <= 0) {
-                            playerDTO.playerStatusRemain = 0
-                            for(j in 0..3) this@frame.statusSlot(j) { item = clear }
-                            return@onClick
-                        }
-                        val status = getStatus(i, playerDTO)
+                        if(!playerDTO.hasRemain()) return@onClick
 
-                        item = statusIcons[i].clone().apply{
-                            editMeta{
-                                it.lore(texts(text("$status")))
-                            }
-                        }
                         this@frame.remainSlot {
-                            item?.editMeta {
-                                it.displayName(text("잔여스탯: ${playerDTO.playerStatusRemain}"))
-                            } ?: return@remainSlot
+                            item = getRemainingStatusIcon(--playerDTO.playerStatusRemain)
                         }
-                        info(i)
+                        when(i) {
+                            0 -> this@frame.updateStrengthSlot(++playerDTO.playerStrength)
+                            1 -> this@frame.updateSwiftnessSlot(++playerDTO.playerSwiftness)
+                            2 -> this@frame.updateBalanceSlot(++playerDTO.playerBalance)
+                            3 -> this@frame.updateConcentrationSlot(++playerDTO.playerConcentration)
+                        }
+
+                        if(!playerDTO.hasRemain()) this@frame.clearUpIcon()
                     }
                 }
-            }
-            for (i in 0..3) this.statusSlot(i) {
-                item = statusIcons[i].clone().apply {
-                    editMeta {
-                        it.lore(texts(text("${getStatus(i, playerDTO)}")))
+                slot(2*i + 1, 2) {
+                    item = downIcon //temp
+                    onClick {
+                        /* TODO :
+                            1) 스텟롤백 테이블 만들기
+                            2) 1에서 롤백가능횟수 가져오기
+                            3) 잘 코딩하기
+                         */
                     }
                 }
             }
 
-//          if(playerDTO.playerStatusRemain > 0) for (i in 0..3) {
-//                slot(2 * i + 1, 0) {
-//                    item = upIcon
-//
-//                    onClick {
-//                        if(--playerDTO.playerStatusRemain <= 0) {
-//                            playerDTO.playerStatusRemain = 0
-//                            item = clear
-//                        }
-//                        when(i) {
-//                            0 -> playerDTO.playerStrength++
-//                            1 -> playerDTO.playerSwiftness++
-//                            2 -> playerDTO.playerBalance++
-//                            3 -> playerDTO.playerConcentration++
-//                        }
-//                    }
-//                }
-//            }
-            remainSlot {
-                item = getRemainingStatusIcon(playerDTO)
-            }
-            onClose {
-                if(str != playerDTO.playerStrength) manager.applyStatus(StatusType.STRENGTH)
-                if(swt != playerDTO.playerSwiftness) manager.applyStatus(StatusType.SWIFTNESS)
-                if(bal != playerDTO.playerBalance) manager.applyStatus(StatusType.BALANCE)
-                if(con != playerDTO.playerConcentration) manager.applyStatus(StatusType.CONCENTRATION)
-            }
-            onOpen {
+            updateStrengthSlot(str)
+            updateSwiftnessSlot(swt)
+            updateBalanceSlot(bal)
+            updateConcentrationSlot(con)
 
-            }
+            updateRemainSlot(playerDTO.playerStatusRemain)
         }
     }
 
-    private fun getStatus(i: Int, playerDTO: PlayerDTO) = when(i) {
-        0 -> ++playerDTO.playerStrength
-        1 -> ++playerDTO.playerSwiftness
-        2 -> ++playerDTO.playerBalance
-        3 -> ++playerDTO.playerConcentration
-        else -> 0
+    private fun InvFrame.updateStrengthSlot(strength: Int) = this.strengthSlot {
+        item = statusIcons[0].clone().apply {
+            this.lore(texts(text("$strength")))
+        }
+    }
+    private fun InvFrame.updateSwiftnessSlot(swiftness: Int) = this.swiftnessSlot {
+        item = statusIcons[1].clone().apply {
+            this.lore(texts(text("$swiftness")))
+        }
+    }
+    private fun InvFrame.updateBalanceSlot(balance: Int) = this.balanceSlot {
+        item = statusIcons[2].clone().apply {
+            this.lore(texts(text("$balance")))
+        }
+    }
+    private fun InvFrame.updateConcentrationSlot(concentration: Int) = this.concentrationSlot {
+        item = statusIcons[3].clone().apply {
+            this.lore(texts(text("$concentration")))
+        }
+    }
+
+    private fun InvFrame.updateRemainSlot(remains: Int) = this.remainSlot {
+        item = getRemainingStatusIcon(remains)
     }
 }
 
-private fun InvFrame.remainSlot(init: InvSlot.() -> Unit) = this.slot(8, 3, init)
+private fun InvFrame.clearUpIcon() = run { for(i in 0..3) this.slot(2*i + 1, 0) { item = clear } }
+private fun InvFrame.clearDownIcon() = run { for(i in 0..3) this.slot(2*i + 1, 2) { item = clear } }
 
 /**
  * 0: str, 1: swt, 2: bal, 3: con
  */
 private fun InvFrame.statusSlot(x: Int, init: InvSlot.() -> Unit) = this.slot(2*x + 1, 1, init)
+private fun InvFrame.remainSlot(init: InvSlot.() -> Unit) = this.slot(8, 3, init)
 
 private fun InvFrame.strengthSlot(init: InvSlot.() -> Unit) = this.slot(1, 1, init)
 private fun InvFrame.swiftnessSlot(init: InvSlot.() -> Unit) = this.slot(3, 1, init)
