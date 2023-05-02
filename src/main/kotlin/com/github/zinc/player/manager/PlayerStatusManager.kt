@@ -24,7 +24,7 @@ class PlayerStatusManager(
 
     fun levelUp(amount: Int = 1) {
         playerDTO.playerLevel += amount
-
+        playerDTO.playerStatusRemain++
         PlayerLevelUpEvent(playerEntity).callEvent()
     }
 

@@ -2,7 +2,6 @@ package com.github.zinc.player.fx
 
 import com.github.zinc.player.PlayerContainer
 import com.github.zinc.player.fx.StatusFx.clear
-import com.github.zinc.player.manager.PlayerStatusManager
 import com.github.zinc.util.extension.*
 import com.github.zinc.util.extension.getCustomItem
 import com.github.zinc.util.extension.item
@@ -10,6 +9,7 @@ import com.github.zinc.util.extension.text
 import io.github.monun.invfx.InvFX
 import io.github.monun.invfx.frame.InvFrame
 import io.github.monun.invfx.frame.InvSlot
+import io.github.monun.invfx.openFrame
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -21,10 +21,10 @@ object StatusFx {
     private val downIcon: ItemStack = getCustomItem(Material.PAPER, "DOWN", 2)
 
     private val statusIcons: List<ItemStack> = listOf(
-        getCustomItem(Material.PAPER, "STRENGTH", 3),
-        getCustomItem(Material.PAPER, "SWIFTNESS", 4),
-        getCustomItem(Material.PAPER, "BALANCE", 5),
-        getCustomItem(Material.PAPER, "CONCENTRATION", 6)
+        getCustomItem(Material.RED_STAINED_GLASS_PANE, "STRENGTH", 3),
+        getCustomItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, "SWIFTNESS", 4),
+        getCustomItem(Material.LIME_STAINED_GLASS_PANE, "BALANCE", 5),
+        getCustomItem(Material.YELLOW_STAINED_GLASS_PANE, "CONCENTRATION", 6)
     )
 
     private fun getRemainingStatusIcon(remain: Int): ItemStack {
@@ -38,53 +38,47 @@ object StatusFx {
     }
 
     fun getStatusFrame(player: Player): InvFrame {
+        return getFX(player)
+    }
+
+    private fun getFX(player: Player) = InvFX.frame(3, Component.text("${player.name}의 스테이터스")) {
         val playerDTO = PlayerContainer[player.name]!!
-        val manager = PlayerStatusManager(playerDTO)
 
-        val str = playerDTO.playerStrength
-        val swt = playerDTO.playerSwiftness
-        val bal = playerDTO.playerBalance
-        val con = playerDTO.playerConcentration
+        for (i in 0..3) {
+            slot(2*i + 1, 0) {
+                if(playerDTO.hasRemain()) {
+                    item = upIcon
 
-        return InvFX.frame(4, Component.text("${player.name}의 스테이터스")) {
-            for (i in 0..3){
-                slot(2*i + 1, 0) {
-                    item = if(playerDTO.hasRemain()) upIcon else clear
                     onClick {
-                        if(!playerDTO.hasRemain()) return@onClick
-
-                        this@frame.remainSlot {
-                            item = getRemainingStatusIcon(--playerDTO.playerStatusRemain)
-                        }
+                        player.sendMessage("${playerDTO.playerStatusRemain--}")
                         when(i) {
-                            0 -> this@frame.updateStrengthSlot(++playerDTO.playerStrength)
-                            1 -> this@frame.updateSwiftnessSlot(++playerDTO.playerSwiftness)
-                            2 -> this@frame.updateBalanceSlot(++playerDTO.playerBalance)
-                            3 -> this@frame.updateConcentrationSlot(++playerDTO.playerConcentration)
+                            0 -> playerDTO.playerStrength++
+                            1 -> playerDTO.playerSwiftness++
+                            2 -> playerDTO.playerBalance++
+                            3 -> playerDTO.playerConcentration++
                         }
-
-                        if(!playerDTO.hasRemain()) this@frame.clearUpIcon()
+                        player.openFrame(getStatusFrame(player))
                     }
                 }
-                slot(2*i + 1, 2) {
-                    item = downIcon //temp
-                    onClick {
-                        /* TODO :
-                            1) 스텟롤백 테이블 만들기
-                            2) 1에서 롤백가능횟수 가져오기
-                            3) 잘 코딩하기
-                         */
-                    }
+                else item = clear
+            }
+            slot(2*i + 1, 2) {
+                item = downIcon //temp
+                onClick {
+                    /* TODO :
+                        1) 스텟롤백 테이블 만들기
+                        2) 1에서 롤백가능횟수 가져오기
+                        3) 잘 코딩하기
+                     */
                 }
             }
-
-            updateStrengthSlot(str)
-            updateSwiftnessSlot(swt)
-            updateBalanceSlot(bal)
-            updateConcentrationSlot(con)
-
-            updateRemainSlot(playerDTO.playerStatusRemain)
         }
+
+        updateStrengthSlot(playerDTO.playerStrength)
+        updateSwiftnessSlot(playerDTO.playerSwiftness)
+        updateBalanceSlot(playerDTO.playerBalance)
+        updateConcentrationSlot(playerDTO.playerConcentration)
+        updateRemainSlot(playerDTO.playerStatusRemain)
     }
 
     private fun InvFrame.updateStrengthSlot(strength: Int) = this.strengthSlot {
@@ -120,7 +114,7 @@ private fun InvFrame.clearDownIcon() = run { for(i in 0..3) this.slot(2*i + 1, 2
  * 0: str, 1: swt, 2: bal, 3: con
  */
 private fun InvFrame.statusSlot(x: Int, init: InvSlot.() -> Unit) = this.slot(2*x + 1, 1, init)
-private fun InvFrame.remainSlot(init: InvSlot.() -> Unit) = this.slot(8, 3, init)
+private fun InvFrame.remainSlot(init: InvSlot.() -> Unit) = this.slot(8, 2, init)
 
 private fun InvFrame.strengthSlot(init: InvSlot.() -> Unit) = this.slot(1, 1, init)
 private fun InvFrame.swiftnessSlot(init: InvSlot.() -> Unit) = this.slot(3, 1, init)

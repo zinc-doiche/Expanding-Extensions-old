@@ -49,16 +49,26 @@ class PlayerStatusListener: Listener {
 
     @EventHandler
     fun onGetExperience(e: PlayerExpChangeEvent) {
+        e.player.sendMessage(e.amount.toString())
         val playerDTO = PlayerContainer[e.player.name] ?: return
         val manager = PlayerStatusManager(playerDTO)
-        val maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
+        var maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
         val currExp = e.amount + (playerDTO.playerExperience)
 
         if(maxExp <= currExp) {
-            manager.expUp(e.amount)
-            manager.expUp(-maxExp)
+            var excess = maxExp - currExp
+            maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
             manager.levelUp()
-        }
+            if(maxExp > excess) {
+                manager.expUp(excess)
+                return
+            }
+            while (maxExp <= excess) {
+                maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
+                excess = maxExp - currExp
+                manager.levelUp()
+            }
+        } else manager.expUp(e.amount)
     }
 
     @EventHandler
