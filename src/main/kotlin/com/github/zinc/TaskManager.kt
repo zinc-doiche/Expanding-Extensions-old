@@ -1,19 +1,23 @@
 package com.github.zinc
 
-import com.github.zinc.player.PlayerContainer
-import com.github.zinc.player.fx.StatusFx
+import com.github.zinc.util.extension.text
 import com.github.zinc.util.scheduler.asyncLoop
-import io.github.monun.invfx.openFrame
 //import io.github.monun.kommand.kommand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.server.ServerLoadEvent
 
 class TaskManager: Listener {
 
     @EventHandler
+    fun onDamage(e: EntityDamageEvent) {
+        plugin.server.broadcast(text("${e.damage}"))
+    }
+
+    @EventHandler
     fun onLoaded(e: ServerLoadEvent) {
-        asyncLoop(0L, 20L * 60 * 5) {
+        asyncLoop(0L, 20L * 60 * 10) {
             updatedTasks.forEach { it.value() }
         }
 

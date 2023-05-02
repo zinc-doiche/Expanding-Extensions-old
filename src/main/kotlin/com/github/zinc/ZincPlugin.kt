@@ -5,7 +5,6 @@ import com.github.zinc.player.PlayerContainer
 import com.github.zinc.player.command.StatusOpenCommand
 import com.github.zinc.player.dao.PlayerDAO
 import com.github.zinc.player.listener.PlayerStatusListener
-import com.github.zinc.player.manager.PlayerStatusManager
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
 

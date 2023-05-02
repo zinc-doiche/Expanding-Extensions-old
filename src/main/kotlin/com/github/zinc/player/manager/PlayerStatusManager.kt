@@ -51,7 +51,7 @@ class PlayerStatusManager(
 
     private fun applyStrength() {
         val damageAttr = playerEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) ?: return
-        damageAttr.baseValue = getAdditionalHealth(playerDTO.playerStrength) + defaultDamage
+        damageAttr.baseValue = getAdditionalDamage(playerDTO.playerStrength) + defaultDamage
     }
 
     private fun applyBalance() {
@@ -62,7 +62,7 @@ class PlayerStatusManager(
 
     private fun applySwiftness() {
         val speedAttr = playerEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) ?: return
-        speedAttr.baseValue = getAdditionalHealth(playerDTO.playerSwiftness) + defaultSpeed
+        speedAttr.baseValue = getAdditionalSpeed(playerDTO.playerSwiftness) + defaultSpeed
     }
 
     private fun applyConcentration() {
@@ -89,7 +89,7 @@ class PlayerStatusManager(
     companion object {
         const val defaultDamage = 1.0
         const val defaultHealth = 20.0
-        const val defaultSpeed = 1.0
+        const val defaultSpeed = 0.1
         const val defaultCriticalProbability = 0.0
 
         private const val INTERVAL1 = 150
@@ -162,31 +162,30 @@ class PlayerStatusManager(
             return health
         }
 
-        //TODO 상대속도 -> 절대속도
         private fun getAdditionalSpeed(swiftness: Int): Double {
             var speed = 0.0
 
             speed += when(swiftness) {
                 in 0..INTERVAL1 -> //150
-                    swiftness * .4 / INTERVAL1
-                //max 1.4 = 1 + .4
-                // 0.4/150 ps
+                    swiftness * .04 / INTERVAL1
+                //max 0.14 = 1 + .4
+                // 0.04/150 ps
                 in INTERVAL1 + 1..INTERVAL2 -> //250
-                    1.4 + (swiftness - INTERVAL1) * .2 / (INTERVAL2 - INTERVAL1)
-                //max 1.6 = 1 + .4 + .2
-                // 0.3/150 ps
+                    .14 + (swiftness - INTERVAL1) * .02 / (INTERVAL2 - INTERVAL1)
+                //max 0.16 = 0.1 + .04 + .02
+                // 0.03/150 ps
                 in INTERVAL2 + 1..INTERVAL3 -> //400
-                    1.6 + (swiftness - INTERVAL2) * .2 / (INTERVAL3 - INTERVAL2)
-                //max 1.8 = 1 + .4 + .2 + .2
-                // 0.2/150 ps
+                    .16 + (swiftness - INTERVAL2) * .02 / (INTERVAL3 - INTERVAL2)
+                //max 0.18 = 0.1 + .04 + .02 + .02
+                // 0.02/150 ps
                 in INTERVAL3 + 1..INTERVAL4 -> //550
-                    1.8 + (swiftness - INTERVAL3) * .4 / (INTERVAL4 - INTERVAL3)
-                //max 2.2 = 1 + .4 + .2 + .2 + .4
-                // 0.4/150 ps
+                    .18 + (swiftness - INTERVAL3) * .04 / (INTERVAL4 - INTERVAL3)
+                //max 0.22 = 0.1 + .04 + .02 + .02 + .04
+                // 0.04/150 ps
                 else -> //600
-                    2.2 + (swiftness - INTERVAL4) * .8 / (600 - INTERVAL4)
-                //max 3 = 1 + .4 + .2 + .2 + .4 + .8
-                // 2.4/150 ps
+                    .22 + (swiftness - INTERVAL4) * .08 / (600 - INTERVAL4)
+                //max 0.3 = 0.1 + .04 + .02 + .02 + .04 + .08
+                // 0.24/150 ps
             }
             return speed
         }

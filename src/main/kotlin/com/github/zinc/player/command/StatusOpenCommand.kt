@@ -48,7 +48,9 @@ class StatusOpenCommand: TabExecutor {
                             "| Strength: ${playerDTO.playerStrength}\n" +
                             "| Swiftness: ${playerDTO.playerSwiftness}\n" +
                             "| Balance: ${playerDTO.playerBalance}\n" +
-                            "| Concentration: ${playerDTO.playerConcentration}\n"
+                            "| Concentration: ${playerDTO.playerConcentration}\n" +
+                            "\n" +
+                            "잔여스탯: ${playerDTO.playerStatusRemain}"
                         )
                         return true
                     }
