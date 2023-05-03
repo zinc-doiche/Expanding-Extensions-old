@@ -18,7 +18,7 @@ class TaskManager: Listener {
     @EventHandler
     fun onLoaded(e: ServerLoadEvent) {
         asyncLoop(0L, 20L * 60 * 10) {
-            updatedTasks.forEach { it.value() }
+            if(updatedTasks.isNotEmpty()) updatedTasks.forEach { it.value() }
         }
 
 //        plugin.kommand {

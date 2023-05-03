@@ -86,6 +86,21 @@ class PlayerStatusManager(
         }
     }
 
+    fun getMaxExpForNextLevel(): Int {
+        return when(playerDTO.playerLevel){
+            in 0..99 ->
+                (-1/500.0)*playerDTO.playerLevel*playerDTO.playerLevel*(playerDTO.playerLevel-150) + 100
+            //1100
+            in 100..199 ->
+                (-1/50.0)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-250) + 1100
+            //11100
+            in 200..299 ->
+                (-1/5.0)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-250) + 11100
+            //111100
+            else -> 0
+        }.toInt()
+    }
+
     companion object {
         const val defaultDamage = 1.0
         const val defaultHealth = 20.0
@@ -96,15 +111,6 @@ class PlayerStatusManager(
         private const val INTERVAL2 = 250
         private const val INTERVAL3 = 400
         private const val INTERVAL4 = 550
-
-        fun getMaxExpForNextLevel(level: Int): Int {
-            return when(level){
-                in 0..99 -> (-1/500.0)*level*level*(level-150) + 100
-                in 100..199 -> (-1/50.0)*(level-100)*(level-100)*(level-250) + 1100
-                in 200..299 ->(-1/5.0)*(level-100)*(level-100)*(level-250) + 11100
-                else -> 0
-            }.toInt()
-        }
 
         private fun getAdditionalDamage(strength: Int): Double {
             var damage = 0.0

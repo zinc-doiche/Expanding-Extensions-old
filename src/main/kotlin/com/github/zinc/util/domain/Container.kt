@@ -1,7 +1,8 @@
 package com.github.zinc.util.domain
 
-interface Container<K, V> {
-    operator fun get(k: K): V?
-    fun add(k: K, v: V)
-    fun remove(k: K): V?
+abstract class Container<K, V> {
+    val container: HashMap<K, V> = HashMap()
+    operator fun get(k: K): V? = container[k]
+    fun add(k: K, v: V) { container[k] = v }
+    fun remove(k: K): V? = container.remove(k)
 }

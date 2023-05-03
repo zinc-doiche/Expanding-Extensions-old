@@ -21,7 +21,7 @@ class ZincPlugin: JavaPlugin() {
         TaskManager.add("updateAll") {
             info("saving...")
             val dao =  PlayerDAO()
-            PlayerContainer.players.values.forEach(dao::update)
+            PlayerContainer.container.values.forEach(dao::update)
         }
     }
 
