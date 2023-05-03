@@ -2,17 +2,18 @@ package com.github.zinc
 
 import com.github.zinc.util.extension.text
 import com.github.zinc.util.scheduler.asyncLoop
+import org.bukkit.entity.Player
 //import io.github.monun.kommand.kommand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.server.ServerLoadEvent
 
 class TaskManager: Listener {
 
     @EventHandler
-    fun onDamage(e: EntityDamageEvent) {
-        plugin.server.broadcast(text("${e.damage}"))
+    fun onDamage(e: EntityDamageByEntityEvent) {
+        if(e.damager is Player) e.damager.sendMessage(text("${e.damage}"))
     }
 
     @EventHandler
