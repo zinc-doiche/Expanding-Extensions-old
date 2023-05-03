@@ -68,20 +68,18 @@ class PlayerStatusManager(
         //TODO CUSTOM
     }
 
-    fun updateStatus(change: Pair<StatusType, Int>) {
-        val type = change.first
-        val amount = change.second
-        when(type) {
+    fun updateStatus(type: StatusType, amount: Int): Int {
+        return when(type) {
             StatusType.STRENGTH ->
-                playerDTO.playerStrength += amount
+                playerDTO.playerStrength.plus(amount)
             StatusType.BALANCE ->
-                playerDTO.playerBalance += amount
+                playerDTO.playerBalance.plus(amount)
             StatusType.SWIFTNESS ->
-                playerDTO.playerSwiftness += amount
+                playerDTO.playerSwiftness.plus(amount)
             StatusType.CONCENTRATION ->
-                playerDTO.playerConcentration += amount
+                playerDTO.playerConcentration.plus(amount)
             StatusType.REMAIN ->
-                playerDTO.playerStatusRemain+= amount
+                playerDTO.playerStatusRemain.minus(amount)
         }
     }
 

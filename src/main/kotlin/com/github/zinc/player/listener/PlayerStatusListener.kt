@@ -43,25 +43,6 @@ class PlayerStatusListener: Listener {
     }
 
     @EventHandler
-    fun onLevelUp(e: PlayerLevelUpEvent) {
-
-    }
-
-    @EventHandler
-    fun onGetExperience(e: PlayerExpChangeEvent) {
-        val playerDTO = PlayerContainer[e.player.name] ?: return
-        val manager = PlayerStatusManager(playerDTO)
-        val maxExp = PlayerStatusManager.getMaxExpForNextLevel(playerDTO.playerLevel)
-        val currExp = e.amount + (playerDTO.playerExperience)
-
-        if(maxExp <= currExp) {
-            manager.expUp(e.amount)
-            manager.expUp(-maxExp)
-            manager.levelUp()
-        }
-    }
-
-    @EventHandler
     fun onStatusChange(e: PlayerStatusChangeEvent) {
         val playerDTO = PlayerContainer[e.player.name] ?: return
         val manager = PlayerStatusManager(playerDTO)
