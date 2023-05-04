@@ -8,7 +8,5 @@
         select quest_require, quest_reward
         from tbl_quest where quest_mob_name = #{questMobName}
     </select>
-    
-    <select id=""
 
 </mapper>

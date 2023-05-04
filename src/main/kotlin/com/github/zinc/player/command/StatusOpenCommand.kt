@@ -20,7 +20,7 @@ class StatusOpenCommand: TabExecutor {
             when(args.size) {
                 1 -> return StringUtil.copyPartialMatches(args[0], listOf("open", "view", "add"), list)
                 2 -> if(args[0] == "add")
-                    return StringUtil.copyPartialMatches(args[1], listOf("str", "swt", "bal", "con"), list)
+                    return StringUtil.copyPartialMatches(args[1], listOf("str", "swt", "bal", "con", "rem"), list)
             }
         } else {
             when(args.size) {
@@ -82,6 +82,9 @@ class StatusOpenCommand: TabExecutor {
                         manager.updateStatus(StatusType.CONCENTRATION, amount)
                         manager.applyStatus(StatusType.CONCENTRATION)
                         return true
+                    }
+                    "rem" -> {
+                        manager.updateStatus(StatusType.REMAIN, amount)
                     }
                 }
             }
