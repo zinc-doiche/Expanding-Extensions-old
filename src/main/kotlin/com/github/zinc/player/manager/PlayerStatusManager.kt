@@ -70,16 +70,28 @@ class PlayerStatusManager(
 
     fun updateStatus(type: StatusType, amount: Int = 1): Int {
         return when(type) {
-            StatusType.STRENGTH ->
-                playerDTO.playerStrength.plus(amount)
-            StatusType.BALANCE ->
-                playerDTO.playerBalance.plus(amount)
-            StatusType.SWIFTNESS ->
-                playerDTO.playerSwiftness.plus(amount)
-            StatusType.CONCENTRATION ->
-                playerDTO.playerConcentration.plus(amount)
-            StatusType.REMAIN ->
-                playerDTO.playerStatusRemain.minus(amount)
+            StatusType.STRENGTH -> {
+                playerDTO.playerStrength += amount
+                playerDTO.playerStrength
+            }
+
+            StatusType.BALANCE -> {
+                playerDTO.playerBalance += amount
+                playerDTO.playerBalance
+            }
+
+            StatusType.SWIFTNESS -> {
+                playerDTO.playerSwiftness += amount
+                playerDTO.playerSwiftness
+            }
+            StatusType.CONCENTRATION -> {
+                playerDTO.playerConcentration += amount
+                playerDTO.playerConcentration
+            }
+            StatusType.REMAIN -> {
+                playerDTO.playerStatusRemain += amount
+                playerDTO.playerStatusRemain
+            }
         }
     }
 

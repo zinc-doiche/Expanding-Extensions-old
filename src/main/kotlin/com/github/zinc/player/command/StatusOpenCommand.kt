@@ -85,6 +85,7 @@ class StatusOpenCommand: TabExecutor {
                     }
                     "rem" -> {
                         manager.updateStatus(StatusType.REMAIN, amount)
+                        return true
                     }
                 }
             }

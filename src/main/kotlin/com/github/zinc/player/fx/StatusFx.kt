@@ -52,13 +52,14 @@ object StatusFx {
                         item = upIcon
 
                         onClick {
-                            player.sendMessage("${manager.updateStatus(StatusType.values()[i])}")
 //                            when(i) {
 //                                0 -> playerDTO.playerStrength++
 //                                1 -> playerDTO.playerSwiftness++
 //                                2 -> playerDTO.playerBalance++
 //                                3 -> playerDTO.playerConcentration++
 //                            }
+                            manager.updateStatus(StatusType.values()[i], 1)
+                            manager.updateStatus(StatusType.REMAIN, -1)
                             player.openFrame(getStatusFrame(player))
                         }
                     }
