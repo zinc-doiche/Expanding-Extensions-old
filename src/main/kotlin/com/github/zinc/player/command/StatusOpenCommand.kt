@@ -45,6 +45,7 @@ class StatusOpenCommand: TabExecutor {
                         val playerDTO = PlayerContainer[sender.name]!!
                         sender.sendMessage(
                             "${sender.name}의 스테이터스 :\n" +
+                            "[${playerDTO.playerLevel}Lv.] ${playerDTO.playerExperience}xp / ${PlayerStatusManager(playerDTO).getMaxExpForNextLevel()}xp\n" +
                             "| Strength: ${playerDTO.playerStrength}\n" +
                             "| Swiftness: ${playerDTO.playerSwiftness}\n" +
                             "| Balance: ${playerDTO.playerBalance}\n" +

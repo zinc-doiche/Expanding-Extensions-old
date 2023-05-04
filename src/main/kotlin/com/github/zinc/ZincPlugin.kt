@@ -4,6 +4,7 @@ import com.github.zinc.mybatis.MybatisConfig
 import com.github.zinc.player.PlayerContainer
 import com.github.zinc.player.command.StatusOpenCommand
 import com.github.zinc.player.dao.PlayerDAO
+import com.github.zinc.player.listener.PlayerExpListener
 import com.github.zinc.player.listener.PlayerStatusListener
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +16,8 @@ class ZincPlugin: JavaPlugin() {
         MybatisConfig.init()
         registerAll(
             TaskManager(),
-            PlayerStatusListener()
+            PlayerStatusListener(),
+            PlayerExpListener()
         )
         plugin.getCommand("status")?.setExecutor(StatusOpenCommand())
 

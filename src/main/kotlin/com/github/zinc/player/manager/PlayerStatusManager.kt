@@ -2,11 +2,7 @@ package com.github.zinc.player.manager
 
 import com.github.zinc.player.domain.PlayerDTO
 import com.github.zinc.player.domain.StatusType
-import com.github.zinc.player.event.PlayerLevelUpEvent
-import com.google.common.math.IntMath.pow
 import org.bukkit.attribute.Attribute
-import kotlin.math.ceil
-import kotlin.math.exp
 
 class PlayerStatusManager(
     private val playerDTO: PlayerDTO
@@ -24,7 +20,7 @@ class PlayerStatusManager(
 
     fun levelUp(amount: Int = 1) {
         playerDTO.playerLevel += amount
-        PlayerLevelUpEvent(playerEntity).callEvent()
+        playerDTO.playerStatusRemain += amount
     }
 
     fun expUp(amount: Int) {
@@ -74,12 +70,10 @@ class PlayerStatusManager(
                 playerDTO.playerStrength += amount
                 playerDTO.playerStrength
             }
-
             StatusType.BALANCE -> {
                 playerDTO.playerBalance += amount
                 playerDTO.playerBalance
             }
-
             StatusType.SWIFTNESS -> {
                 playerDTO.playerSwiftness += amount
                 playerDTO.playerSwiftness

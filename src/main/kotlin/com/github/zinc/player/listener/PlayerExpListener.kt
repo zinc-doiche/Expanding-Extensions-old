@@ -1,12 +1,9 @@
 package com.github.zinc.player.listener
 
-import com.github.zinc.info
 import com.github.zinc.player.PlayerContainer
 import com.github.zinc.player.event.PlayerGetExpEvent
-import com.github.zinc.player.event.PlayerLevelUpEvent
 import com.github.zinc.player.manager.PlayerStatusManager
 import com.github.zinc.quest.QuestContainer
-import com.github.zinc.warn
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -31,32 +28,24 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 class PlayerExpListener: Listener {
     @EventHandler
     fun onEntityDamage(e: EntityDamageByEntityEvent) {
-        if(e.damager !is Player) return
-        if(!e.entity.isDead) return
+        if(e.damager !is Player || e.entity !is Enemy) return
 
-        info(e.entity.name)
-
-        if(e.entityType.entityClass !is Enemy) return
+        val enemy = e.entity as Enemy
+        if(enemy.health > e.finalDamage) return
 
         val player = e.damager as Player
-        val enemy = e.entityType.entityClass as Enemy
+        val quest = QuestContainer[player] ?: run { QuestContainer.add(player, hashMapOf(enemy.name to 1)); player.sendMessage("${enemy.name}: (1/5)"); return }
+        var number = quest[enemy.name] ?: run { quest[enemy.name] = 1; player.sendMessage("${enemy.name}: (1/5)"); return }
+        if(number == -1) { player.sendMessage("§6이미 ${enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다."); return }
+        player.sendMessage("${enemy.name}: (${++number}/5)")
 
-        player.sendMessage(e.entity.name)
-        QuestContainer[player]?.let { map ->
-            map[enemy]?.let { number ->
-                if(number + 1 >= 15) {
-                    map[enemy] = 15
-                    PlayerGetExpEvent(player, QuestContainer.getRewardOf(enemy) ?: run { player.sendMessage("이 메세지가 보이면 나한테 당장 말하셈"); return })
-                    return
-                }
-                map[enemy] = number + 1
-            } ?: run { map[enemy] = 1 }
-        } ?: run { warn("Quest of ${player.name} is not exist."); return }
-    }
-
-    @EventHandler
-    fun onLevelUp(e: PlayerLevelUpEvent) {
-
+        if(number >= 5) {
+            quest[enemy.name] = -1
+            PlayerGetExpEvent(player, 100 ?: run { player.sendMessage("이 메세지가 보이면 나한테 당장 말하셈"); return }).callEvent()
+            player.sendMessage("\n${enemy.name} 퀘스트 완료! (+100 xp)\n")
+            return
+        }
+        quest[enemy.name] = number
     }
 
     @EventHandler

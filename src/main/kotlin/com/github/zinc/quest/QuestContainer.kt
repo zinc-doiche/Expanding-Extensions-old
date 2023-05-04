@@ -6,11 +6,12 @@ import com.github.zinc.util.domain.Container
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.Player
 
-object QuestContainer: Container<Player, HashMap<Enemy, Int>>() {
+object QuestContainer: Container<Player, HashMap<String, Int>>() {
     private val session = MybatisConfig.sqlSessionFactory.openSession()
     private val questMapper = session.getMapper(QuestMapper::class.java)
-    fun getRewardOf(mob: Enemy): Int? {
-        questMapper.select(mob.name)
+
+    fun getRewardOf(mobName: String): Int? {
+        questMapper.select(mobName)
         return 100
     }
 
