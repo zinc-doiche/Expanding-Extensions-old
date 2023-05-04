@@ -26,5 +26,6 @@
 
     <mappers>
         <mapper resource="mybatis/mapper/playerMapper.xml"/>
+        <mapper resource="mybatis/mapper/questMapper.xml"/>
     </mappers>
 </configuration>

@@ -1,5 +1,6 @@
 package com.github.zinc.player.listener
 
+import com.github.zinc.info
 import com.github.zinc.player.PlayerContainer
 import com.github.zinc.player.event.PlayerGetExpEvent
 import com.github.zinc.player.event.PlayerLevelUpEvent
@@ -32,18 +33,25 @@ class PlayerExpListener: Listener {
     fun onEntityDamage(e: EntityDamageByEntityEvent) {
         if(e.damager !is Player) return
         if(!e.entity.isDead) return
-        if(e.entityType.entityClass !is Enemy) return
-        e.damager.sendMessage(e.entity.name)
 
-        QuestContainer[e.damager as Player]?.let { map ->
-            map[e.entityType.entityClass as Enemy]?.let { number ->
+        info(e.entity.name)
+
+        if(e.entityType.entityClass !is Enemy) return
+
+        val player = e.damager as Player
+        val enemy = e.entityType.entityClass as Enemy
+
+        player.sendMessage(e.entity.name)
+        QuestContainer[player]?.let { map ->
+            map[enemy]?.let { number ->
                 if(number + 1 >= 15) {
-                    map[e.entityType.entityClass as Enemy] = 15
+                    map[enemy] = 15
+                    PlayerGetExpEvent(player, QuestContainer.getRewardOf(enemy) ?: run { player.sendMessage("이 메세지가 보이면 나한테 당장 말하셈"); return })
                     return
                 }
-                map[e.entityType.entityClass as Enemy] = number + 1
-            } ?: run { map[e.entityType.entityClass as Enemy] = 1 }
-        } ?: run { warn("Quest of ${e.damager.name} is not exist."); return }
+                map[enemy] = number + 1
+            } ?: run { map[enemy] = 1 }
+        } ?: run { warn("Quest of ${player.name} is not exist."); return }
     }
 
     @EventHandler

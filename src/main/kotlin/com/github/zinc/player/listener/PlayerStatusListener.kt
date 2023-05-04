@@ -47,7 +47,7 @@ class PlayerStatusListener: Listener {
         val playerDTO = PlayerContainer[e.player.name] ?: return
         val manager = PlayerStatusManager(playerDTO)
         e.changes.forEach {
-            manager.updateStatus(it.toPair())
+            manager.updateStatus(it.key, it.value)
             manager.applyStatus(it.key)
         }
     }

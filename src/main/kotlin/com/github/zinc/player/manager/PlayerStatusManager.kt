@@ -68,7 +68,7 @@ class PlayerStatusManager(
         //TODO CUSTOM
     }
 
-    fun updateStatus(type: StatusType, amount: Int): Int {
+    fun updateStatus(type: StatusType, amount: Int = 1): Int {
         return when(type) {
             StatusType.STRENGTH ->
                 playerDTO.playerStrength.plus(amount)

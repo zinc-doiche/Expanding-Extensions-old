@@ -64,22 +64,22 @@ class StatusOpenCommand: TabExecutor {
                 val manager = PlayerStatusManager(PlayerContainer[sender.name]!!)
                 when(args[1]) {
                     "str" -> {
-                        manager.updateStatus(StatusType.STRENGTH to amount)
+                        manager.updateStatus(StatusType.STRENGTH, amount)
                         manager.applyStatus(StatusType.STRENGTH)
                         return true
                     }
                     "swt" -> {
-                        manager.updateStatus(StatusType.SWIFTNESS to amount)
+                        manager.updateStatus(StatusType.SWIFTNESS, amount)
                         manager.applyStatus(StatusType.SWIFTNESS)
                         return true
                     }
                     "bal" -> {
-                        manager.updateStatus(StatusType.BALANCE to amount)
+                        manager.updateStatus(StatusType.BALANCE, amount)
                         manager.applyStatus(StatusType.BALANCE)
                         return true
                     }
                     "con" -> {
-                        manager.updateStatus(StatusType.CONCENTRATION to amount)
+                        manager.updateStatus(StatusType.CONCENTRATION, amount)
                         manager.applyStatus(StatusType.CONCENTRATION)
                         return true
                     }

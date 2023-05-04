@@ -20,10 +20,10 @@ class ZincPlugin: JavaPlugin() {
         plugin.getCommand("status")?.setExecutor(StatusOpenCommand())
 
         TaskManager.add("updateAll") {
-            if(PlayerContainer.players.isNotEmpty()) {
+            if(PlayerContainer.container.isNotEmpty()) {
                 info("saving...")
                 val dao = PlayerDAO()
-                PlayerContainer.players.values.forEach(dao::update)
+                PlayerContainer.container.values.forEach(dao::update)
             }
         }
     }
