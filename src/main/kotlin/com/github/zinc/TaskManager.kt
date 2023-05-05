@@ -1,7 +1,7 @@
 package com.github.zinc
 
 import com.github.zinc.util.extension.text
-import com.github.zinc.util.scheduler.asyncLoop
+import com.github.zinc.util.scheduler.loop
 import org.bukkit.entity.Player
 //import io.github.monun.kommand.kommand
 import org.bukkit.event.EventHandler
@@ -18,7 +18,7 @@ class TaskManager: Listener {
 
     @EventHandler
     fun onLoaded(e: ServerLoadEvent) {
-        asyncLoop(0L, 20L * 60 * 10) {
+        loop(0L, 20L * 60 * 10) {
             if(updatedTasks.isNotEmpty()) updatedTasks.forEach { it.value() }
         }
 

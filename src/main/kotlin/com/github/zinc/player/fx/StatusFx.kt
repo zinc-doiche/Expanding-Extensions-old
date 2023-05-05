@@ -1,6 +1,6 @@
 package com.github.zinc.player.fx
 
-import com.github.zinc.player.PlayerContainer
+import com.github.zinc.player.domain.PlayerContainer
 import com.github.zinc.player.domain.StatusType
 import com.github.zinc.player.fx.StatusFx.clear
 import com.github.zinc.player.manager.PlayerStatusManager

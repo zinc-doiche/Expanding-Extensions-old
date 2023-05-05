@@ -3,10 +3,44 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.zinc.mybatis.QuestMapper">
+    <insert id="insert">
+        insert into tbl_appended_quest
+        (appended_player_id, appended_quest_name)
+        values (#{appendedPlayerId}, #{appendedQuestName})
+    </insert>
 
-    <select id="select" resultType="map">
-        select quest_require, quest_reward
-        from tbl_quest where quest_mob_name = #{questMobName}
+    <select id="selectList" resultType="questDTO">
+        select
+        appended_quest_id, appended_player_id, appended_quest_name,
+        appended_quest_progress, quest_require, quest_reward,
+        appended_quest_cleared
+        from tbl_quest_list tql join tbl_appended_quest taq
+        on tql.quest_name = taq.appended_quest_name
+        where appended_player_id = #{playerId}
     </select>
 
+    <select id="select" resultType="questDTO">
+        select
+        appended_quest_id, appended_player_id, appended_quest_name,
+        appended_quest_progress, quest_require, quest_reward,
+        appended_quest_cleared
+        from tbl_quest_list join tbl_appended_quest
+        on quest_name = appended_quest_name
+        where appended_player_id = #{playerId} and appended_quest_name = #{questName}
+    </select>
+
+    <update id="update">
+        update tbl_appended_quest
+        set appended_quest_progress = #{appendedQuestProgress}
+        <if test="appendedQuestCleared">
+            , appended_quest_cleared = #{appendedQuestCleared}
+        </if>
+        where appended_quest_id = #{appendedQuestId}
+    </update>
+
+    <insert id="registerQuest">
+        insert into tbl_quest_list
+        (quest_name, quest_require, quest_reward)
+        values (#{questName}, #{questRequire}, #{questReward})
+    </insert>
 </mapper>

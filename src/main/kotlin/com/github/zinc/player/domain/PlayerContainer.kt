@@ -1,4 +1,4 @@
-package com.github.zinc.player
+package com.github.zinc.player.domain
 
 import com.github.zinc.player.domain.PlayerDTO
 import com.github.zinc.util.domain.Container

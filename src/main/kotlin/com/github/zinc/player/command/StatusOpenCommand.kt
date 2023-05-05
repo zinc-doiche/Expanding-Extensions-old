@@ -1,6 +1,6 @@
 package com.github.zinc.player.command
 
-import com.github.zinc.player.PlayerContainer
+import com.github.zinc.player.domain.PlayerContainer
 import com.github.zinc.player.domain.StatusType
 import com.github.zinc.player.fx.StatusFx
 import com.github.zinc.player.manager.PlayerStatusManager
@@ -20,7 +20,7 @@ class StatusOpenCommand: TabExecutor {
             when(args.size) {
                 1 -> return StringUtil.copyPartialMatches(args[0], listOf("open", "view", "add"), list)
                 2 -> if(args[0] == "add")
-                    return StringUtil.copyPartialMatches(args[1], listOf("str", "swt", "bal", "con", "rem"), list)
+                    return StringUtil.copyPartialMatches(args[1], listOf("str", "swt", "bal", "con", "rem", "lv"), list)
             }
         } else {
             when(args.size) {
@@ -62,7 +62,8 @@ class StatusOpenCommand: TabExecutor {
             //ex) add str 3
             3 -> {
                 val amount = args[2].toIntOrNull() ?: return false
-                val manager = PlayerStatusManager(PlayerContainer[sender.name]!!)
+                val playerDTO = PlayerContainer[sender.name] ?: return false
+                val manager = PlayerStatusManager(playerDTO)
                 when(args[1]) {
                     "str" -> {
                         manager.updateStatus(StatusType.STRENGTH, amount)
@@ -86,6 +87,11 @@ class StatusOpenCommand: TabExecutor {
                     }
                     "rem" -> {
                         manager.updateStatus(StatusType.REMAIN, amount)
+                        return true
+                    }
+                    "lv" -> {
+                        playerDTO.playerExperience = 0
+                        manager.levelUp(amount)
                         return true
                     }
                 }
