@@ -26,7 +26,7 @@
         appended_quest_cleared
         from tbl_quest_list join tbl_appended_quest
         on quest_name = appended_quest_name
-        where appended_player_id = #{playerId} and appended_quest_name = #{questName}
+        where appended_player_id = #{playerId} and quest_name = #{questName}
     </select>
 
     <update id="update">

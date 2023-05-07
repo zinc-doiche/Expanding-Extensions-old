@@ -42,7 +42,7 @@ class PlayerListener: Listener {
         if(e.entity !is Enemy) return
 
         val enemy = e.entity as Enemy
-        if(enemy.health >= e.finalDamage) return
+        if(enemy.health > e.finalDamage) return
 
         if(QuestManager.clearMap[player.name]!!.contains(enemy.name)) {
             player.sendMessage("§6이미 ${enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
