@@ -1,5 +1,6 @@
 package com.github.zinc.quest.manager
 
+import com.github.zinc.info
 import com.github.zinc.player.domain.PlayerDTO
 import com.github.zinc.quest.dao.QuestDAO
 import com.github.zinc.util.scheduler.loop
@@ -40,8 +41,13 @@ object QuestManager {
         "Shulker" to Pair(20, 2500),
 
         //Boss
+
+    )
+
+    private val weekendQuests = hashMapOf(
         "Wither" to Pair(3, 5000),
-        "Warden" to Pair(1, 30000)
+        "Warden" to Pair(1, 30000),
+        "Raid" to Pair(2, 5000)
     )
 
     private val randomQuests:  Map<String, Pair<Int, Int>> = hashMapOf(
@@ -68,14 +74,11 @@ object QuestManager {
     )
 
     val clearMap: HashMap<String, HashSet<String>> = hashMapOf()
-    private val formatter = SimpleDateFormat("HH:mm:ss", Locale.KOREA)
-    private const val START_TIME = "09:20:00"
-    private const val START_MILLISECONDS = 1000L * 60L * 60L * 9L + 1000L * 60L * 20L
-    private const val UPDATE_PERIOD = 1000L * 60L * 60L * 24L
 
     fun registerAllQuestList() {
         QuestDAO().use { dao ->
             dailyQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "daily") }
+            weekendQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "weekend") }
             randomQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "limit") }
         }
     }
@@ -83,6 +86,7 @@ object QuestManager {
     fun registerAllQuests(playerDTO: PlayerDTO) {
         QuestDAO().use { dao ->
             dailyQuests.keys.forEach { dao.insert(playerDTO.playerId, it) }
+            weekendQuests.keys.forEach { dao.insert(playerDTO.playerId, it) }
             randomQuests.keys.toMutableList().run {
                 this.shuffle()
                 this.subList(0, 5).forEach { dao.insert(playerDTO.playerId, it) }
@@ -91,13 +95,18 @@ object QuestManager {
     }
 
     fun appendQuestUpdater() {
-        val currentTime = formatter.parse(formatter.format(System.currentTimeMillis()))
-        val startTime = formatter.parse(START_TIME)
-        val difference = startTime.time - currentTime.time
-
-        val delay = if(difference < 0) abs(difference) + START_MILLISECONDS else difference
-
-        loop(delay, UPDATE_PERIOD) {
+        val currentDate = Calendar.getInstance(Locale.KOREA)
+        val resetDate = (currentDate.clone() as Calendar).apply {
+            this.add(Calendar.DATE, 1)
+            this.set(Calendar.HOUR_OF_DAY, 2)
+            this.set(Calendar.MINUTE, 0)
+            this.set(Calendar.SECOND, 0)
+        }.time
+        val delay = resetDate.time - currentDate.time.time
+        info(delay / (1000L * 60L * 60L * 24L))
+        info((delay % (1000L * 60L * 60L * 24L)) / (1000L * 60L * 60L))
+        loop(resetDate.time - currentDate.time.time, 1000L * 60L * 60L * 24L) {
+            info("reset quests...")
             QuestDAO().use(QuestDAO::resetAll)
         }
     }
