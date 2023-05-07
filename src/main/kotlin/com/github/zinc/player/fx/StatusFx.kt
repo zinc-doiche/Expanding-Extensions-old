@@ -21,14 +21,13 @@ import org.bukkit.inventory.ItemStack
 
 object StatusFx {
     val clear = ItemStack(Material.AIR)
-    private val upIcon: ItemStack = getCustomItem(Material.PAPER, "UP", 1)
-    private val downIcon: ItemStack = getCustomItem(Material.PAPER, "DOWN", 2)
+    private val upIcon: ItemStack = getCustomItem(Material.PAPER, text("UP"), 1)
 
     private val statusIcons: List<ItemStack> = listOf(
-        getCustomItem(Material.RED_STAINED_GLASS_PANE, "STRENGTH", 3),
-        getCustomItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, "SWIFTNESS", 4),
-        getCustomItem(Material.LIME_STAINED_GLASS_PANE, "BALANCE", 5),
-        getCustomItem(Material.YELLOW_STAINED_GLASS_PANE, "CONCENTRATION", 6)
+        item(Material.RED_STAINED_GLASS_PANE, text("STRENGTH")),
+        item(Material.LIGHT_BLUE_STAINED_GLASS_PANE, text("SWIFTNESS")),
+        item(Material.LIME_STAINED_GLASS_PANE, text("BALANCE")),
+        item(Material.YELLOW_STAINED_GLASS_PANE, text("CONCENTRATION"))
     )
 
     private fun getRemainingStatusIcon(remain: Int): ItemStack {

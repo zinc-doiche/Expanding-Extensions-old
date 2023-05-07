@@ -22,8 +22,8 @@ class PlayerListener: Listener {
             is AbstractArrow -> {
                 val abstractArrow = e.damager as AbstractArrow
                 val shooter = abstractArrow.shooter ?: return
-
-                shooter as Player
+                if(shooter !is Player) return
+                shooter
             }
             else -> return
         }
