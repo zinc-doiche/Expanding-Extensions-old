@@ -17,7 +17,6 @@ class TaskManager: Listener {
         loop(0L, 20L * 60 * 10) {
             if(updatedTasks.isNotEmpty()) updatedTasks.forEach { it.value() }
         }
-        QuestManager.appendQuestUpdater()
 //        plugin.kommand {
 //            register("status", "스테이터스") {
 //                then("open") {

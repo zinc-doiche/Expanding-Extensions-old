@@ -41,6 +41,7 @@ class ZincPlugin: JavaPlugin() {
                 PlayerDAO().use { PlayerContainer.container.values.forEach(it::update) }
             }
         }
+        TaskManager.add("resetQuestTimer", QuestManager::appendQuestUpdater)
     }
 
     override fun onDisable() {

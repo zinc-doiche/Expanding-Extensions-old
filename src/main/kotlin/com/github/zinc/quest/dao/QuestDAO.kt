@@ -11,8 +11,8 @@ class QuestDAO : AbstractDAO() {
     fun selectList(playerId: Long): List<QuestDTO>? = mapper.selectList(playerId)
     fun select(playerId: Long, enemy: Enemy): QuestDTO? = mapper.select(hashMapOf("playerId" to playerId, "questName" to enemy.name))
     fun update(questDTO: QuestDTO) = mapper.update(questDTO)
-    fun registerQuest(questName: String, require: Int, reward: Int) {
-        mapper.registerQuest(hashMapOf("questName" to questName, "questRequire" to require, "questReward" to reward))
+    fun registerQuest(questName: String, require: Int, reward: Int, questType: String) {
+        mapper.registerQuest(hashMapOf("questName" to questName, "questRequire" to require, "questReward" to reward, "questType" to questType))
     }
     fun resetAll() = mapper.updateAll()
     fun updateLimited(appendedQuestName: String, appendedQuestId: Long) {

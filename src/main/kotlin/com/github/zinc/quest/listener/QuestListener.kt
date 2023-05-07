@@ -1,5 +1,6 @@
 package com.github.zinc.quest.listener
 
+import com.github.zinc.info
 import com.github.zinc.player.domain.PlayerContainer
 import com.github.zinc.player.event.PlayerGetExpEvent
 import com.github.zinc.quest.dao.QuestDAO
@@ -32,10 +33,10 @@ import org.bukkit.event.entity.ProjectileLaunchEvent
  */
 class QuestListener: Listener {
     @EventHandler
-    fun onEntityDamage(e: QuestClearEvent) {
+    fun onQuestClear(e: QuestClearEvent) {
         QuestDAO().use { dao ->
+            info("qc, ${PlayerContainer[e.player.name]!!.playerId}, ${e.enemy.name}")
             val questDTO = dao.select(PlayerContainer[e.player.name]!!.playerId, e.enemy) ?: return@use
-
             if(questDTO.appendedQuestCleared) {
                 e.player.sendMessage("§6이미 ${e.enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
                 QuestManager.clearMap[e.player.name]?.add(e.enemy.name)

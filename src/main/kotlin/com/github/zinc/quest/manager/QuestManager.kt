@@ -75,8 +75,8 @@ object QuestManager {
 
     fun registerAllQuestList() {
         QuestDAO().use { dao ->
-            dailyQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second) }
-            randomQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second) }
+            dailyQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "daily") }
+            randomQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "limit") }
         }
     }
 

@@ -11,18 +11,18 @@
 
     <select id="selectList" resultType="questDTO">
         select
-        appended_quest_id, appended_player_id, appended_quest_name, quest_type,
-        appended_quest_progress, quest_require, quest_reward,
+        appended_quest_id, appended_player_id, appended_quest_name,
+        appended_quest_progress, quest_type, quest_require, quest_reward,
         appended_quest_cleared
-        from tbl_quest_list tql join tbl_appended_quest taq
-        on tql.quest_name = taq.appended_quest_name
+        from tbl_quest_list join tbl_appended_quest
+        on quest_name = appended_quest_name
         where appended_player_id = #{playerId}
     </select>
 
     <select id="select" resultType="questDTO">
         select
-        appended_quest_id, appended_player_id, appended_quest_name, quest_type,
-        appended_quest_progress, quest_require, quest_reward,
+        appended_quest_id, appended_player_id, appended_quest_name,
+        appended_quest_progress, quest_type, quest_require, quest_reward,
         appended_quest_cleared
         from tbl_quest_list join tbl_appended_quest
         on quest_name = appended_quest_name
@@ -40,8 +40,8 @@
 
     <insert id="registerQuest">
         insert into tbl_quest_list
-        (quest_name, quest_require, quest_reward)
-        values (#{questName}, #{questRequire}, #{questReward})
+        (quest_name, quest_require, quest_reward, quest_type)
+        values (#{questName}, #{questRequire}, #{questReward}, #{questType})
     </insert>
 
     <update id="updateAll">
