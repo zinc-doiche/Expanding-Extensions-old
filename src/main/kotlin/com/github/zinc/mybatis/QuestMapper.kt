@@ -11,4 +11,7 @@ interface QuestMapper: IMapper {
     fun select(data: HashMap<String, Any>): QuestDTO?
     fun update(questDTO: QuestDTO)
     fun registerQuest(data: HashMap<String, Any>)
+    fun updateAll()
+    fun updateLimited(data: HashMap<String, Any>)
+    fun selectLimitedQuestList(playerId: Long): List<Long>
 }

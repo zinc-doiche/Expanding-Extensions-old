@@ -1,5 +1,6 @@
 package com.github.zinc
 
+import com.github.zinc.quest.manager.QuestManager
 import com.github.zinc.util.extension.text
 import com.github.zinc.util.scheduler.loop
 import org.bukkit.entity.Player
@@ -12,16 +13,11 @@ import org.bukkit.event.server.ServerLoadEvent
 class TaskManager: Listener {
 
     @EventHandler
-    fun onDamage(e: EntityDamageByEntityEvent) {
-        if(e.damager is Player) e.damager.sendMessage(text("${e.damage}"))
-    }
-
-    @EventHandler
     fun onLoaded(e: ServerLoadEvent) {
         loop(0L, 20L * 60 * 10) {
             if(updatedTasks.isNotEmpty()) updatedTasks.forEach { it.value() }
         }
-
+        QuestManager.appendQuestUpdater()
 //        plugin.kommand {
 //            register("status", "스테이터스") {
 //                then("open") {

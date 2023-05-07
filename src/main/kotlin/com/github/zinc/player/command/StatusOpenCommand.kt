@@ -4,11 +4,15 @@ import com.github.zinc.player.domain.PlayerContainer
 import com.github.zinc.player.domain.StatusType
 import com.github.zinc.player.fx.StatusFx
 import com.github.zinc.player.manager.PlayerStatusManager
+import com.github.zinc.tools.ToolManager
+import com.github.zinc.util.sound.Sounds
 import io.github.monun.invfx.openFrame
+import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.StringUtil
 
 class StatusOpenCommand: TabExecutor {
@@ -38,11 +42,13 @@ class StatusOpenCommand: TabExecutor {
             1 -> {
                 when(args[0]) {
                     "open" -> {
+                        sender.playSound(Sounds.uiOpen)
                         sender.openFrame(StatusFx.getStatusFrame(sender))
                         return true
                     }
                     "view" -> {
                         val playerDTO = PlayerContainer[sender.name]!!
+                        sender.playSound(Sounds.uiOpen)
                         sender.sendMessage(
                             "${sender.name}의 스테이터스 :\n" +
                             "[${playerDTO.playerLevel}Lv.] ${playerDTO.playerExperience}xp / ${PlayerStatusManager(playerDTO).getMaxExpForNextLevel()}xp\n" +

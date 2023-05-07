@@ -1,10 +1,7 @@
 package com.github.zinc.quest.dao
 
-import com.github.zinc.mybatis.IMapper
-import com.github.zinc.mybatis.MybatisConfig
 import com.github.zinc.mybatis.QuestMapper
 import com.github.zinc.quest.domain.QuestDTO
-import com.github.zinc.quest.domain.QuestVO
 import com.github.zinc.util.AbstractDAO
 import org.bukkit.entity.Enemy
 
@@ -17,4 +14,9 @@ class QuestDAO : AbstractDAO() {
     fun registerQuest(questName: String, require: Int, reward: Int) {
         mapper.registerQuest(hashMapOf("questName" to questName, "questRequire" to require, "questReward" to reward))
     }
+    fun resetAll() = mapper.updateAll()
+    fun updateLimited(appendedQuestName: String, appendedQuestId: Long) {
+        mapper.updateLimited(hashMapOf("appendedQuestName" to appendedQuestName, "appendedQuestId" to appendedQuestId))
+    }
+    fun selectLimitedQuestList(playerId: Long) = mapper.selectLimitedQuestList(playerId)
 }

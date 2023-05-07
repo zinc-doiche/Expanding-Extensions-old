@@ -6,3 +6,7 @@ commands:
   status:
     aliases: '스테이터스'
     description: show your status
+  test:
+    description: test
+  quest:
+    description: open quest list

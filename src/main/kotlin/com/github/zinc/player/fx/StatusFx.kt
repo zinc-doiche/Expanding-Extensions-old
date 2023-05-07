@@ -8,6 +8,7 @@ import com.github.zinc.util.extension.*
 import com.github.zinc.util.extension.getCustomItem
 import com.github.zinc.util.extension.item
 import com.github.zinc.util.extension.text
+import com.github.zinc.util.sound.Sounds
 import io.github.monun.invfx.InvFX
 import io.github.monun.invfx.frame.InvFrame
 import io.github.monun.invfx.frame.InvSlot
@@ -47,7 +48,7 @@ object StatusFx {
         return InvFX.frame(3, Component.text("${player.name}의 스테이터스")) {
             for (i in 0..3) {
                 slot(2*i + 1, 0) {
-                    if(playerDTO.hasRemain()) {
+                    if(manager.hasRemain() && manager.getTotalStatus() <= 600) {
                         item = upIcon
 
                         onClick {
@@ -59,20 +60,11 @@ object StatusFx {
 //                            }
                             manager.updateStatus(StatusType.values()[i], 1)
                             manager.updateStatus(StatusType.REMAIN, -1)
+                            player.playSound(Sounds.click)
                             player.openFrame(getStatusFrame(player))
                         }
                     }
                     else item = clear
-                }
-                slot(2*i + 1, 2) {
-                    item = downIcon //temp
-                    onClick {
-                        /* TODO :
-                            1) 스텟롤백 테이블 만들기
-                            2) 1에서 롤백가능횟수 가져오기
-                            3) 잘 코딩하기
-                         */
-                    }
                 }
             }
 
@@ -83,9 +75,11 @@ object StatusFx {
             updateRemainSlot(playerDTO.playerStatusRemain)
 
             onClose { event ->
-                player.sendMessage(event.reason.toString())
-                if(event.reason != InventoryCloseEvent.Reason.PLUGIN)
+                //player.sendMessage(event.reason.toString())
+                if(event.reason != InventoryCloseEvent.Reason.PLUGIN) {
+                    player.playSound(Sounds.uiClose)
                     manager.applyAll()
+                }
             }
         }
     }

@@ -13,6 +13,7 @@ data class QuestDTO(
     var appendedPlayerId: Long,
     var appendedQuestName: String,
     var appendedQuestProgress: Int,
+    var questType: String,
     var questRequire: Int,
     var questReward: Int,
     var appendedQuestCleared: Boolean

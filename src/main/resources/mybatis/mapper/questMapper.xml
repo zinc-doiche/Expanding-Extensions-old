@@ -11,7 +11,7 @@
 
     <select id="selectList" resultType="questDTO">
         select
-        appended_quest_id, appended_player_id, appended_quest_name,
+        appended_quest_id, appended_player_id, appended_quest_name, quest_type,
         appended_quest_progress, quest_require, quest_reward,
         appended_quest_cleared
         from tbl_quest_list tql join tbl_appended_quest taq
@@ -21,7 +21,7 @@
 
     <select id="select" resultType="questDTO">
         select
-        appended_quest_id, appended_player_id, appended_quest_name,
+        appended_quest_id, appended_player_id, appended_quest_name, quest_type,
         appended_quest_progress, quest_require, quest_reward,
         appended_quest_cleared
         from tbl_quest_list join tbl_appended_quest
@@ -43,4 +43,23 @@
         (quest_name, quest_require, quest_reward)
         values (#{questName}, #{questRequire}, #{questReward})
     </insert>
+
+    <update id="updateAll">
+        update tbl_appended_quest
+        set appended_quest_progress = 0, appended_quest_cleared = 0
+    </update>
+
+    <update id="updateLimited">
+        update tbl_appended_quest
+        set appended_quest_name = #{appendedQuestName}
+        where appended_quest_id = #{appendQuestId}
+    </update>
+
+    <select id="selectLimitedQuestList" resultType="long">
+        select appended_quest_id from tbl_appended_quest
+        where appended_player_id = #{playerId}
+        and appended_quest_name in (
+            select quest_name from tbl_quest_list where quest_type = 'limit'
+        )
+    </select>
 </mapper>

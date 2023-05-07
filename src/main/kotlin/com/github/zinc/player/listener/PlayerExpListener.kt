@@ -3,6 +3,7 @@ package com.github.zinc.player.listener
 import com.github.zinc.player.domain.PlayerContainer
 import com.github.zinc.player.event.PlayerGetExpEvent
 import com.github.zinc.player.manager.PlayerStatusManager
+import com.github.zinc.util.sound.Sounds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 
@@ -27,7 +28,7 @@ class PlayerExpListener: Listener {
         val playerDTO = PlayerContainer[e.player.name] ?: return
         val manager = PlayerStatusManager(playerDTO)
         var maxExp = manager.getMaxExpForNextLevel()
-        var currExp = e.amount + (playerDTO.playerExperience)
+        var currExp = e.amount + playerDTO.playerExperience
 
         if(maxExp > currExp) {
             manager.expUp(e.amount)
@@ -40,6 +41,8 @@ class PlayerExpListener: Listener {
 
             manager.levelUp()
         }
+        playerDTO.playerEntity.playSound(Sounds.levelUp)
+        manager.setExp(0)
         manager.expUp(currExp)
     }
 }

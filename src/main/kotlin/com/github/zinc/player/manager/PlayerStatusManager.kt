@@ -3,6 +3,7 @@ package com.github.zinc.player.manager
 import com.github.zinc.player.domain.PlayerDTO
 import com.github.zinc.player.domain.StatusType
 import org.bukkit.attribute.Attribute
+import kotlin.random.Random
 
 class PlayerStatusManager(
     private val playerDTO: PlayerDTO
@@ -14,8 +15,8 @@ class PlayerStatusManager(
         val con = playerDTO.playerConcentration
         val bal = playerDTO.playerBalance
         val swt = playerDTO.playerSwiftness
-
-        return str + con + bal + swt
+        val rem = playerDTO.playerStatusRemain
+        return str + con + bal + swt + rem
     }
 
     fun levelUp(amount: Int = 1) {
@@ -23,9 +24,17 @@ class PlayerStatusManager(
         playerDTO.playerStatusRemain += amount
     }
 
+    fun setExp(amount: Int) {
+        playerDTO.playerExperience = amount
+    }
+
     fun expUp(amount: Int) {
         playerDTO.playerExperience += amount
     }
+
+    fun rollCritical() = (Random.nextInt(100)+1) <= 100 * getAdditionalCriticalProbability(playerDTO.playerConcentration)
+
+    fun hasRemain() = playerDTO.playerStatusRemain > 0
 
     fun applyAll() {
         applyStrength()
@@ -209,19 +218,19 @@ class PlayerStatusManager(
                 //max 0.2 = 0 + .2
                 // 20/15000 ps
                 in INTERVAL1 + 1..INTERVAL2 -> //250
-                    1.4 + (concentration - INTERVAL1) * .05 / (INTERVAL2 - INTERVAL1)
+                    .2 + (concentration - INTERVAL1) * .05 / (INTERVAL2 - INTERVAL1)
                 //max 0.25 = 0 + .2 + .05
                 // 5/15000 ps
                 in INTERVAL2 + 1..INTERVAL3 -> //400
-                    1.6 + (concentration - INTERVAL2) * .05 / (INTERVAL3 - INTERVAL2)
+                    .25 + (concentration - INTERVAL2) * .05 / (INTERVAL3 - INTERVAL2)
                 //max 0.3 = 0 + .2 + .05 +.05
                 // 5/15000 ps
                 in INTERVAL3 + 1..INTERVAL4 -> //550
-                    1.8 + (concentration - INTERVAL3) * .1 / (INTERVAL4 - INTERVAL3)
+                    .3 + (concentration - INTERVAL3) * .1 / (INTERVAL4 - INTERVAL3)
                 //max 0.4 = 0 + .2 + .05 + .05 + .1
                 // 10/15000 ps
                 else -> //600
-                    2.2 + (concentration - INTERVAL4) * .6 / (600 - INTERVAL4)
+                    .4 + (concentration - INTERVAL4) * .6 / (600 - INTERVAL4)
                 //max 1 = 0 + .2 + .05 + .05 + .1 + .6
                 // 60/15000 ps
             }
