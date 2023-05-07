@@ -15,12 +15,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 object QuestFx {
-    private val creeperIcon = ItemStack(Material.CREEPER_HEAD)
+    private val creeperIcon = item(Material.CREEPER_HEAD) { meta ->
+        meta.displayName(text("§4한정 퀘스트 목록 바로가기"))
+    }
     private val returnIcon = item(Material.PAPER) {}
 
     private fun getHeadIcon(player: Player) = item(Material.PLAYER_HEAD) { meta ->
         (meta as SkullMeta).owningPlayer = player
-        meta.displayName(text("일일퀘스트 목록 바로가기"))
+        meta.displayName(text("§4일일퀘스트 목록 바로가기"))
     }
 
     fun getQuestMainFx(playerDTO: PlayerDTO): InvFrame {
