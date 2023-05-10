@@ -1,4 +1,4 @@
-package com.github.zinc.util.sound
+package com.github.zinc.util
 
 import net.kyori.adventure.sound.Sound
 

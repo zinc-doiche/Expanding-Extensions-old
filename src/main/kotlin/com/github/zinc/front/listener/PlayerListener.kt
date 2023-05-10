@@ -1,6 +1,9 @@
-package com.github.zinc.core.player.listener
+package com.github.zinc.front.listener
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.container.PlayerContainer
+import com.github.zinc.core.player.dao.PlayerDAO
+import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.manager.PlayerStatusManager
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.manager.QuestManager
@@ -13,8 +16,38 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 
 class PlayerListener: Listener {
+    @EventHandler
+    fun onLogin(e: AsyncPlayerPreLoginEvent) {
+        var isNewbie = false
+        val playerName = e.playerProfile.name ?: return
+
+        val playerVO = PlayerDAO().use { dao ->
+             dao.select(playerName) ?: run {
+                isNewbie = true
+                dao.insert(playerName)
+                dao.select(playerName) ?: run {
+                    e.disallow(
+                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                        text("Login Cancelled, please retry login.")
+                    )
+                    return
+                }
+            }
+        }
+
+        if(isNewbie) QuestManager.registerAllQuests(playerVO.playerId)
+        PlayerContainer.add(playerName, PlayerData(playerVO))
+    }
+
+    @EventHandler
+    fun onRespawn(e: PlayerPostRespawnEvent) {
+        val manager = PlayerStatusManager(PlayerContainer[e.player.name]!!)
+        manager.applyAll()
+    }
+
     @EventHandler
     fun onEntityDamage(e: EntityDamageByEntityEvent) {
         val player: Player = when(e.damager) {

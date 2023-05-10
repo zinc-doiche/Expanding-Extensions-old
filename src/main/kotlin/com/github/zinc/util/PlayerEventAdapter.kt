@@ -1,10 +1,10 @@
-package com.github.zinc.util.event
+package com.github.zinc.util
 
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.player.PlayerEvent
 
-open class PlayerEventAdapter(player: Player): PlayerEvent(player) {
+abstract class PlayerEventAdapter(player: Player): PlayerEvent(player) {
     override fun getHandlers(): HandlerList {
         return getHandlerList()
     }

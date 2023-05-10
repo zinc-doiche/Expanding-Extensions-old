@@ -1,9 +1,8 @@
 package com.github.zinc.core.player.listener
 
-import com.github.zinc.core.player.domain.PlayerContainer
-import com.github.zinc.core.player.event.PlayerGetExpEvent
+import com.github.zinc.front.event.PlayerGetExpEvent
 import com.github.zinc.core.player.manager.PlayerStatusManager
-import com.github.zinc.util.sound.Sounds
+import com.github.zinc.util.Sounds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 

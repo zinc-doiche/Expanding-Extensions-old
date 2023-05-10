@@ -1,6 +1,6 @@
-package com.github.zinc.tools
+package com.github.zinc.core.equipment
 
-import com.github.zinc.core.player.domain.StatusType
+import com.github.zinc.core.player.StatusType
 import org.bukkit.inventory.ItemStack
 import java.util.*
 

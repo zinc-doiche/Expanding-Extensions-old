@@ -1,10 +1,9 @@
-package com.github.zinc.core.player.command
+package com.github.zinc.command
 
-import com.github.zinc.core.player.domain.PlayerContainer
-import com.github.zinc.core.player.domain.StatusType
-import com.github.zinc.core.player.fx.StatusFx
+import com.github.zinc.core.player.StatusType
+import com.github.zinc.front.ui.StatusFx
 import com.github.zinc.core.player.manager.PlayerStatusManager
-import com.github.zinc.util.sound.Sounds
+import com.github.zinc.util.Sounds
 import io.github.monun.invfx.openFrame
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

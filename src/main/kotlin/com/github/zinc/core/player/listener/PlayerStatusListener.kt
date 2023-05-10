@@ -1,6 +1,5 @@
 package com.github.zinc.core.player.listener
 
-import com.github.zinc.core.player.domain.PlayerContainer
 import com.github.zinc.core.player.dao.PlayerDAO
 import com.github.zinc.core.player.manager.PlayerStatusManager
 import com.github.zinc.core.quest.manager.QuestManager

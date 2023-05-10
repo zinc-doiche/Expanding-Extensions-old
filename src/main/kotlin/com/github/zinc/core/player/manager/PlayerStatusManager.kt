@@ -1,40 +1,40 @@
 package com.github.zinc.core.player.manager
 
-import com.github.zinc.core.player.domain.PlayerDTO
-import com.github.zinc.core.player.domain.StatusType
+import com.github.zinc.core.player.PlayerData
+import com.github.zinc.core.player.StatusType
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Player
 import kotlin.random.Random
 
 class PlayerStatusManager(
-    private val playerDTO: PlayerDTO
+    private val playerData: PlayerData,
+    val playerEntity: Player
 ) {
-    private val playerEntity = playerDTO.playerEntity
-
     fun getTotalStatus(): Int {
-        val str = playerDTO.playerStrength
-        val con = playerDTO.playerConcentration
-        val bal = playerDTO.playerBalance
-        val swt = playerDTO.playerSwiftness
-        val rem = playerDTO.playerStatusRemain
+        val str = playerData.playerVO.playerStrength
+        val con = playerData.playerVO.playerConcentration
+        val bal = playerData.playerVO.playerBalance
+        val swt = playerData.playerVO.playerSwiftness
+        val rem = playerData.playerVO.playerStatusRemain
         return str + con + bal + swt + rem
     }
 
     fun levelUp(amount: Int = 1) {
-        playerDTO.playerLevel += amount
-        playerDTO.playerStatusRemain += amount
+        playerData.playerVO.playerLevel += amount
+        playerData.playerVO.playerStatusRemain += amount
     }
 
     fun setExp(amount: Int) {
-        playerDTO.playerExperience = amount
+        playerData.playerVO.playerExperience = amount
     }
 
     fun expUp(amount: Int) {
-        playerDTO.playerExperience += amount
+        playerData.playerVO.playerExperience += amount
     }
 
-    fun rollCritical() = (Random.nextInt(100)+1) <= 100 * getAdditionalCriticalProbability(playerDTO.playerConcentration)
+    fun rollCritical() = (Random.nextInt(100)+1) <= 100 * getAdditionalCriticalProbability(playerData.playerVO.playerConcentration)
 
-    fun hasRemain() = playerDTO.playerStatusRemain > 0
+    fun hasRemain() = playerData.playerVO.playerStatusRemain > 0
 
     fun applyAll() {
         applyStrength()
@@ -55,18 +55,18 @@ class PlayerStatusManager(
 
     private fun applyStrength() {
         val damageAttr = playerEntity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) ?: return
-        damageAttr.baseValue = getAdditionalDamage(playerDTO.playerStrength) + defaultDamage
+        damageAttr.baseValue = getAdditionalDamage(playerData.playerVO.playerStrength) + defaultDamage
     }
 
     private fun applyBalance() {
         val healthAttr = playerEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
-        healthAttr.baseValue = getAdditionalHealth(playerDTO.playerBalance) + defaultHealth
+        healthAttr.baseValue = getAdditionalHealth(playerData.playerVO.playerBalance) + defaultHealth
         playerEntity.health = healthAttr.baseValue
     }
 
     private fun applySwiftness() {
         val speedAttr = playerEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) ?: return
-        speedAttr.baseValue = getAdditionalSpeed(playerDTO.playerSwiftness) + defaultSpeed
+        speedAttr.baseValue = getAdditionalSpeed(playerData.playerVO.playerSwiftness) + defaultSpeed
     }
 
     private fun applyConcentration() {
@@ -76,38 +76,38 @@ class PlayerStatusManager(
     fun updateStatus(type: StatusType, amount: Int = 1): Int {
         return when(type) {
             StatusType.STRENGTH -> {
-                playerDTO.playerStrength += amount
-                playerDTO.playerStrength
+                playerData.playerVO.playerStrength += amount
+                playerData.playerVO.playerStrength
             }
             StatusType.BALANCE -> {
-                playerDTO.playerBalance += amount
-                playerDTO.playerBalance
+                playerData.playerVO.playerBalance += amount
+                playerData.playerVO.playerBalance
             }
             StatusType.SWIFTNESS -> {
-                playerDTO.playerSwiftness += amount
-                playerDTO.playerSwiftness
+                playerData.playerVO.playerSwiftness += amount
+                playerData.playerVO.playerSwiftness
             }
             StatusType.CONCENTRATION -> {
-                playerDTO.playerConcentration += amount
-                playerDTO.playerConcentration
+                playerData.playerVO.playerConcentration += amount
+                playerData.playerVO.playerConcentration
             }
             StatusType.REMAIN -> {
-                playerDTO.playerStatusRemain += amount
-                playerDTO.playerStatusRemain
+                playerData.playerVO.playerStatusRemain += amount
+                playerData.playerVO.playerStatusRemain
             }
         }
     }
 
     fun getMaxExpForNextLevel(): Int {
-        return when(playerDTO.playerLevel){
+        return when(playerData.playerVO.playerLevel){
             in 0..99 ->
-                (-1/500.0)*playerDTO.playerLevel*playerDTO.playerLevel*(playerDTO.playerLevel-150) + 100
+                (-1/500.0)*playerData.playerVO.playerLevel*playerData.playerVO.playerLevel*(playerData.playerVO.playerLevel-150) + 100
             //1100
             in 100..199 ->
-                (-1/50.0)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-250) + 1100
+                (-1/50.0)*(playerData.playerVO.playerLevel-100)*(playerData.playerVO.playerLevel-100)*(playerData.playerVO.playerLevel-250) + 1100
             //11100
             in 200..299 ->
-                (-1/5.0)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-100)*(playerDTO.playerLevel-250) + 11100
+                (-1/5.0)*(playerData.playerVO.playerLevel-100)*(playerData.playerVO.playerLevel-100)*(playerData.playerVO.playerLevel-250) + 11100
             //111100
             else -> 0
         }.toInt()

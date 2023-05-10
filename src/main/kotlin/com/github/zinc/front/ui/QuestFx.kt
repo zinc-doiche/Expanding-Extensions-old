@@ -1,11 +1,11 @@
-package com.github.zinc.core.quest.fx
+package com.github.zinc.front.ui
 
-import com.github.zinc.core.player.domain.PlayerDTO
+import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.quest.dao.QuestDAO
 import com.github.zinc.core.quest.domain.QuestDTO
 import com.github.zinc.core.quest.domain.QuestVO
 import com.github.zinc.core.quest.manager.QuestManager
-import com.github.zinc.util.color.Colors
+import com.github.zinc.util.Colors
 import com.github.zinc.util.extension.getCustomItem
 import com.github.zinc.util.extension.item
 import com.github.zinc.util.extension.text
@@ -52,17 +52,18 @@ object QuestFx {
         }
     }
 
-    fun getQuestMainFx(playerDTO: PlayerDTO): InvFrame {
-        return InvFX.frame(1, text("${playerDTO.playerEntity.name}의 임무")) {
+    fun getQuestMainFx(playerData: PlayerData): InvFrame {
+        val manager = playerData.manager!!
+        return InvFX.frame(1, text("${manager.playerEntity.name}의 임무")) {
             slot(0, 0) {
-                item = getHeadIcon(playerDTO.playerEntity)
+                item = getHeadIcon(manager.playerEntity)
                 onClick {
                     val list = QuestDAO().use { dao ->
-                        dao.selectList(playerDTO.playerId)
+                        dao.selectList(playerData.playerVO.playerId)
                             ?.filter { it.questType == "daily" } ?: return@onClick
                     }
-                    getQuestListFx(playerDTO, text("일일 임무"), list).let {
-                        playerDTO.playerEntity.openFrame(it)
+                    getQuestListFx(playerData, text("일일 임무"), list).let {
+                        manager.playerEntity.openFrame(it)
                     }
                 }
             }
@@ -70,11 +71,11 @@ object QuestFx {
                 item = witherIcon
                 onClick {
                     val list = QuestDAO().use { dao ->
-                        dao.selectList(playerDTO.playerId)
+                        dao.selectList(playerData.playerVO.playerId)
                             ?.filter { it.questType == "weekend" } ?: return@onClick
                     }
-                    getQuestListFx(playerDTO, text("주간 임무"), list).let{
-                        playerDTO.playerEntity.openFrame(it)
+                    getQuestListFx(playerData, text("주간 임무"), list).let{
+                        manager.playerEntity.openFrame(it)
                     }
                 }
             }
@@ -82,18 +83,18 @@ object QuestFx {
                 item = creeperIcon
                 onClick {
                     val list = QuestDAO().use { dao ->
-                        dao.selectList(playerDTO.playerId)
+                        dao.selectList(playerData.playerVO.playerId)
                             ?.filter { it.questType == "limit" } ?: return@onClick
                     }
-                    getQuestListFx(playerDTO, text("일일 특별 임무"), list).let {
-                        playerDTO.playerEntity.openFrame(it)
+                    getQuestListFx(playerData, text("일일 특별 임무"), list).let {
+                        manager.playerEntity.openFrame(it)
                     }
                 }
             }
         }
     }
 
-    private fun getQuestListFx(playerDTO: PlayerDTO, name: Component, questList: List<QuestDTO>): InvFrame {
+    private fun getQuestListFx(playerData: PlayerData, name: Component, questList: List<QuestDTO>): InvFrame {
         val cleared = questList.filter(QuestDTO::appendedQuestCleared)
         val unCleared = questList.filterNot(QuestDTO::appendedQuestCleared)
 
@@ -141,8 +142,8 @@ object QuestFx {
                             quest
                     }
 
-                    getQuestListFx(playerDTO, text("일일 특별 임무"), newQuestList).let {
-                        playerDTO.playerEntity.openFrame(it)
+                    getQuestListFx(playerData, text("일일 특별 임무"), newQuestList).let {
+                        playerData.manager!!.playerEntity.openFrame(it)
                     }
                 }
             }
@@ -150,7 +151,7 @@ object QuestFx {
             slot(8, 5) {
                 item = returnIcon
                 onClick {
-                    playerDTO.playerEntity.openFrame(getQuestMainFx(playerDTO))
+                    playerData.manager!!.playerEntity.openFrame(getQuestMainFx(playerData))
                 }
             }
         }

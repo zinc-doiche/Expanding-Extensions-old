@@ -1,7 +1,7 @@
-package com.github.zinc.core.quest.command
+package com.github.zinc.command
 
-import com.github.zinc.core.player.domain.PlayerContainer
-import com.github.zinc.core.quest.fx.QuestFx
+import com.github.zinc.container.PlayerContainer
+import com.github.zinc.front.ui.QuestFx
 import io.github.monun.invfx.openFrame
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor

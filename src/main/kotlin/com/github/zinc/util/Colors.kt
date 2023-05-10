@@ -1,4 +1,4 @@
-package com.github.zinc.util.color
+package com.github.zinc.util
 
 import net.kyori.adventure.text.format.TextColor
 

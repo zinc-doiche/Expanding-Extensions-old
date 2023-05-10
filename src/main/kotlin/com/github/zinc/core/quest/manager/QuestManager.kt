@@ -1,6 +1,5 @@
 package com.github.zinc.core.quest.manager
 
-import com.github.zinc.core.player.domain.PlayerDTO
 import com.github.zinc.core.quest.dao.QuestDAO
 import java.util.*
 
@@ -79,13 +78,13 @@ object QuestManager {
         }
     }
 
-    fun registerAllQuests(playerDTO: PlayerDTO) {
+    fun registerAllQuests(playerId: Long) {
         QuestDAO().use { dao ->
-            dailyQuests.keys.forEach { dao.insert(playerDTO.playerId, it) }
-            weekendQuests.keys.forEach { dao.insert(playerDTO.playerId, it) }
+            dailyQuests.keys.forEach { dao.insert(playerId, it) }
+            weekendQuests.keys.forEach { dao.insert(playerId, it) }
             randomQuests.keys.toMutableList().run {
                 this.shuffle()
-                this.subList(0, 5).forEach { dao.insert(playerDTO.playerId, it) }
+                this.subList(0, 5).forEach { dao.insert(playerId, it) }
             }
         }
     }
