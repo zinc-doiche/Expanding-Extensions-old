@@ -1,7 +1,7 @@
 package com.github.zinc.mybatis
 
-import com.github.zinc.quest.domain.QuestDTO
-import com.github.zinc.quest.domain.QuestVO
+import com.github.zinc.core.quest.domain.QuestDTO
+import com.github.zinc.core.quest.domain.QuestVO
 import org.apache.ibatis.annotations.Mapper
 
 @Mapper
@@ -14,4 +14,9 @@ interface QuestMapper: IMapper {
     fun updateAll()
     fun updateLimited(data: HashMap<String, Any>)
     fun selectLimitedQuestList(playerId: Long): List<Long>
+    fun questTimer()
+    fun selectQuest(questName: String): QuestVO
+    fun getChance(playerId: Long): Int
+    fun updateChance(data: HashMap<String, Any>)
+    fun insertChance(playerId: Long)
 }

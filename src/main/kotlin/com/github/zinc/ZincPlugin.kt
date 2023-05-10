@@ -1,16 +1,17 @@
 package com.github.zinc;
 
 import com.github.zinc.mybatis.MybatisConfig
-import com.github.zinc.player.domain.PlayerContainer
-import com.github.zinc.player.command.StatusOpenCommand
-import com.github.zinc.player.dao.PlayerDAO
-import com.github.zinc.player.listener.PlayerExpListener
-import com.github.zinc.player.listener.PlayerListener
-import com.github.zinc.player.listener.PlayerStatusListener
-import com.github.zinc.quest.command.QuestCommand
-import com.github.zinc.quest.dao.QuestDAO
-import com.github.zinc.quest.listener.QuestListener
-import com.github.zinc.quest.manager.QuestManager
+import com.github.zinc.core.player.domain.PlayerContainer
+import com.github.zinc.core.player.command.StatusOpenCommand
+import com.github.zinc.core.player.dao.PlayerDAO
+import com.github.zinc.core.player.listener.PlayerExpListener
+import com.github.zinc.core.player.listener.PlayerListener
+import com.github.zinc.core.player.listener.PlayerStatusListener
+import com.github.zinc.core.quest.command.QuestCommand
+import com.github.zinc.core.quest.dao.QuestDAO
+import com.github.zinc.core.quest.listener.QuestListener
+import com.github.zinc.core.TaskManager
+import com.github.zinc.core.TestCommand
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,7 +42,8 @@ class ZincPlugin: JavaPlugin() {
                 PlayerDAO().use { PlayerContainer.container.values.forEach(it::update) }
             }
         }
-        TaskManager.add("resetQuestTimer", QuestManager::appendQuestUpdater)
+
+        QuestDAO().use(QuestDAO::questTimer)
     }
 
     override fun onDisable() {

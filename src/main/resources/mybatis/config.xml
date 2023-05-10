@@ -8,9 +8,10 @@
     </settings>
 
     <typeAliases>
-        <typeAlias type="com.github.zinc.player.domain.PlayerVO" alias="playerVO"/>
-        <typeAlias type="com.github.zinc.player.domain.PlayerDTO" alias="playerDTO"/>
-        <typeAlias type="com.github.zinc.quest.domain.QuestDTO" alias="questDTO"/>
+        <typeAlias type="com.github.zinc.core.player.domain.PlayerVO" alias="playerVO"/>
+        <typeAlias type="com.github.zinc.core.player.domain.PlayerDTO" alias="playerDTO"/>
+        <typeAlias type="com.github.zinc.core.quest.domain.QuestVO" alias="questVO"/>
+        <typeAlias type="com.github.zinc.core.quest.domain.QuestDTO" alias="questDTO"/>
     </typeAliases>
 
     <environments default="mysql">

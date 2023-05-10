@@ -1,7 +1,7 @@
 package com.github.zinc.mybatis
 
-import com.github.zinc.player.domain.PlayerDTO
-import com.github.zinc.player.domain.PlayerVO
+import com.github.zinc.core.player.domain.PlayerDTO
+import com.github.zinc.core.player.domain.PlayerVO
 import org.apache.ibatis.annotations.Mapper
 
 @Mapper

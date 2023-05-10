@@ -62,4 +62,35 @@
             select quest_name from tbl_quest_list where quest_type = 'limit'
         )
     </select>
+
+    <insert id="questTimer">
+        CREATE EVENT if not exists quest_reset_event
+            ON SCHEDULE every 1 day
+            STARTS '2023-05-01 02:00:00'
+            COMMENT 'quest reset event at 2am'
+        DO
+            update tbl_appended_quest
+            set appended_quest_progress = 0, appended_quest_cleared = 0
+    </insert>
+
+    <select id="selectQuest" resultType="questVO">
+        select quest_name, quest_require, quest_reward, quest_type
+        from tbl_quest_list where quest_name = #{questName}
+    </select>
+
+    <select id="getChance" resultType="int">
+        select quest_reset_chance from tbl_quest_reset_chance
+        where player_id = #{playerId}
+    </select>
+
+    <update id="updateChance">
+        update tbl_quest_reset_chance
+        set quest_reset_chance = #{questResetChance}
+        where player_id = #{playerId}
+    </update>
+
+    <insert id="insertChance">
+        insert into tbl_quest_reset_chance
+        (player_id) values (#{playerId})
+    </insert>
 </mapper>
