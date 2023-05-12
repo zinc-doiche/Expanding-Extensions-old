@@ -1,6 +1,7 @@
 package com.github.zinc.front.event
 
+import com.github.zinc.core.player.PlayerData
 import com.github.zinc.util.PlayerEventAdapter
 import org.bukkit.entity.Enemy
 
-class QuestClearEvent(val playerDTO: PlayerDTO, val enemy: Enemy) : PlayerEventAdapter(playerDTO.playerEntity)
+class QuestClearEvent(val playerData: PlayerData, val enemy: Enemy) : PlayerEventAdapter(playerData.manager!!.playerEntity)

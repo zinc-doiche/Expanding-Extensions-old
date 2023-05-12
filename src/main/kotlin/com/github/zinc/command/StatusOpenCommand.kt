@@ -1,5 +1,6 @@
 package com.github.zinc.command
 
+import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.player.StatusType
 import com.github.zinc.front.ui.StatusFx
 import com.github.zinc.core.player.manager.PlayerStatusManager
@@ -34,26 +35,27 @@ class StatusOpenCommand: TabExecutor {
         if (sender !is Player) {
             return false
         }
+        val playerData = PlayerContainer[sender.name]!!
+
         when (args.size) {
             1 -> {
                 when(args[0]) {
                     "open" -> {
                         sender.playSound(Sounds.uiOpen)
-                        sender.openFrame(StatusFx.getStatusFrame(sender))
+                        sender.openFrame(StatusFx.getStatusFrame(playerData))
                         return true
                     }
                     "view" -> {
-                        val playerDTO = PlayerContainer[sender.name]!!
                         sender.playSound(Sounds.uiOpen)
                         sender.sendMessage(
                             "${sender.name}의 스테이터스 :\n" +
-                            "[${playerDTO.playerLevel}Lv.] ${playerDTO.playerExperience}xp / ${PlayerStatusManager(playerDTO).getMaxExpForNextLevel()}xp\n" +
-                            "| Strength: ${playerDTO.playerStrength}\n" +
-                            "| Swiftness: ${playerDTO.playerSwiftness}\n" +
-                            "| Balance: ${playerDTO.playerBalance}\n" +
-                            "| Concentration: ${playerDTO.playerConcentration}\n" +
+                            "[${playerData.playerVO.playerLevel}Lv.] ${playerData.playerVO.playerExperience}xp / ${playerData.manager?.getMaxExpForNextLevel()}xp\n" +
+                            "| Strength: ${playerData.playerVO.playerStrength}\n" +
+                            "| Swiftness: ${playerData.playerVO.playerSwiftness}\n" +
+                            "| Balance: ${playerData.playerVO.playerBalance}\n" +
+                            "| Concentration: ${playerData.playerVO.playerConcentration}\n" +
                             "\n" +
-                            "잔여스탯: ${playerDTO.playerStatusRemain}"
+                            "잔여스탯: ${playerData.playerVO.playerStatusRemain}"
                         )
                         return true
                     }
@@ -64,36 +66,34 @@ class StatusOpenCommand: TabExecutor {
             //ex) add str 3
             3 -> {
                 val amount = args[2].toIntOrNull() ?: return false
-                val playerDTO = PlayerContainer[sender.name] ?: return false
-                val manager = PlayerStatusManager(playerDTO)
                 when(args[1]) {
                     "str" -> {
-                        manager.updateStatus(StatusType.STRENGTH, amount)
-                        manager.applyStatus(StatusType.STRENGTH)
+                        playerData.manager?.updateStatus(StatusType.STRENGTH, amount)
+                        playerData.manager?.applyStatus(StatusType.STRENGTH)
                         return true
                     }
                     "swt" -> {
-                        manager.updateStatus(StatusType.SWIFTNESS, amount)
-                        manager.applyStatus(StatusType.SWIFTNESS)
+                        playerData.manager?.updateStatus(StatusType.SWIFTNESS, amount)
+                        playerData.manager?.applyStatus(StatusType.SWIFTNESS)
                         return true
                     }
                     "bal" -> {
-                        manager.updateStatus(StatusType.BALANCE, amount)
-                        manager.applyStatus(StatusType.BALANCE)
+                        playerData.manager?.updateStatus(StatusType.BALANCE, amount)
+                        playerData.manager?.applyStatus(StatusType.BALANCE)
                         return true
                     }
                     "con" -> {
-                        manager.updateStatus(StatusType.CONCENTRATION, amount)
-                        manager.applyStatus(StatusType.CONCENTRATION)
+                        playerData.manager?.updateStatus(StatusType.CONCENTRATION, amount)
+                        playerData.manager?.applyStatus(StatusType.CONCENTRATION)
                         return true
                     }
                     "rem" -> {
-                        manager.updateStatus(StatusType.REMAIN, amount)
+                        playerData.manager?.updateStatus(StatusType.REMAIN, amount)
                         return true
                     }
                     "lv" -> {
-                        playerDTO.playerExperience = 0
-                        manager.levelUp(amount)
+                        playerData.playerVO.playerExperience = 0
+                        playerData.manager?.levelUp(amount)
                         return true
                     }
                 }

@@ -3,14 +3,15 @@ package com.github.zinc;
 import com.github.zinc.mybatis.MybatisConfig
 import com.github.zinc.command.StatusOpenCommand
 import com.github.zinc.core.player.dao.PlayerDAO
-import com.github.zinc.core.player.listener.PlayerExpListener
-import com.github.zinc.core.player.listener.PlayerListener
-import com.github.zinc.core.player.listener.PlayerStatusListener
+import com.github.zinc.front.listener.PlayerExpListener
 import com.github.zinc.command.QuestCommand
+import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.quest.dao.QuestDAO
 import com.github.zinc.core.quest.listener.QuestListener
 import com.github.zinc.front.listener.ServerListener
 import com.github.zinc.core.TestCommand
+import com.github.zinc.core.player.PlayerData
+import com.github.zinc.front.listener.PlayerListener
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,7 +26,6 @@ class ZincPlugin: JavaPlugin() {
 
         registerAll(
             ServerListener(),
-            PlayerStatusListener(),
             PlayerExpListener(),
             PlayerListener(),
             QuestListener()
@@ -38,7 +38,7 @@ class ZincPlugin: JavaPlugin() {
         ServerListener.add("updateAll") {
             if(PlayerContainer.container.isNotEmpty()) {
                 info("saving...")
-                PlayerDAO().use { PlayerContainer.container.values.forEach(it::update) }
+                PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
             }
         }
 
@@ -48,7 +48,7 @@ class ZincPlugin: JavaPlugin() {
     override fun onDisable() {
         if(PlayerContainer.container.isNotEmpty()) {
             info("saving...")
-            PlayerDAO().use { PlayerContainer.container.values.forEach(it::update) }
+            PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
         }
     }
 

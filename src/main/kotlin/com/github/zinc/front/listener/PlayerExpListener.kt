@@ -1,5 +1,7 @@
-package com.github.zinc.core.player.listener
+package com.github.zinc.front.listener
 
+import com.github.zinc.container.PlayerContainer
+import com.github.zinc.core.player.PlayerVO
 import com.github.zinc.front.event.PlayerGetExpEvent
 import com.github.zinc.core.player.manager.PlayerStatusManager
 import com.github.zinc.util.Sounds
@@ -22,25 +24,26 @@ import org.bukkit.event.Listener
  *  3) original exp -> exp
  */
 class PlayerExpListener: Listener {
+
     @EventHandler
     fun onGetExperience(e: PlayerGetExpEvent) {
-        val playerDTO = PlayerContainer[e.player.name] ?: return
-        val manager = PlayerStatusManager(playerDTO)
+        val playerData = PlayerContainer[e.player.name] ?: return
+        e.player.location
+        val manager = playerData.manager ?: return
         var maxExp = manager.getMaxExpForNextLevel()
-        var currExp = e.amount + playerDTO.playerExperience
+        var currExp = e.amount + playerData.playerVO.playerExperience
 
         if(maxExp > currExp) {
             manager.expUp(e.amount)
             return
         }
-
         while(maxExp <= currExp) {
             currExp -= maxExp
             maxExp = manager.getMaxExpForNextLevel()
 
             manager.levelUp()
         }
-        playerDTO.playerEntity.playSound(Sounds.levelUp)
+        manager.playerEntity.playSound(Sounds.levelUp)
         manager.setExp(0)
         manager.expUp(currExp)
     }

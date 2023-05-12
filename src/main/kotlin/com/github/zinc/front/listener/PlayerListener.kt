@@ -5,6 +5,7 @@ import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.player.dao.PlayerDAO
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.manager.PlayerStatusManager
+import com.github.zinc.core.quest.dao.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.manager.QuestManager
 import com.github.zinc.util.extension.text
@@ -17,6 +18,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import java.util.HashSet
 
 class PlayerListener: Listener {
     @EventHandler
@@ -40,12 +44,32 @@ class PlayerListener: Listener {
 
         if(isNewbie) QuestManager.registerAllQuests(playerVO.playerId)
         PlayerContainer.add(playerName, PlayerData(playerVO))
+
+        QuestManager.clearMap[e.playerProfile.name!!] = QuestDAO().use { dao ->
+            val questList = dao.selectList(playerVO.playerId) ?: return
+
+            questList.filter { it.appendedQuestCleared }.map { it.appendedQuestName }.toSet()
+
+        } as HashSet<String>
+    }
+
+    @EventHandler
+    fun onJoin(e: PlayerJoinEvent) {
+        val playerData = PlayerContainer[e.player.name]!!
+        playerData.manager = PlayerStatusManager(playerData, e.player)
+    }
+
+    @EventHandler
+    fun onQuit(e: PlayerQuitEvent) {
+        val playerData = PlayerContainer.remove(e.player.name) ?: return
+        PlayerDAO().use { it.update(playerData.playerVO) }
+
+        QuestManager.clearMap.remove(e.player.name)
     }
 
     @EventHandler
     fun onRespawn(e: PlayerPostRespawnEvent) {
-        val manager = PlayerStatusManager(PlayerContainer[e.player.name]!!)
-        manager.applyAll()
+        PlayerContainer[e.player.name]!!.manager?.applyAll() ?: return
     }
 
     @EventHandler
@@ -63,8 +87,8 @@ class PlayerListener: Listener {
 
         if(e.entity !is LivingEntity) return
 
-        val playerDTO = PlayerContainer[player.name]!!
-        val manager = PlayerStatusManager(playerDTO)
+        val playerData = PlayerContainer[player.name]!!
+        val manager = playerData.manager ?: return
         e.damage = if(manager.rollCritical()) {
             player.playSound(Sounds.ironGolemDamaged)
             e.damage * 1.8
@@ -82,7 +106,7 @@ class PlayerListener: Listener {
             return
         }
 
-        QuestClearEvent(playerDTO, enemy).callEvent()
+        QuestClearEvent(playerData, enemy).callEvent()
     }
 
 }

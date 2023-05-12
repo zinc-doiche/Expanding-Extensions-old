@@ -1,5 +1,6 @@
 package com.github.zinc.core.quest.listener
 
+import com.github.zinc.container.PlayerContainer
 import com.github.zinc.info
 import com.github.zinc.front.event.PlayerGetExpEvent
 import com.github.zinc.core.quest.dao.QuestDAO
@@ -8,6 +9,7 @@ import com.github.zinc.core.quest.manager.QuestManager
 import com.github.zinc.util.Sounds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 
 /**
  * TODO :
@@ -28,8 +30,8 @@ class QuestListener: Listener {
     @EventHandler
     fun onQuestClear(e: QuestClearEvent) {
         QuestDAO().use { dao ->
-            info("qc, ${PlayerContainer[e.player.name]!!.playerId}, ${e.enemy.name}")
-            val questDTO = dao.select(PlayerContainer[e.player.name]!!.playerId, e.enemy) ?: return@use
+            info("qc, ${e.playerData.playerVO.playerId}, ${e.enemy.name}")
+            val questDTO = dao.select(PlayerContainer[e.player.name]!!.playerVO.playerId, e.enemy) ?: return@use
             if(questDTO.appendedQuestCleared) {
                 e.player.sendMessage("§6이미 ${e.enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
                 QuestManager.clearMap[e.player.name]?.add(e.enemy.name)

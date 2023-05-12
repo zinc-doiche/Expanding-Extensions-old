@@ -1,5 +1,6 @@
 package com.github.zinc.core.quest.manager
 
+import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.quest.dao.QuestDAO
 import java.util.*
 
@@ -89,9 +90,9 @@ object QuestManager {
         }
     }
 
-    fun registerChance(playerDTO: PlayerDTO) {
+    fun registerChance(playerData: PlayerData) {
         QuestDAO().use { dao ->
-            dao.insertChance(playerDTO.playerId)
+            dao.insertChance(playerData.playerVO.playerId)
         }
     }
 

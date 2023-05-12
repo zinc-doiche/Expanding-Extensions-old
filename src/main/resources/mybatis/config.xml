@@ -8,8 +8,7 @@
     </settings>
 
     <typeAliases>
-        <typeAlias type="com.github.zinc.core.player.domain.PlayerDomains" alias="playerVO"/>
-        <typeAlias type="com.github.zinc.core.player.domain.PlayerDTO" alias="playerDTO"/>
+        <typeAlias type="com.github.zinc.core.player.PlayerVO" alias="playerVO"/>
         <typeAlias type="com.github.zinc.core.quest.domain.QuestVO" alias="questVO"/>
         <typeAlias type="com.github.zinc.core.quest.domain.QuestDTO" alias="questDTO"/>
     </typeAliases>

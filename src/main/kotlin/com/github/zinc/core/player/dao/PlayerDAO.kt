@@ -13,5 +13,5 @@ class PlayerDAO : AbstractDAO() {
     fun select(playerId: Long): PlayerVO? = mapper.selectById(playerId)
     fun insert(player: Player) = mapper.insert(player.name)
     fun insert(playerName: String) = mapper.insert(playerName)
-    fun update(playerDTO: PlayerDTO) = mapper.update(playerDTO)
+    fun update(playerVO: PlayerVO) = mapper.update(playerVO)
 }

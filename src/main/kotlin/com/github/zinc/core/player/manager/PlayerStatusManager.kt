@@ -8,7 +8,7 @@ import kotlin.random.Random
 
 class PlayerStatusManager(
     private val playerData: PlayerData,
-    val playerEntity: Player
+    var playerEntity: Player
 ) {
     fun getTotalStatus(): Int {
         val str = playerData.playerVO.playerStrength

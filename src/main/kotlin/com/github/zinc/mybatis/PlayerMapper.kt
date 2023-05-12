@@ -8,5 +8,5 @@ interface PlayerMapper: IMapper {
     fun insert(playerName: String)
     fun select(playerName: String): PlayerVO?
     fun selectById(playerId: Long): PlayerVO?
-    fun update(playerDTO: PlayerDTO)
+    fun update(playerVO: PlayerVO)
 }
