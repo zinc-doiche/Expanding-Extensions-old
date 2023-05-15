@@ -1,7 +1,6 @@
-package com.github.zinc.core.quest.manager
+package com.github.zinc.core.quest
 
 import com.github.zinc.core.player.PlayerData
-import com.github.zinc.core.quest.dao.QuestDAO
 import java.util.*
 
 /**

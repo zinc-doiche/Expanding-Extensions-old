@@ -1,10 +1,10 @@
 package com.github.zinc.front.ui
 
 import com.github.zinc.core.player.PlayerData
-import com.github.zinc.core.quest.dao.QuestDAO
-import com.github.zinc.core.quest.domain.QuestDTO
-import com.github.zinc.core.quest.domain.QuestVO
-import com.github.zinc.core.quest.manager.QuestManager
+import com.github.zinc.core.quest.QuestDAO
+import com.github.zinc.core.quest.QuestDTO
+import com.github.zinc.core.quest.QuestVO
+import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.util.Colors
 import com.github.zinc.util.extension.getCustomItem
 import com.github.zinc.util.extension.item

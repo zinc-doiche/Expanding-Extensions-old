@@ -9,8 +9,8 @@
 
     <typeAliases>
         <typeAlias type="com.github.zinc.core.player.PlayerVO" alias="playerVO"/>
-        <typeAlias type="com.github.zinc.core.quest.domain.QuestVO" alias="questVO"/>
-        <typeAlias type="com.github.zinc.core.quest.domain.QuestDTO" alias="questDTO"/>
+        <typeAlias type="com.github.zinc.core.quest.QuestVO" alias="questVO"/>
+        <typeAlias type="com.github.zinc.core.quest.QuestDTO" alias="questDTO"/>
     </typeAliases>
 
     <environments default="mysql">

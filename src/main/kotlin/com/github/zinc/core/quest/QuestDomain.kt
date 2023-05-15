@@ -1,4 +1,4 @@
-package com.github.zinc.core.quest.domain
+package com.github.zinc.core.quest
 
 data class QuestVO(
     var questName: String,

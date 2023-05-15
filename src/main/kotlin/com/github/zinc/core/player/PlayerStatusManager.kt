@@ -1,7 +1,5 @@
-package com.github.zinc.core.player.manager
+package com.github.zinc.core.player
 
-import com.github.zinc.core.player.PlayerData
-import com.github.zinc.core.player.StatusType
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import kotlin.random.Random

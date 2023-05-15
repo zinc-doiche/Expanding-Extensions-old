@@ -1,7 +1,6 @@
-package com.github.zinc.core.player.dao
+package com.github.zinc.core.player
 
 import com.github.zinc.mybatis.PlayerMapper
-import com.github.zinc.core.player.PlayerVO
 import com.github.zinc.util.AbstractDAO
 import org.bukkit.entity.Player
 

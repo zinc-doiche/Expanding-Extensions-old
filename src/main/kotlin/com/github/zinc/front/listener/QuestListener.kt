@@ -1,15 +1,14 @@
-package com.github.zinc.core.quest.listener
+package com.github.zinc.front.listener
 
 import com.github.zinc.container.PlayerContainer
 import com.github.zinc.info
 import com.github.zinc.front.event.PlayerGetExpEvent
-import com.github.zinc.core.quest.dao.QuestDAO
+import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
-import com.github.zinc.core.quest.manager.QuestManager
+import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.util.Sounds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.inventory.ItemStack
 
 /**
  * TODO :

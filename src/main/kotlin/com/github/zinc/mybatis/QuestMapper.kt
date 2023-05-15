@@ -1,7 +1,7 @@
 package com.github.zinc.mybatis
 
-import com.github.zinc.core.quest.domain.QuestDTO
-import com.github.zinc.core.quest.domain.QuestVO
+import com.github.zinc.core.quest.QuestDTO
+import com.github.zinc.core.quest.QuestVO
 import org.apache.ibatis.annotations.Mapper
 
 @Mapper

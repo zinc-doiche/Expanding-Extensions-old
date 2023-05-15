@@ -2,9 +2,11 @@ package com.github.zinc.util.extension
 
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Item
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.persistence.PersistentDataType
 
 internal fun item(material: Material, block: (ItemMeta) -> Unit): ItemStack {
     return ItemStack(material).apply {
@@ -37,3 +39,13 @@ internal fun getCustomItem(
 }
 
 internal fun isNullOrAir(itemStack: ItemStack?) = itemStack?.type == Material.AIR
+
+internal fun ItemStack.getPersistent(key: NamespacedKey)
+        = this.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING)
+
+internal fun ItemStack.setPersistent(key: NamespacedKey, value: String)
+        = this.itemMeta.persistentDataContainer.set(key, PersistentDataType.STRING, value)
+
+internal fun ItemStack.hasPersistent(key: NamespacedKey)
+        = this.itemMeta.persistentDataContainer.has(key)
+

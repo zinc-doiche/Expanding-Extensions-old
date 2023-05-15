@@ -1,7 +1,5 @@
 package com.github.zinc.core.player
 
-import com.github.zinc.core.player.manager.PlayerStatusManager
-
 data class PlayerVO(
     var playerId: Long,
     var playerName: String,

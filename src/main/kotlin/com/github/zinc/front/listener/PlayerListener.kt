@@ -2,12 +2,12 @@ package com.github.zinc.front.listener
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.container.PlayerContainer
-import com.github.zinc.core.player.dao.PlayerDAO
+import com.github.zinc.core.player.PlayerDAO
 import com.github.zinc.core.player.PlayerData
-import com.github.zinc.core.player.manager.PlayerStatusManager
-import com.github.zinc.core.quest.dao.QuestDAO
+import com.github.zinc.core.player.PlayerStatusManager
+import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
-import com.github.zinc.core.quest.manager.QuestManager
+import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.util.extension.text
 import com.github.zinc.util.Sounds
 import org.bukkit.entity.AbstractArrow
@@ -27,18 +27,14 @@ class PlayerListener: Listener {
     fun onLogin(e: AsyncPlayerPreLoginEvent) {
         var isNewbie = false
         val playerName = e.playerProfile.name ?: return
-
         val playerVO = PlayerDAO().use { dao ->
-             dao.select(playerName) ?: run {
+            dao.select(playerName) ?: run {
                 isNewbie = true
                 dao.insert(playerName)
-                dao.select(playerName) ?: run {
-                    e.disallow(
-                        AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                        text("Login Cancelled, please retry login.")
-                    )
-                    return
-                }
+                dao.select(playerName)
+            } ?: run {
+                e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("Login Cancelled, please retry login."))
+                return
             }
         }
 
@@ -47,9 +43,7 @@ class PlayerListener: Listener {
 
         QuestManager.clearMap[e.playerProfile.name!!] = QuestDAO().use { dao ->
             val questList = dao.selectList(playerVO.playerId) ?: return
-
             questList.filter { it.appendedQuestCleared }.map { it.appendedQuestName }.toSet()
-
         } as HashSet<String>
     }
 
@@ -74,6 +68,8 @@ class PlayerListener: Listener {
 
     @EventHandler
     fun onEntityDamage(e: EntityDamageByEntityEvent) {
+        if(e.entity !is LivingEntity) return
+
         val player: Player = when(e.damager) {
             is Player -> e.damager as Player
             is AbstractArrow -> {
@@ -84,9 +80,6 @@ class PlayerListener: Listener {
             }
             else -> return
         }
-
-        if(e.entity !is LivingEntity) return
-
         val playerData = PlayerContainer[player.name]!!
         val manager = playerData.manager ?: return
         e.damage = if(manager.rollCritical()) {
@@ -97,7 +90,6 @@ class PlayerListener: Listener {
         player.sendMessage(text("${e.finalDamage}"))
 
         if(e.entity !is Enemy) return
-
         val enemy = e.entity as Enemy
         if(enemy.health > e.finalDamage) return
 
@@ -108,5 +100,4 @@ class PlayerListener: Listener {
 
         QuestClearEvent(playerData, enemy).callEvent()
     }
-
 }

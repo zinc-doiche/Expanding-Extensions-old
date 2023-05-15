@@ -1,7 +1,6 @@
-package com.github.zinc.core.quest.dao
+package com.github.zinc.core.quest
 
 import com.github.zinc.mybatis.QuestMapper
-import com.github.zinc.core.quest.domain.QuestDTO
 import com.github.zinc.util.AbstractDAO
 import org.bukkit.entity.Enemy
 
