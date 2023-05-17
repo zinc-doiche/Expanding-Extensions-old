@@ -1,8 +1,8 @@
 package com.github.zinc.core.equipment
 
 import com.github.zinc.core.player.StatusType
+import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.hasPersistent
-import com.github.zinc.util.extension.item
 import com.github.zinc.util.extension.setPersistent
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
@@ -25,7 +25,13 @@ object ToolManager {
     private const val TRIDENT = "TRIDENT"
     private const val SHIELD = "SHIELD"
 
+    private const val HELMET = "HELMET"
+    private const val CHESTPLATE = "CHESTPLATE"
+    private const val LEGGINGS = "LEGGINGS"
+    private const val BOOTS = "BOOTS"
+
     private val STATUS_KEY = NamespacedKey.minecraft("status_added")
+    private val LEVEL_CONSTRAINT_KEY = NamespacedKey.minecraft("level_constraint")
 
     /**
      * netherite tools = max 200 / bow is con 150 / crossbow is con 75 str 75
@@ -40,84 +46,129 @@ object ToolManager {
      *     충절3
      */
     fun getRequireStatus(itemStack: ItemStack): Map<StatusType, Int> {
-        val statusMap: EnumMap<StatusType, Int> = EnumMap(StatusType::class.java)
-        val name = itemStack.type.name
+        if(!itemStack.hasPersistent(STATUS_KEY)) return mapOf()
 
-        if(!itemStack.hasPersistent(STATUS_KEY)) return statusMap
         itemStack.setPersistent(STATUS_KEY, "status")
 
+        var str = 0
+        var swt = 0
+        var bal = 0
+        var con = 0
+        var amplifier = 1.0
+        val name = itemStack.type.name
+
+        //set Material && Tool
         when {
             name.contains(BOW) && !name.contains("CROSS")-> {
-                statusMap[StatusType.CONCENTRATION] = 150
+                con = 150
             }
             name.contains(CROSSBOW) -> {
-                statusMap[StatusType.STRENGTH] = 70
-                statusMap[StatusType.CONCENTRATION] = 70
+                str = 70
+                con = 70
             }
             name.contains(SHIELD) -> {
-                statusMap[StatusType.BALANCE] = 100
+                bal = 100
             }
             name.contains(TRIDENT) -> {
-                statusMap[StatusType.CONCENTRATION] = 30
-                statusMap[StatusType.STRENGTH] = 30
-                statusMap[StatusType.BALANCE] = 30
+                con = 30
+                str = 30
+                bal = 30
             }
+
+            //General
             else -> {
-                val amplifier = when {
-                    name.contains(WOOD) -> .0
+                 amplifier = when {
+                    name.contains(WOOD) -> return getStatusMap()
                     name.contains(STONE) -> .5
                     name.contains(GOLD) -> .5
                     name.contains(IRON) -> 1.0
                     name.contains(DIAMOND) -> 1.5
                     name.contains(NETHERITE) -> 2.5
-                    else -> return statusMap
+                    else -> return getStatusMap()
                 }
                 when {
+                    //tools
                     name.contains(PICKAXE) -> {
-                        statusMap[StatusType.BALANCE] = (amplifier * 60).toInt()
-                        statusMap[StatusType.STRENGTH] = (amplifier * 20).toInt()
+                        bal = 60
+                        str = 20
                     }
                     name.contains(AXE) && !name.contains("PICK") -> {
-                        statusMap[StatusType.STRENGTH] = (amplifier * 60).toInt()
-                        statusMap[StatusType.BALANCE] = (amplifier * 20).toInt()
+                        str = 60
+                        bal = 20
                     }
                     name.contains(SWORD) -> {
-                        statusMap[StatusType.SWIFTNESS] = (amplifier * 60).toInt()
-                        statusMap[StatusType.STRENGTH] = (amplifier * 20).toInt()
+                        swt = 60
+                        str = 20
+                    }
+
+                    //Equipments
+                    name.contains(HELMET) -> {
+                        bal = 60
+                        con = 20
+                    }
+                    name.contains(CHESTPLATE) -> {
+                        bal = 80
+                    }
+                    name.contains(LEGGINGS) -> {
+                        bal = 40
+                        str = 40
+                    }
+                    name.contains(BOOTS) -> {
+                        bal = 40
+                        swt = 40
                     }
                 }
             }
         }
 
+        //set enchants
         for(enchantEntry in itemStack.enchantments) {
             val enchant = enchantEntry.key
             val level = enchantEntry.value
 
             when(enchant) {
-                Enchantment.PROTECTION_ENVIRONMENTAL -> TODO()
-                Enchantment.PROTECTION_FIRE -> TODO()
-                Enchantment.PROTECTION_FALL -> TODO()
-                Enchantment.PROTECTION_EXPLOSIONS -> TODO()
-                Enchantment.PROTECTION_PROJECTILE -> TODO()
-                Enchantment.OXYGEN -> TODO()
-                Enchantment.WATER_WORKER -> TODO()
-                Enchantment.THORNS -> TODO()
-                Enchantment.DEPTH_STRIDER -> TODO()
-                Enchantment.FROST_WALKER -> TODO()
-                Enchantment.BINDING_CURSE -> TODO()
-                Enchantment.DAMAGE_ALL -> TODO()
-                Enchantment.DAMAGE_UNDEAD -> TODO()
-                Enchantment.DAMAGE_ARTHROPODS -> TODO()
-                Enchantment.KNOCKBACK -> TODO()
-                Enchantment.FIRE_ASPECT -> TODO()
-                Enchantment.LOOT_BONUS_MOBS -> TODO()
-                Enchantment.SWEEPING_EDGE -> TODO()
-                Enchantment.DIG_SPEED -> TODO()
-                Enchantment.SILK_TOUCH -> TODO()
-                Enchantment.DURABILITY -> TODO()
-                Enchantment.LOOT_BONUS_BLOCKS -> TODO()
-                Enchantment.ARROW_DAMAGE -> TODO()
-                Enchantment.ARROW_KNOCKBACK -> TODO()
+                //All Eqs
+                Enchantment.PROTECTION_ENVIRONMENTAL -> bal += 20 * level
+                Enchantment.PROTECTION_FIRE -> bal += 10 * level
+                Enchantment.PROTECTION_EXPLOSIONS -> bal += 10 * level
+                Enchantment.PROTECTION_PROJECTILE -> bal += 10 * level
+                Enchantment.THORNS -> str += 15 * level
+
+                //Helmet
+                Enchantment.WATER_WORKER -> con += 10 * level
+
+                //Boots
+                Enchantment.PROTECTION_FALL -> swt += 10 * level
+                Enchantment.DEPTH_STRIDER -> swt += 10 * level
+                Enchantment.FROST_WALKER -> swt += 10 * level
+                Enchantment.SOUL_SPEED -> swt += 10 * level
+
+                //damaging
+                Enchantment.DAMAGE_ALL -> str += 20 * level
+                Enchantment.DAMAGE_UNDEAD -> str += 20 * level
+                Enchantment.DAMAGE_ARTHROPODS -> str += 20 * level
+                Enchantment.SWEEPING_EDGE -> str += 10 * level
+
+                //effects
+                Enchantment.KNOCKBACK -> str += 10 * level
+                Enchantment.FIRE_ASPECT -> con += 20 * level
+                Enchantment.LOOT_BONUS_MOBS -> itemStack.setLevelConstraint(50 * level)
+
+                //tools
+                Enchantment.DIG_SPEED -> {
+                    bal += 10 * level
+                    str += 10 * level
+                }
+                Enchantment.SILK_TOUCH -> con += 30
+                Enchantment.DURABILITY -> itemStack.setLevelConstraint(50 * level)
+                Enchantment.LOOT_BONUS_BLOCKS -> itemStack.setLevelConstraint(60 * level)
+
+                //bow
+                Enchantment.ARROW_DAMAGE -> {
+                    str += 10 * level
+                    con += 30 * level
+                }
+                Enchantment.ARROW_KNOCKBACK -> str += 10 * level
                 Enchantment.ARROW_FIRE -> TODO()
                 Enchantment.ARROW_INFINITE -> TODO()
                 Enchantment.LUCK -> TODO()
@@ -131,12 +182,22 @@ object ToolManager {
                 Enchantment.PIERCING -> TODO()
                 Enchantment.MENDING -> TODO()
                 Enchantment.VANISHING_CURSE -> TODO()
-                Enchantment.SOUL_SPEED -> TODO()
                 Enchantment.SWIFT_SNEAK -> TODO()
-                else -> return statusMap
+//                Enchantment.OXYGEN ->
+//                Enchantment.BINDING_CURSE ->
             }
         }
 
-        return statusMap
+        return getStatusMap((str * amplifier).toInt(), (swt * amplifier).toInt(),
+                            (bal * amplifier).toInt(), (con * amplifier).toInt())
+    }
+
+    private fun getStatusMap(str: Int = 0, swt: Int = 0, bal: Int = 0, con: Int = 0)
+            = mapOf(StatusType.STRENGTH to str, StatusType.SWIFTNESS to swt,
+                    StatusType.BALANCE to bal, StatusType.CONCENTRATION to con)
+
+    private fun ItemStack.setLevelConstraint(level: Int) {
+        val constraint = this.getPersistent(LEVEL_CONSTRAINT_KEY)?.toInt() ?: return
+        if(constraint < level) this.setPersistent(LEVEL_CONSTRAINT_KEY, "$level")
     }
 }
