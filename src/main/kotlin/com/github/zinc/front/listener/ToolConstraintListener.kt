@@ -4,6 +4,7 @@ import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.equipment.ToolManager
 import com.github.zinc.core.equipment.ToolManager.BALANCE
 import com.github.zinc.core.equipment.ToolManager.CONCENTRATION
+import com.github.zinc.core.equipment.ToolManager.STATUS_KEY
 import com.github.zinc.core.equipment.ToolManager.STRENGTH
 import com.github.zinc.core.equipment.ToolManager.SWIFTNESS
 import com.github.zinc.core.equipment.ToolManager.isTool
@@ -16,6 +17,7 @@ import com.github.zinc.util.extension.text
 import com.github.zinc.util.extension.texts
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -102,6 +104,20 @@ class ToolConstraintListener: Listener {
     //passed by playerListener.onEntityDamage
     @EventHandler
     fun onUse(e: PlayerUseToolEvent) {
+        val playerData = PlayerContainer[e.player.name] ?: return
+        val playerVO = playerData.playerVO
+        val item = if(e.mainItem.hasPersistent(STATUS_KEY)) e.mainItem
+                else if(e.offItem.hasPersistent(STATUS_KEY)) e.offItem else return
+
+        val str = item.getPersistent(STRENGTH, PersistentDataType.INTEGER)
+        val swt = item.getPersistent(SWIFTNESS, PersistentDataType.INTEGER)
+        val bal = item.getPersistent(BALANCE, PersistentDataType.INTEGER)
+        val con = item.getPersistent(CONCENTRATION, PersistentDataType.INTEGER)
+
+
+        if(playerVO.playerStrength >= (str ?: 0) && playerVO.playerSwiftness >= (swt ?: 0) &&)
+
+        e.damageEvent.isCancelled = true
 
     }
 

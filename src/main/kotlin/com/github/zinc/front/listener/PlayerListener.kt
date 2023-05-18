@@ -8,6 +8,7 @@ import com.github.zinc.core.player.PlayerStatusManager
 import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.QuestManager
+import com.github.zinc.front.event.PlayerUseToolEvent
 import com.github.zinc.util.extension.text
 import com.github.zinc.util.Sounds
 import org.bukkit.entity.AbstractArrow
@@ -82,7 +83,7 @@ class PlayerListener: Listener {
         }
         val playerData = PlayerContainer[player.name]!!
 
-
+        if(!PlayerUseToolEvent(e, player, player.inventory.itemInMainHand, player.inventory.itemInOffHand).callEvent()) return
 
         val manager = playerData.manager ?: return
         e.damage = if(manager.rollCritical()) {
