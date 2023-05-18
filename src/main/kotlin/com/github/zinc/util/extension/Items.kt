@@ -3,7 +3,6 @@ package com.github.zinc.util.extension
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.entity.Item
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
@@ -46,6 +45,14 @@ internal fun ItemStack.getPersistent(key: NamespacedKey)
 internal fun ItemStack.setPersistent(key: NamespacedKey, value: String)
         = this.itemMeta.persistentDataContainer.set(key, PersistentDataType.STRING, value)
 
+ internal fun<T, Z> ItemStack.getPersistent(key: NamespacedKey, type: PersistentDataType<T, Z>)
+        = this.itemMeta.persistentDataContainer.get(key, type)
+
+internal fun<T, Z : Any> ItemStack.setPersistent(key: NamespacedKey, value: Z, type: PersistentDataType<T, Z>)
+        = this.itemMeta.persistentDataContainer.set(key, type, value)
+
 internal fun ItemStack.hasPersistent(key: NamespacedKey)
         = this.itemMeta.persistentDataContainer.has(key)
+
+internal val AIR: ItemStack = ItemStack(Material.AIR)
 

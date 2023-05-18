@@ -43,8 +43,8 @@ class PlayerListener: Listener {
 
         QuestManager.clearMap[e.playerProfile.name!!] = QuestDAO().use { dao ->
             val questList = dao.selectList(playerVO.playerId) ?: return
-            questList.filter { it.appendedQuestCleared }.map { it.appendedQuestName }.toSet()
-        } as HashSet<String>
+            questList.filter { it.appendedQuestCleared }.map { it.appendedQuestName }.toHashSet()
+        }
     }
 
     @EventHandler
@@ -81,6 +81,9 @@ class PlayerListener: Listener {
             else -> return
         }
         val playerData = PlayerContainer[player.name]!!
+
+
+
         val manager = playerData.manager ?: return
         e.damage = if(manager.rollCritical()) {
             player.playSound(Sounds.ironGolemDamaged)

@@ -1,4 +1,4 @@
-package com.github.zinc.core
+package com.github.zinc.command
 
 import com.github.zinc.util.extension.text
 import io.github.monun.invfx.InvFX

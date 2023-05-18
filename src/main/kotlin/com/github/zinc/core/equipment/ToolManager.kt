@@ -4,9 +4,11 @@ import com.github.zinc.core.player.StatusType
 import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.hasPersistent
 import com.github.zinc.util.extension.setPersistent
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
 object ToolManager {
@@ -29,9 +31,17 @@ object ToolManager {
     private const val CHESTPLATE = "CHESTPLATE"
     private const val LEGGINGS = "LEGGINGS"
     private const val BOOTS = "BOOTS"
+    private const val FISHING_ROD = "FISHING_ROD"
 
-    private val STATUS_KEY = NamespacedKey.minecraft("status_added")
+    val STATUS_KEY = NamespacedKey.minecraft("status_added")
+    val STRENGTH = NamespacedKey.minecraft("str")
+    val SWIFTNESS = NamespacedKey.minecraft("swt")
+    val BALANCE = NamespacedKey.minecraft("bal")
+    val CONCENTRATION = NamespacedKey.minecraft("con")
     private val LEVEL_CONSTRAINT_KEY = NamespacedKey.minecraft("level_constraint")
+
+    internal fun ItemStack.isTool() = this.type.name.contains(
+        "$PICKAXE|$AXE|$SWORD|$BOW|$CROSSBOW|$TRIDENT|$SHIELD|$HELMET|$CHESTPLATE|$LEGGINGS|$BOOTS|$FISHING_ROD")
 
     /**
      * netherite tools = max 200 / bow is con 150 / crossbow is con 75 str 75
@@ -46,10 +56,6 @@ object ToolManager {
      *     충절3
      */
     fun getRequireStatus(itemStack: ItemStack): Map<StatusType, Int> {
-        if(!itemStack.hasPersistent(STATUS_KEY)) return mapOf()
-
-        itemStack.setPersistent(STATUS_KEY, "status")
-
         var str = 0
         var swt = 0
         var bal = 0
@@ -74,17 +80,21 @@ object ToolManager {
                 str = 30
                 bal = 30
             }
+            name.contains(FISHING_ROD) -> {
+                con = 30
+                bal = 30
+            }
 
             //General
             else -> {
                  amplifier = when {
-                    name.contains(WOOD) -> return getStatusMap()
+                    name.contains(WOOD) -> .0
                     name.contains(STONE) -> .5
                     name.contains(GOLD) -> .5
                     name.contains(IRON) -> 1.0
                     name.contains(DIAMOND) -> 1.5
                     name.contains(NETHERITE) -> 2.5
-                    else -> return getStatusMap()
+                    else -> return mapOf()
                 }
                 when {
                     //tools
@@ -137,6 +147,9 @@ object ToolManager {
                 //Helmet
                 Enchantment.WATER_WORKER -> con += 10 * level
 
+                //leggings
+                Enchantment.SWIFT_SNEAK -> swt += 10 * level
+
                 //Boots
                 Enchantment.PROTECTION_FALL -> swt += 10 * level
                 Enchantment.DEPTH_STRIDER -> swt += 10 * level
@@ -169,35 +182,48 @@ object ToolManager {
                     con += 30 * level
                 }
                 Enchantment.ARROW_KNOCKBACK -> str += 10 * level
-                Enchantment.ARROW_FIRE -> TODO()
-                Enchantment.ARROW_INFINITE -> TODO()
-                Enchantment.LUCK -> TODO()
-                Enchantment.LURE -> TODO()
-                Enchantment.LOYALTY -> TODO()
-                Enchantment.IMPALING -> TODO()
-                Enchantment.RIPTIDE -> TODO()
-                Enchantment.CHANNELING -> TODO()
-                Enchantment.MULTISHOT -> TODO()
-                Enchantment.QUICK_CHARGE -> TODO()
-                Enchantment.PIERCING -> TODO()
-                Enchantment.MENDING -> TODO()
-                Enchantment.VANISHING_CURSE -> TODO()
-                Enchantment.SWIFT_SNEAK -> TODO()
-//                Enchantment.OXYGEN ->
-//                Enchantment.BINDING_CURSE ->
+                Enchantment.ARROW_FIRE -> con += 20
+                Enchantment.ARROW_INFINITE -> itemStack.setLevelConstraint(180)
+
+                //fishing rod
+                Enchantment.LUCK -> itemStack.addLevelConstraint(40 * level)
+                Enchantment.LURE -> itemStack.addLevelConstraint(40 * level)
+
+                //trident
+                Enchantment.LOYALTY -> con += 30 * level
+                Enchantment.IMPALING -> str += 20 * level
+                Enchantment.RIPTIDE -> {
+                    swt += 30 * level
+                    itemStack.addLevelConstraint(50 * level)
+                }
+                Enchantment.CHANNELING -> itemStack.addLevelConstraint(120)
+
+                //crossbow
+                Enchantment.MULTISHOT -> {
+                    con += 30
+                    str += 30
+                }
+                Enchantment.QUICK_CHARGE -> {
+                    con += 30 * level
+                    bal += 20 * level
+                }
+                Enchantment.PIERCING -> str += 20 * level
+
+                //mending
+                Enchantment.MENDING -> itemStack.setLevelConstraint(250)
             }
         }
 
-        return getStatusMap((str * amplifier).toInt(), (swt * amplifier).toInt(),
-                            (bal * amplifier).toInt(), (con * amplifier).toInt())
+        return mapOf(StatusType.STRENGTH to str, StatusType.STRENGTH to str, StatusType.STRENGTH to str, StatusType.STRENGTH to str)
     }
 
-    private fun getStatusMap(str: Int = 0, swt: Int = 0, bal: Int = 0, con: Int = 0)
-            = mapOf(StatusType.STRENGTH to str, StatusType.SWIFTNESS to swt,
-                    StatusType.BALANCE to bal, StatusType.CONCENTRATION to con)
-
     private fun ItemStack.setLevelConstraint(level: Int) {
-        val constraint = this.getPersistent(LEVEL_CONSTRAINT_KEY)?.toInt() ?: return
-        if(constraint < level) this.setPersistent(LEVEL_CONSTRAINT_KEY, "$level")
+        val constraint = this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER) ?: return
+        if(constraint < level) this.setPersistent(LEVEL_CONSTRAINT_KEY, level, PersistentDataType.INTEGER)
+    }
+
+    private fun ItemStack.addLevelConstraint(level: Int) {
+        val constraint = this.getPersistent(LEVEL_CONSTRAINT_KEY)?.toInt() ?: 0
+        this.setPersistent(LEVEL_CONSTRAINT_KEY, level + constraint, PersistentDataType.INTEGER)
     }
 }
