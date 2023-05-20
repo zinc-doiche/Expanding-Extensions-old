@@ -109,16 +109,13 @@ class ToolConstraintListener: Listener {
         val item = if(e.mainItem.hasPersistent(STATUS_KEY)) e.mainItem
                 else if(e.offItem.hasPersistent(STATUS_KEY)) e.offItem else return
 
-        val str = item.getPersistent(STRENGTH, PersistentDataType.INTEGER)
-        val swt = item.getPersistent(SWIFTNESS, PersistentDataType.INTEGER)
-        val bal = item.getPersistent(BALANCE, PersistentDataType.INTEGER)
-        val con = item.getPersistent(CONCENTRATION, PersistentDataType.INTEGER)
+        val checkStr = (item.getPersistent(STRENGTH, PersistentDataType.INTEGER) ?: 0) <= playerVO.playerStrength
+        val checkSwt = (item.getPersistent(SWIFTNESS, PersistentDataType.INTEGER) ?: 0) <= playerVO.playerSwiftness
+        val checkBal = (item.getPersistent(BALANCE, PersistentDataType.INTEGER) ?: 0) <= playerVO.playerBalance
+        val checkCon = (item.getPersistent(CONCENTRATION, PersistentDataType.INTEGER) ?: 0) <= playerVO.playerConcentration
 
-
-        if(playerVO.playerStrength >= (str ?: 0) && playerVO.playerSwiftness >= (swt ?: 0) &&)
-
+        if(checkStr && checkSwt && checkBal && checkCon) return
         e.damageEvent.isCancelled = true
-
     }
 
     private fun setConstraints(itemStack: ItemStack) {
@@ -128,10 +125,10 @@ class ToolConstraintListener: Listener {
         val bal = statusConstrains[StatusType.BALANCE] ?: return
         val con = statusConstrains[StatusType.CONCENTRATION] ?: return
 
-        if(str > 0) itemStack.setPersistent(ToolManager.STRENGTH, str, PersistentDataType.INTEGER)
-        if(swt > 0) itemStack.setPersistent(ToolManager.SWIFTNESS, swt, PersistentDataType.INTEGER)
-        if(bal > 0) itemStack.setPersistent(ToolManager.BALANCE, bal, PersistentDataType.INTEGER)
-        if(con > 0) itemStack.setPersistent(ToolManager.CONCENTRATION, con, PersistentDataType.INTEGER)
+        if(str > 0) itemStack.setPersistent(STRENGTH, str, PersistentDataType.INTEGER)
+        if(swt > 0) itemStack.setPersistent(SWIFTNESS, swt, PersistentDataType.INTEGER)
+        if(bal > 0) itemStack.setPersistent(BALANCE, bal, PersistentDataType.INTEGER)
+        if(con > 0) itemStack.setPersistent(CONCENTRATION, con, PersistentDataType.INTEGER)
 
         itemStack.editMeta { meta ->
             meta.lore(texts(
