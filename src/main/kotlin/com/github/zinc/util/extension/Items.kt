@@ -52,7 +52,7 @@ internal fun<T, Z : Any> ItemStack.setPersistent(key: NamespacedKey, value: Z, t
         = this.itemMeta.persistentDataContainer.set(key, type, value)
 
 internal fun ItemStack.hasPersistent(key: NamespacedKey)
-        = this.itemMeta.persistentDataContainer.has(key)
+        = this.itemMeta?.persistentDataContainer?.has(key) ?: false
 
 internal val AIR: ItemStack = ItemStack(Material.AIR)
 

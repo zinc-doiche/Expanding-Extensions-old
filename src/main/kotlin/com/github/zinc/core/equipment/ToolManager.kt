@@ -2,9 +2,7 @@ package com.github.zinc.core.equipment
 
 import com.github.zinc.core.player.StatusType
 import com.github.zinc.util.extension.getPersistent
-import com.github.zinc.util.extension.hasPersistent
 import com.github.zinc.util.extension.setPersistent
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
@@ -40,8 +38,14 @@ object ToolManager {
     val CONCENTRATION = NamespacedKey.minecraft("con")
     private val LEVEL_CONSTRAINT_KEY = NamespacedKey.minecraft("level_constraint")
 
-    internal fun ItemStack.isTool() = this.type.name.contains(
-        "$PICKAXE|$AXE|$SWORD|$BOW|$CROSSBOW|$TRIDENT|$SHIELD|$HELMET|$CHESTPLATE|$LEGGINGS|$BOOTS|$FISHING_ROD")
+    internal fun ItemStack.isTool(): Boolean {
+        return this.type.name.let {
+            it.contains(PICKAXE)    || it.contains(AXE)         || it.contains(SWORD)       ||
+            it.contains(BOW)        || it.contains(CROSSBOW)    || it.contains(TRIDENT)     ||
+            it.contains(SHIELD)     || it.contains(HELMET)      || it.contains(CHESTPLATE)  ||
+            it.contains(LEGGINGS)   || it.contains(BOOTS)       || it.contains(FISHING_ROD)
+        }
+    }
 
     /**
      * netherite tools = max 200 / bow is con 150 / crossbow is con 75 str 75
@@ -214,7 +218,12 @@ object ToolManager {
             }
         }
 
-        return mapOf(StatusType.STRENGTH to str, StatusType.STRENGTH to str, StatusType.STRENGTH to str, StatusType.STRENGTH to str)
+        return mapOf(
+            StatusType.STRENGTH to (str * amplifier).toInt(),
+            StatusType.SWIFTNESS to (swt * amplifier).toInt(),
+            StatusType.BALANCE to (bal * amplifier).toInt(),
+            StatusType.CONCENTRATION to (con * amplifier).toInt()
+        )
     }
 
     private fun ItemStack.setLevelConstraint(level: Int) {
