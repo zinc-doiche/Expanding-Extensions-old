@@ -10,3 +10,4 @@ commands:
     description: test
   quest:
     description: open quest list
+

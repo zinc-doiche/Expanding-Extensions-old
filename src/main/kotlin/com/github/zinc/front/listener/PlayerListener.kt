@@ -9,8 +9,10 @@ import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.front.event.PlayerUseToolEvent
+import com.github.zinc.util.ChainEventCall
 import com.github.zinc.util.extension.text
 import com.github.zinc.util.Sounds
+import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.LivingEntity
@@ -21,7 +23,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.HashSet
 
 class PlayerListener: Listener {
     @EventHandler
@@ -68,6 +69,7 @@ class PlayerListener: Listener {
     }
 
     @EventHandler
+    @ChainEventCall(PlayerUseToolEvent::class, QuestClearEvent::class)
     fun onEntityDamage(e: EntityDamageByEntityEvent) {
         if(e.entity !is LivingEntity) return
 
@@ -103,5 +105,11 @@ class PlayerListener: Listener {
         }
 
         QuestClearEvent(playerData, enemy).callEvent()
+    }
+
+    @EventHandler
+    @ChainEventCall()
+    fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
+
     }
 }

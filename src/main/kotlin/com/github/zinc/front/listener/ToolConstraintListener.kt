@@ -82,6 +82,7 @@ class ToolConstraintListener: Listener {
         }
     }
 
+    //passed by PlayerListener.PlayerInventorySlotChangeEvent
     @EventHandler
     fun onEquip(e: PlayerInventorySlotChangeEvent) {
         info("E1")
