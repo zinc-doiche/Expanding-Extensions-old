@@ -26,7 +26,8 @@ class ZincPlugin: JavaPlugin() {
             PlayerExpListener(),
             PlayerListener(),
             QuestListener(),
-            ToolConstraintListener()
+            ToolConstraintListener(),
+            PlayerWorldListener()
         )
         executors(
             "status" to StatusOpenCommand(),

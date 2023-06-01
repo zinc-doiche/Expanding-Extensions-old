@@ -1,5 +1,6 @@
 package com.github.zinc.core.equipment
 
+import com.github.zinc.core.equipment.ToolManager.isEquipment
 import com.github.zinc.core.player.StatusType
 import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.setPersistent
@@ -7,7 +8,6 @@ import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import java.util.*
 
 object ToolManager {
     private const val WOOD = "WOODEN"
@@ -38,13 +38,19 @@ object ToolManager {
     val CONCENTRATION = NamespacedKey.minecraft("con")
     private val LEVEL_CONSTRAINT_KEY = NamespacedKey.minecraft("level_constraint")
 
+    internal fun ItemStack.isEquipment(): Boolean {
+        return this.type.name.let {
+            it.contains(HELMET) || it.contains(CHESTPLATE) ||
+            it.contains(LEGGINGS) || it.contains(BOOTS)
+        }
+    }
+
     internal fun ItemStack.isTool(): Boolean {
         return this.type.name.let {
             it.contains(PICKAXE)    || it.contains(AXE)         || it.contains(SWORD)       ||
             it.contains(BOW)        || it.contains(CROSSBOW)    || it.contains(TRIDENT)     ||
-            it.contains(SHIELD)     || it.contains(HELMET)      || it.contains(CHESTPLATE)  ||
-            it.contains(LEGGINGS)   || it.contains(BOOTS)       || it.contains(FISHING_ROD)
-        }
+            it.contains(SHIELD)     || it.contains(FISHING_ROD)
+        } || this.isEquipment()
     }
 
     /**

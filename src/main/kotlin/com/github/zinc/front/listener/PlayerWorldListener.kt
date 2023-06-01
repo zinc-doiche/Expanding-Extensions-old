@@ -12,9 +12,9 @@ import org.bukkit.potion.PotionEffectType
 
 /**
  * 1. PDC of chestplate
- * 1-1. equip I/O
- * 2. resist potion
- * 3. world I/O
+ * 2. equip I/O
+ * 3. resist potion
+ * 4. world I/O
  */
 class PlayerWorldListener: Listener {
 
