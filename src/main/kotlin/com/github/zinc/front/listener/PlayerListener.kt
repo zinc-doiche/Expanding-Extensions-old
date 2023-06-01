@@ -2,12 +2,14 @@ package com.github.zinc.front.listener
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.container.PlayerContainer
+import com.github.zinc.core.equipment.ToolManager.isEquipment
 import com.github.zinc.core.player.PlayerDAO
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.PlayerStatusManager
 import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.QuestManager
+import com.github.zinc.front.event.PlayerEquipmentChangeEvent
 import com.github.zinc.front.event.PlayerUseToolEvent
 import com.github.zinc.util.ChainEventCall
 import com.github.zinc.util.extension.text
@@ -85,7 +87,7 @@ class PlayerListener: Listener {
         }
         val playerData = PlayerContainer[player.name]!!
 
-        if(!PlayerUseToolEvent(e, player, player.inventory.itemInMainHand, player.inventory.itemInOffHand).callEvent()) return
+        if(!PlayerUseToolEvent(player, player.inventory.itemInMainHand, player.inventory.itemInOffHand).callEvent()) return
 
         val manager = playerData.manager ?: return
         e.damage = if(manager.rollCritical()) {
@@ -110,6 +112,6 @@ class PlayerListener: Listener {
     @EventHandler
     @ChainEventCall()
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
-
+        if(e.newItemStack.isEquipment())
     }
 }

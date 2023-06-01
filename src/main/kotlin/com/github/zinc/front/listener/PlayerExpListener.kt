@@ -2,6 +2,8 @@ package com.github.zinc.front.listener
 
 import com.github.zinc.container.PlayerContainer
 import com.github.zinc.front.event.PlayerGetExpEvent
+import com.github.zinc.front.event.QuestClearEvent
+import com.github.zinc.util.PassedBy
 import com.github.zinc.util.Sounds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -24,6 +26,7 @@ import org.bukkit.event.Listener
 class PlayerExpListener: Listener {
 
     @EventHandler
+    @PassedBy(QuestListener::class, QuestClearEvent::class)
     fun onGetExperience(e: PlayerGetExpEvent) {
         val playerData = PlayerContainer[e.player.name] ?: return
         e.player.location

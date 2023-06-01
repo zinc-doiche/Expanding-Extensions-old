@@ -6,9 +6,12 @@ import com.github.zinc.front.event.PlayerGetExpEvent
 import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.QuestManager
+import com.github.zinc.util.ChainEventCall
+import com.github.zinc.util.PassedBy
 import com.github.zinc.util.Sounds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 
 /**
  * TODO :
@@ -26,23 +29,27 @@ import org.bukkit.event.Listener
  *  3) original exp -> exp
  */
 class QuestListener: Listener {
+
     @EventHandler
+    @PassedBy(PlayerListener::class, EntityDamageByEntityEvent::class)
+    @ChainEventCall(PlayerGetExpEvent::class)
     fun onQuestClear(e: QuestClearEvent) {
+        val player = e.playerData.manager?.playerEntity ?: return
         QuestDAO().use { dao ->
             info("qc, ${e.playerData.playerVO.playerId}, ${e.enemy.name}")
-            val questDTO = dao.select(PlayerContainer[e.player.name]!!.playerVO.playerId, e.enemy) ?: return@use
+            val questDTO = dao.select(e.playerData.playerVO.playerId, e.enemy) ?: return@use
             if(questDTO.appendedQuestCleared) {
-                e.player.sendMessage("§6이미 ${e.enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
-                QuestManager.clearMap[e.player.name]?.add(e.enemy.name)
+                player.sendMessage("§6이미 ${e.enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
+                QuestManager.clearMap[player.name]?.add(e.enemy.name)
                 return@use
             }
-            e.player.sendMessage("§4${e.enemy.name}: (${++questDTO.appendedQuestProgress}/${questDTO.questRequire})")
+            player.sendMessage("§4${e.enemy.name}: (${++questDTO.appendedQuestProgress}/${questDTO.questRequire})")
 
             if(questDTO.appendedQuestProgress >= questDTO.questRequire) {
                 questDTO.appendedQuestCleared = true
-                e.player.playSound(Sounds.questClear)
-                PlayerGetExpEvent(e.player, questDTO.questReward).callEvent()
-                e.player.sendMessage("\n§6${e.enemy.name} 퀘스트 완료! (+${questDTO.questReward} xp)\n ")
+                player.playSound(Sounds.questClear)
+                PlayerGetExpEvent(player, questDTO.questReward).callEvent()
+                player.sendMessage("\n§6${e.enemy.name} 퀘스트 완료! (+${questDTO.questReward} xp)\n ")
             }
 
             dao.update(questDTO)
