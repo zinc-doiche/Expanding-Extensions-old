@@ -21,10 +21,14 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerLevelChangeEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerStatisticIncrementEvent
 
 class PlayerListener: Listener {
     @EventHandler
@@ -112,6 +116,27 @@ class PlayerListener: Listener {
     @EventHandler
     @ChainEventCall()
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
-        if(e.newItemStack.isEquipment())
+        if(e.newItemStack.isEquipment()) return
+    }
+
+    @EventHandler
+    fun onIncrement(e: PlayerStatisticIncrementEvent) {
+
+    }
+
+    @EventHandler
+    fun onLevelUp(e: PlayerLevelChangeEvent) {
+
+    }
+
+    @EventHandler
+    fun onClick(e: PlayerInteractEvent) {
+        when(e.action) {
+            Action.LEFT_CLICK_BLOCK -> return
+            Action.RIGHT_CLICK_BLOCK -> return
+            Action.LEFT_CLICK_AIR -> return
+            Action.RIGHT_CLICK_AIR -> return
+            Action.PHYSICAL -> return
+        }
     }
 }
