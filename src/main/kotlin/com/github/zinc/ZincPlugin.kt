@@ -1,5 +1,6 @@
 package com.github.zinc;
 
+import com.doiche.zinc.DependencyTest
 import com.github.zinc.mybatis.MybatisConfig
 import com.github.zinc.command.StatusOpenCommand
 import com.github.zinc.core.player.PlayerDAO
@@ -41,6 +42,8 @@ class ZincPlugin: JavaPlugin() {
         }
 
         QuestDAO().use(QuestDAO::questTimer)
+
+        DependencyTest().doSth("포티큐티")
     }
 
     override fun onDisable() {

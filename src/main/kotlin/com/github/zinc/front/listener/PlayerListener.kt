@@ -112,6 +112,6 @@ class PlayerListener: Listener {
     @EventHandler
     @ChainEventCall()
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
-        if(e.newItemStack.isEquipment())
+        if(e.newItemStack.isEquipment()) return
     }
 }
