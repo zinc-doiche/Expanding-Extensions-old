@@ -1,6 +1,5 @@
 package com.github.zinc.util
 
-import org.bukkit.event.Listener
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.FUNCTION)

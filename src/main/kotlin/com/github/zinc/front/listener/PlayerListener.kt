@@ -9,7 +9,7 @@ import com.github.zinc.core.player.PlayerStatusManager
 import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.QuestManager
-import com.github.zinc.front.event.PlayerEquipmentChangeEvent
+import com.github.zinc.front.event.PlayerEquipEvent
 import com.github.zinc.front.event.PlayerUseToolEvent
 import com.github.zinc.util.ChainEventCall
 import com.github.zinc.util.extension.text
@@ -114,7 +114,7 @@ class PlayerListener: Listener {
     }
 
     @EventHandler
-    @ChainEventCall()
+    @ChainEventCall(PlayerEquipEvent::class)
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
         if(e.newItemStack.isEquipment()) return
     }

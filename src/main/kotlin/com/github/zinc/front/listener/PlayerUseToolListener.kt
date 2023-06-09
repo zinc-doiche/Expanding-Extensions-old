@@ -9,6 +9,7 @@ import com.github.zinc.core.equipment.ToolManager.STRENGTH
 import com.github.zinc.core.equipment.ToolManager.SWIFTNESS
 import com.github.zinc.core.equipment.ToolManager.isTool
 import com.github.zinc.core.player.StatusType
+import com.github.zinc.front.event.PlayerEquipEvent
 import com.github.zinc.front.event.PlayerUseToolEvent
 import com.github.zinc.info
 import com.github.zinc.util.Colors
@@ -29,7 +30,6 @@ import org.bukkit.inventory.CraftingInventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
-import java.lang.reflect.Method
 
 /**
  * pdc를 추가해야 되는 상황:
@@ -47,7 +47,7 @@ import java.lang.reflect.Method
  * 2. 꽉 차면 뱉는다.
  * 3. 캔슬
  */
-class ToolConstraintListener: Listener {
+class PlayerUseToolListener: Listener {
     @EventHandler
     fun onLooting(e: InventoryMoveItemEvent) {
         info("L1")
@@ -87,23 +87,22 @@ class ToolConstraintListener: Listener {
 
     @EventHandler
     @PassedBy(PlayerListener::class, PlayerInventorySlotChangeEvent::class)
-    fun onEquip(e: PlayerInventorySlotChangeEvent) {
+    fun onEquip(e: PlayerEquipEvent) {
         info("E1")
         async {
             val playerData = PlayerContainer[e.player.name] ?: return@async
-            e.player.inventory.getItem(e.slot)?.let { item ->
-                if(isNullOrAir(item) || item.hasPersistent(STATUS_KEY) || !item.isTool()) return@async
-                info("E2")
-                val checkStr = item.getPersistent(STRENGTH, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerStrength } ?: true
-                val checkSwt = item.getPersistent(SWIFTNESS, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerSwiftness } ?: true
-                val checkBal = item.getPersistent(BALANCE, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerBalance } ?: true
-                val checkCon = item.getPersistent(CONCENTRATION, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerConcentration } ?: true
+            val item = e.equipment.equipment
+            if(isNullOrAir(item) || item.hasPersistent(STATUS_KEY) || !item.isTool()) return@async
+            info("E2")
+            val checkStr = item.getPersistent(STRENGTH, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerStrength } ?: true
+            val checkSwt = item.getPersistent(SWIFTNESS, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerSwiftness } ?: true
+            val checkBal = item.getPersistent(BALANCE, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerBalance } ?: true
+            val checkCon = item.getPersistent(CONCENTRATION, PersistentDataType.INTEGER)?.let { it < playerData.playerVO.playerConcentration } ?: true
 
-                if(!(checkStr && checkSwt && checkBal && checkCon)) {
-                    e.player.sendMessage("아직 사용하기엔 이르다.")
-                    e.player.inventory.setItem(e.slot, AIR)
-                    if(e.player.inventory.addItem(item).isNotEmpty()) e.player.world.dropItem(e.player.location, item)
-                }
+            if(!(checkStr && checkSwt && checkBal && checkCon)) {
+                e.player.sendMessage("아직 사용하기엔 이르다.")
+                e.player.inventory.setItem(e.equipSlot, AIR)
+                if(e.player.inventory.addItem(item).isNotEmpty()) e.player.world.dropItem(e.player.location, item)
             }
         }
     }

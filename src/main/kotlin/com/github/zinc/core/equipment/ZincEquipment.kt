@@ -1,5 +1,6 @@
 package com.github.zinc.core.equipment
 
+import com.github.zinc.core.player.PlayerData
 import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.setPersistent
 import org.bukkit.NamespacedKey
@@ -8,13 +9,17 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
 class ZincEquipment(
-    private var equipment: ItemStack,
-    var constraint: Status
+    var equipment: ItemStack,
+    val constraint: Status
 ) {
-    constructor(equipment: ItemStack) : this(equipment, Status()) {
-
+    fun canUse(playerData: PlayerData): Boolean {
+        return true
     }
 
+    companion object fun of(itemStack: ItemStack) = ZincEquipment(
+        itemStack,
+        Status()
+    )
 }
 
 data class Status(

@@ -27,7 +27,7 @@ class ZincPlugin: JavaPlugin() {
             PlayerExpListener(),
             PlayerListener(),
             QuestListener(),
-            ToolConstraintListener(),
+            PlayerUseToolListener(),
             PlayerWorldListener()
         )
         executors(
