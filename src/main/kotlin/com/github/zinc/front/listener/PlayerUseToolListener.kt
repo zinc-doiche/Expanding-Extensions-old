@@ -1,5 +1,6 @@
 package com.github.zinc.front.listener
 
+import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.equipment.ToolManager
 import com.github.zinc.core.equipment.ToolManager.BALANCE
@@ -8,8 +9,10 @@ import com.github.zinc.core.equipment.ToolManager.STATUS_KEY
 import com.github.zinc.core.equipment.ToolManager.STRENGTH
 import com.github.zinc.core.equipment.ToolManager.SWIFTNESS
 import com.github.zinc.core.equipment.ToolManager.isTool
+import com.github.zinc.core.equipment.ZincEquipment
 import com.github.zinc.core.player.StatusType
 import com.github.zinc.front.event.PlayerEquipEvent
+import com.github.zinc.front.event.PlayerGetItemEvent
 import com.github.zinc.front.event.PlayerUseToolEvent
 import com.github.zinc.info
 import com.github.zinc.util.Colors
@@ -30,6 +33,7 @@ import org.bukkit.inventory.CraftingInventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
+import java.util.UUID
 
 /**
  * pdc를 추가해야 되는 상황:
@@ -49,14 +53,8 @@ import org.bukkit.persistence.PersistentDataType
  */
 class PlayerUseToolListener: Listener {
     @EventHandler
-    fun onLooting(e: InventoryMoveItemEvent) {
-        info("L1")
-        async {
-            if(e.item.hasPersistent(STATUS_KEY) || !e.item.isTool()) return@async
-            info("L2")
-            e.item.setPersistent(STATUS_KEY, "status")
-            e.item.editMeta{ it.setConstraints(e.item) }
-        }
+    fun onLooting(e: PlayerGetItemEvent) {
+
     }
 
     @EventHandler

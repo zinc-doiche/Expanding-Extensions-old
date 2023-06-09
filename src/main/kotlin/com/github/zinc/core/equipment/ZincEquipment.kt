@@ -1,8 +1,13 @@
 package com.github.zinc.core.equipment
 
 import com.github.zinc.core.player.PlayerData
+import com.github.zinc.info
+import com.github.zinc.util.Colors
 import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.setPersistent
+import com.github.zinc.util.extension.text
+import com.github.zinc.util.extension.texts
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
@@ -12,14 +17,49 @@ class ZincEquipment(
     var equipment: ItemStack,
     val constraint: Status
 ) {
-    fun canUse(playerData: PlayerData): Boolean {
+    fun isDeserved(playerData: PlayerData): Boolean {
         return true
     }
 
-    companion object fun of(itemStack: ItemStack) = ZincEquipment(
-        itemStack,
-        Status()
-    )
+    fun setPDC() {
+        equipment.setPersistent(STRENGTH, constraint.strength, PersistentDataType.INTEGER)
+        equipment.setPersistent(SWIFTNESS, constraint.swiftness, PersistentDataType.INTEGER)
+        equipment.setPersistent(BALANCE, constraint.balance, PersistentDataType.INTEGER)
+        equipment.setPersistent(CONCENTRATION, constraint.concentration, PersistentDataType.INTEGER)
+    }
+
+    fun setLore() {
+        equipment.editMeta { meta ->
+            info("vhxlzbxl")
+            meta.lore(
+                texts(
+                    text(""),
+                    text("요구 스테이터스:", decoration = TextDecoration.BOLD).color(Colors.green)
+                ).apply {
+                    if(constraint.strength > 0)
+                        add(text("STR").color(Colors.red).append(
+                            text(": ${constraint.strength}", decoration = TextDecoration.BOLD).color(Colors.white))
+                        )
+                    if(constraint.swiftness > 0)
+                        add(text("SWT").color(Colors.skyblue).append(
+                            text(": ${constraint.swiftness}", decoration = TextDecoration.BOLD).color(Colors.white))
+                        )
+                    if(constraint.balance > 0)
+                        add(text("BAL").color(Colors.green).append(
+                            text(": ${constraint.balance}", decoration = TextDecoration.BOLD).color(Colors.white))
+                        )
+                    if(constraint.concentration > 0)
+                        add(text("CON").color(Colors.gold).append(
+                            text(": ${constraint.concentration}", decoration = TextDecoration.BOLD).color(Colors.white))
+                        )
+                }
+            )
+        }
+    }
+
+    companion object{
+        fun of(itemStack: ItemStack): ZincEquipment = ZincEquipment(itemStack, Status(itemStack))
+    }
 }
 
 data class Status(
@@ -29,6 +69,10 @@ data class Status(
     var concentration: Int = 0
 ) {
     constructor() : this(0,0,0,0)
+
+    constructor(itemStack: ItemStack) : this() {
+        setStatus(itemStack)
+    }
 
     constructor(
         strength: Double = .0,
@@ -131,7 +175,7 @@ private val equipmentMap: Map<String, Status> = mapOf(
     BOOTS to Status(balance = 40, swiftness = 40)
 )
 
-val STATUS_KEY: NamespacedKey = NamespacedKey.minecraft("status_added")
+val STATUS_KEY: NamespacedKey = NamespacedKey.minecraft("status_key")
 val STRENGTH: NamespacedKey = NamespacedKey.minecraft("str")
 val SWIFTNESS: NamespacedKey = NamespacedKey.minecraft("swt")
 val BALANCE: NamespacedKey = NamespacedKey.minecraft("bal")

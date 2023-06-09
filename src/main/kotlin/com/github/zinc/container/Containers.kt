@@ -6,4 +6,4 @@ import com.github.zinc.core.quest.QuestVO
 
 object PlayerContainer: Container<String, PlayerData>()
 object QuestContainer: Container<String, QuestVO>()
-object EquipmentContainer: Container<Long, ZincEquipment>()
+object EquipmentContainer: Container<String, ZincEquipment>()

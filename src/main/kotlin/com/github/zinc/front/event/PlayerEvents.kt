@@ -20,3 +20,4 @@ class PlayerUseToolEvent(
 }
 
 class PlayerEquipEvent(playerEntity: Player, val equipment: ZincEquipment, val equipSlot: EquipmentSlot) : PlayerEventAdapter(playerEntity)
+class PlayerGetItemEvent(playerEntity: Player, val equipment: ZincEquipment) : PlayerEventAdapter(playerEntity)
