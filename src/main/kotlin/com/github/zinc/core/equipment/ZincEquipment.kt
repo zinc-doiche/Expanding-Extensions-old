@@ -15,10 +15,15 @@ import org.bukkit.persistence.PersistentDataType
 
 class ZincEquipment(
     var equipment: ItemStack,
-    val constraint: Status
+    val constraint: Status = Status()
 ) {
+
     fun isDeserved(playerData: PlayerData): Boolean {
         return true
+    }
+
+    fun setStatus() {
+        constraint.setStatus(equipment)
     }
 
     fun setPDC() {
@@ -56,10 +61,6 @@ class ZincEquipment(
             )
         }
     }
-
-    companion object{
-        fun of(itemStack: ItemStack): ZincEquipment = ZincEquipment(itemStack, Status(itemStack))
-    }
 }
 
 data class Status(
@@ -69,10 +70,6 @@ data class Status(
     var concentration: Int = 0
 ) {
     constructor() : this(0,0,0,0)
-
-    constructor(itemStack: ItemStack) : this() {
-        setStatus(itemStack)
-    }
 
     constructor(
         strength: Double = .0,

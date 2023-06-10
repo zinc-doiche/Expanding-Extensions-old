@@ -19,5 +19,5 @@ class PlayerUseToolEvent(
     override fun setCancelled(cancel: Boolean) { cancelled = cancel }
 }
 
-class PlayerEquipEvent(playerEntity: Player, val equipment: ZincEquipment, val equipSlot: EquipmentSlot) : PlayerEventAdapter(playerEntity)
-class PlayerGetItemEvent(playerEntity: Player, val equipment: ZincEquipment) : PlayerEventAdapter(playerEntity)
+class PlayerEquipEvent(playerEntity: Player, val equipment: ZincEquipment, val equipSlot: EquipmentSlot) : PlayerEventAdapter(playerEntity, true)
+class PlayerGetItemEvent(playerEntity: Player, val equipment: ZincEquipment) : PlayerEventAdapter(playerEntity, true)

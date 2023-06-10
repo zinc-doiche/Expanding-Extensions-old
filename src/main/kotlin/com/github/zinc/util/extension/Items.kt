@@ -37,7 +37,9 @@ internal fun getCustomItem(
     }
 }
 
-internal fun isNullOrAir(itemStack: ItemStack?) = itemStack?.type == Material.AIR
+internal fun isNullOrAir(itemStack: ItemStack?): Boolean {
+    return (itemStack?.type ?: return true) == Material.AIR
+}
 
 internal fun ItemStack.getPersistent(key: NamespacedKey)
         = this.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING)

@@ -1,6 +1,7 @@
 package com.github.zinc.front.listener
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
+import com.destroystokyo.paper.loottable.LootableInventoryReplenishEvent
 import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.equipment.STATUS_KEY
@@ -18,12 +19,13 @@ import com.github.zinc.front.event.PlayerGetItemEvent
 import com.github.zinc.front.event.PlayerUseToolEvent
 import com.github.zinc.info
 import com.github.zinc.util.ChainEventCall
-import com.github.zinc.util.extension.text
 import com.github.zinc.util.Sounds
 import com.github.zinc.util.async
+import com.github.zinc.util.extension.*
 import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.hasPersistent
 import com.github.zinc.util.extension.isNullOrAir
+import com.github.zinc.util.extension.text
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Enemy
@@ -39,7 +41,10 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerLevelChangeEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerStatisticIncrementEvent
+import org.bukkit.event.world.LootGenerateEvent
 import org.bukkit.inventory.EquipmentSlot
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PlayerListener: Listener {
 
@@ -129,14 +134,27 @@ class PlayerListener: Listener {
     @EventHandler
     @ChainEventCall(PlayerEquipEvent::class, PlayerGetItemEvent::class)
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
-        val item = e.player.inventory.getItem(e.slot) ?: return
-        if(isNullOrAir(item) || !item.isTool() || !item.hasPersistent(STATUS_KEY)) return
-        val uuid = item.getPersistent(STATUS_KEY) ?: return
-        val equipment = EquipmentContainer[uuid] ?: return
+        async{
+            e.player.inventory.getItem(e.slot)?.let { item ->
+                if(isNullOrAir(item)) return@async
 
-        when (e.slot) {
-            in 36..39 -> PlayerEquipEvent(e.player, equipment, slots[e.slot - 36]).callEvent()
-            else -> PlayerGetItemEvent(e.player, equipment).callEvent()
+                return@let if(item.hasPersistent(STATUS_KEY)) EquipmentContainer[item.getPersistent(STATUS_KEY)!!]
+                else {
+                    UUID.randomUUID().let { uuid ->
+                        item.setPersistent(STATUS_KEY, uuid.toString())
+
+                        ZincEquipment(item).apply {
+                            setStatus()
+                            setPDC()
+                            setLore()
+                            EquipmentContainer[uuid.toString()] = this
+                        }
+                    }
+                }
+            }?.let { equipment ->
+                if(e.slot in 36..39)
+                    PlayerEquipEvent(e.player, equipment, slots[e.slot - 36]).callEvent()
+            }
         }
     }
 

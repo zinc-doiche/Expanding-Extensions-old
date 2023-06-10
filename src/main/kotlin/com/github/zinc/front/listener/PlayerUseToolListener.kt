@@ -52,36 +52,6 @@ import java.util.UUID
  * 3. 캔슬
  */
 class PlayerUseToolListener: Listener {
-    @EventHandler
-    fun onLooting(e: PlayerGetItemEvent) {
-
-    }
-
-    @EventHandler
-    fun onPickup(e: PlayerAttemptPickupItemEvent) {
-        info("P1")
-        async {
-            if(e.item.itemStack.hasPersistent(STATUS_KEY) || !e.item.itemStack.isTool()) return@async
-            info("P2")
-            e.item.itemStack.setPersistent(STATUS_KEY, "status")
-            info(e.item.itemStack.getPersistent(STATUS_KEY) ?: return@async)
-            e.item.itemStack.editMeta{ it.setConstraints(e.item.itemStack) }
-        }
-    }
-
-    @EventHandler
-    fun onCraft(e: InventoryClickEvent) {
-        info("C1")
-        async {
-            val inv = if (e.view.topInventory is CraftingInventory) e.view.topInventory as CraftingInventory else return@async
-            inv.result?.let { item ->
-                if (item.hasPersistent(STATUS_KEY) || !item.isTool()) return@async
-                info("C2")
-                item.setPersistent(STATUS_KEY, "status")
-                inv.result?.let { tool -> item.editMeta{ it.setConstraints(tool) } }
-            } ?: return@async
-        }
-    }
 
     @EventHandler
     @PassedBy(PlayerListener::class, PlayerInventorySlotChangeEvent::class)
