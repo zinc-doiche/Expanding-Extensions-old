@@ -9,14 +9,12 @@ import org.bukkit.inventory.ItemStack
 
 class PlayerGetExpEvent(player: Player, val amount: Int): PlayerEventAdapter(player)
 
-class PlayerUseToolEvent(
-    user: Player,
-    val usingItem: ZincEquipment,
-): PlayerEventAdapter(user, true), Cancellable {
+class PlayerEquipEvent(playerEntity: Player, val equipment: ZincEquipment, val equipSlot: EquipmentSlot) : PlayerEventAdapter(playerEntity, true)
+
+class PlayerGetItemEvent(playerEntity: Player, val equipment: ZincEquipment) : PlayerEventAdapter(playerEntity, true)
+
+class PlayerShieldBlockEvent(playerEntity: Player, val shield: ZincEquipment) : PlayerEventAdapter(playerEntity), Cancellable {
     private var cancelled: Boolean = false
     override fun isCancelled() = cancelled
     override fun setCancelled(cancel: Boolean) { cancelled = cancel }
 }
-
-class PlayerEquipEvent(playerEntity: Player, val equipment: ZincEquipment, val equipSlot: EquipmentSlot) : PlayerEventAdapter(playerEntity, true)
-class PlayerGetItemEvent(playerEntity: Player, val equipment: ZincEquipment) : PlayerEventAdapter(playerEntity, true)

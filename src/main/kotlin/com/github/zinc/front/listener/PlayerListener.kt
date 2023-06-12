@@ -9,11 +9,9 @@ import com.github.zinc.core.player.PlayerDAO
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.PlayerStatusManager
 import com.github.zinc.core.quest.QuestDAO
-import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.QuestManager
-import com.github.zinc.front.event.PlayerEquipEvent
-import com.github.zinc.front.event.PlayerGetItemEvent
-import com.github.zinc.front.event.PlayerUseToolEvent
+import com.github.zinc.front.event.*
+import com.github.zinc.info
 import com.github.zinc.util.ChainEventCall
 import com.github.zinc.util.Sounds
 import com.github.zinc.util.async
@@ -23,6 +21,7 @@ import com.github.zinc.util.extension.hasPersistent
 import com.github.zinc.util.extension.isNullOrAir
 import com.github.zinc.util.extension.text
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Enemy
@@ -103,7 +102,27 @@ class PlayerListener: Listener {
                 if(shooter !is Player) return
                 shooter
             }
-            else -> return
+            else -> {
+                if(e.entity is Player && (e.entity as Player).isBlocking) {
+                    val playerData = PlayerContainer[(e.entity as Player).name] ?: return
+                    val player = playerData.manager?.playerEntity ?: return
+
+                    val uuid =
+                        if(player.inventory.itemInOffHand.type == Material.SHIELD)
+                            player.inventory.itemInOffHand.getPersistent(STATUS_KEY)
+                        else if(player.inventory.itemInMainHand.type == Material.SHIELD)
+                            player.inventory.itemInMainHand.getPersistent(STATUS_KEY)
+                        else return
+
+                    val equipment = EquipmentContainer[uuid ?: return] ?: return
+
+                    if(!equipment.isDeserved(playerData)) {
+                        player.sendMessage("아직 사용하기엔 이르다.")
+                        player.damage(e.damage)
+                    }
+                }
+                return
+            }
         }
         val playerData = PlayerContainer[player.name]!!
 
@@ -144,8 +163,6 @@ class PlayerListener: Listener {
         }
         async { QuestClearEvent(playerData, enemy).callEvent() }
     }
-
-
 
     @EventHandler
     @ChainEventCall(PlayerEquipEvent::class, PlayerGetItemEvent::class)
@@ -204,11 +221,9 @@ class PlayerListener: Listener {
 
     @EventHandler
     fun onClick(e: PlayerInteractEvent) {
-        when(e.action) {
-            Action.LEFT_CLICK_BLOCK -> return
-            Action.RIGHT_CLICK_BLOCK -> return
-            Action.LEFT_CLICK_AIR -> return
-            Action.RIGHT_CLICK_AIR -> return
+        when (e.action) {
+            Action.LEFT_CLICK_BLOCK, Action.LEFT_CLICK_AIR -> return
+            Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR -> return
             Action.PHYSICAL -> return
         }
     }

@@ -5,6 +5,7 @@ import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.front.event.PlayerEquipEvent
+import com.github.zinc.front.event.PlayerShieldBlockEvent
 import com.github.zinc.info
 import com.github.zinc.util.PassedBy
 import com.github.zinc.util.async
@@ -61,6 +62,16 @@ class PlayerUseToolListener: Listener {
 
                 e.isCancelled = true
             }
+        }
+    }
+
+    @EventHandler
+    fun onShieldBlock(e: PlayerShieldBlockEvent) {
+        val playerData = PlayerContainer[e.player.name] ?: return
+        if(!e.shield.isDeserved(playerData)) {
+            e.player.sendMessage("아직 사용하기엔 이르다.")
+
+            e.isCancelled = true
         }
     }
 }
