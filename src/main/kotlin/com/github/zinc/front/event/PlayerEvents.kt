@@ -11,9 +11,8 @@ class PlayerGetExpEvent(player: Player, val amount: Int): PlayerEventAdapter(pla
 
 class PlayerUseToolEvent(
     user: Player,
-    val mainItem: ItemStack,
-    val offItem: ItemStack
-): PlayerEventAdapter(user), Cancellable {
+    val usingItem: ZincEquipment,
+): PlayerEventAdapter(user, true), Cancellable {
     private var cancelled: Boolean = false
     override fun isCancelled() = cancelled
     override fun setCancelled(cancel: Boolean) { cancelled = cancel }

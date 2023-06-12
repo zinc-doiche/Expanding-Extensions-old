@@ -3,6 +3,8 @@ package com.github.zinc.util.extension
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
@@ -45,16 +47,47 @@ internal fun ItemStack.getPersistent(key: NamespacedKey)
         = this.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING)
 
 internal fun ItemStack.setPersistent(key: NamespacedKey, value: String)
-        = this.itemMeta.persistentDataContainer.set(key, PersistentDataType.STRING, value)
+        = this.editMeta{ it.persistentDataContainer.set(key, PersistentDataType.STRING, value) }
 
  internal fun<T, Z> ItemStack.getPersistent(key: NamespacedKey, type: PersistentDataType<T, Z>)
         = this.itemMeta.persistentDataContainer.get(key, type)
 
 internal fun<T, Z : Any> ItemStack.setPersistent(key: NamespacedKey, value: Z, type: PersistentDataType<T, Z>)
-        = this.itemMeta.persistentDataContainer.set(key, type, value)
+        = this.editMeta{ it.persistentDataContainer.set(key, type, value) }
 
+// itemMeta is nullable
 internal fun ItemStack.hasPersistent(key: NamespacedKey)
         = this.itemMeta?.persistentDataContainer?.has(key) ?: false
 
 internal val AIR: ItemStack = ItemStack(Material.AIR)
+
+
+internal fun Player.setItem(slot: Int, itemStack: ItemStack) {
+    inventory.setItem(slot, itemStack)
+}
+
+internal fun Player.setItem(equipmentSlot: EquipmentSlot, itemStack: ItemStack) {
+    inventory.setItem(equipmentSlot, itemStack)
+}
+
+internal fun Player.removeSlot(slot: Int) {
+    inventory.setItem(slot, AIR)
+}
+
+internal fun Player.removeSlot(equipmentSlot: EquipmentSlot) {
+    inventory.setItem(equipmentSlot, AIR)
+}
+
+
+
+/**
+ * 1. 일단 인벤토리에 저장 시도
+ *
+ * 2. 안되면 뱉음
+ */
+internal fun Player.giveItem(itemStack: ItemStack) {
+    if(inventory.addItem(itemStack).isNotEmpty())
+        world.dropItem(location, itemStack)
+}
+
 

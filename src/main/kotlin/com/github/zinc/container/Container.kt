@@ -5,5 +5,6 @@ abstract class Container<K, V> {
     open operator fun get(k: K): V? = container[k]
     open operator fun set(k: K, v: V) { container[k] = v }
     fun add(k: K, v: V) { container[k] = v }
+    fun has(k: K) = container.containsKey(k)
     fun remove(k: K): V? = container.remove(k)
 }

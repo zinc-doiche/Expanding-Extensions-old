@@ -1,6 +1,7 @@
 package com.github.zinc.command
 
 import com.github.zinc.container.PlayerContainer
+import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.StatusType
 import com.github.zinc.front.ui.StatusFx
 import com.github.zinc.util.Sounds
@@ -11,7 +12,7 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
 
-class StatusOpenCommand: TabExecutor {
+class StatusCommand: TabExecutor {
     override fun onTabComplete(sender: CommandSender, command: Command, label: String, args: Array<out String>): MutableList<String> {
         val list = ArrayList<String>()
         val player = if(sender is Player) sender else return list
@@ -46,16 +47,7 @@ class StatusOpenCommand: TabExecutor {
                     }
                     "view" -> {
                         sender.playSound(Sounds.uiOpen)
-                        sender.sendMessage(
-                            "${sender.name}의 스테이터스 :\n" +
-                            "[${playerData.playerVO.playerLevel}Lv.] ${playerData.playerVO.playerExperience}xp / ${playerData.manager?.getMaxExpForNextLevel()}xp\n" +
-                            "| Strength: ${playerData.playerVO.playerStrength}\n" +
-                            "| Swiftness: ${playerData.playerVO.playerSwiftness}\n" +
-                            "| Balance: ${playerData.playerVO.playerBalance}\n" +
-                            "| Concentration: ${playerData.playerVO.playerConcentration}\n" +
-                            "\n" +
-                            "잔여스탯: ${playerData.playerVO.playerStatusRemain}"
-                        )
+                        sendStatusViewMessage(playerData)
                         return true
                     }
                 }
@@ -69,35 +61,48 @@ class StatusOpenCommand: TabExecutor {
                     "str" -> {
                         playerData.manager?.updateStatus(StatusType.STRENGTH, amount)
                         playerData.manager?.applyStatus(StatusType.STRENGTH)
-                        return true
                     }
                     "swt" -> {
                         playerData.manager?.updateStatus(StatusType.SWIFTNESS, amount)
                         playerData.manager?.applyStatus(StatusType.SWIFTNESS)
-                        return true
                     }
                     "bal" -> {
                         playerData.manager?.updateStatus(StatusType.BALANCE, amount)
                         playerData.manager?.applyStatus(StatusType.BALANCE)
-                        return true
                     }
                     "con" -> {
                         playerData.manager?.updateStatus(StatusType.CONCENTRATION, amount)
                         playerData.manager?.applyStatus(StatusType.CONCENTRATION)
-                        return true
                     }
                     "rem" -> {
                         playerData.manager?.updateStatus(StatusType.REMAIN, amount)
-                        return true
                     }
                     "lv" -> {
                         playerData.playerVO.playerExperience = 0
                         playerData.manager?.levelUp(amount)
-                        return true
                     }
                 }
+
+                sendStatusViewMessage(playerData)
+                return true
             }
         }
         return false
     }
+
+    private fun sendStatusViewMessage(playerData: PlayerData) {
+        val player = playerData.manager!!.playerEntity
+
+        player.sendMessage(
+            "${player.name}의 스테이터스 :\n" +
+                    "[${playerData.playerVO.playerLevel}Lv.] ${playerData.playerVO.playerExperience}xp / ${playerData.manager?.getMaxExpForNextLevel()}xp\n" +
+                    "| Strength: ${playerData.playerVO.playerStrength}\n" +
+                    "| Swiftness: ${playerData.playerVO.playerSwiftness}\n" +
+                    "| Balance: ${playerData.playerVO.playerBalance}\n" +
+                    "| Concentration: ${playerData.playerVO.playerConcentration}\n" +
+                    "\n" +
+                    "잔여스탯: ${playerData.playerVO.playerStatusRemain}"
+        )
+    }
+
 }

@@ -3,6 +3,7 @@ package com.github.zinc.core.equipment
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.info
 import com.github.zinc.util.Colors
+import com.github.zinc.util.extension.*
 import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.setPersistent
 import com.github.zinc.util.extension.text
@@ -17,13 +18,20 @@ class ZincEquipment(
     var equipment: ItemStack,
     val constraint: Status = Status()
 ) {
+    private var levelConstraint = 0
 
     fun isDeserved(playerData: PlayerData): Boolean {
-        return true
+        return playerData.playerVO.playerStrength >= constraint.strength &&
+               playerData.playerVO.playerSwiftness >= constraint.swiftness &&
+               playerData.playerVO.playerBalance >= constraint.balance &&
+               playerData.playerVO.playerConcentration >= constraint.concentration &&
+               playerData.playerVO.playerLevel >= levelConstraint
     }
 
     fun setStatus() {
         constraint.setStatus(equipment)
+        if(equipment.hasPersistent(LEVEL_CONSTRAINT_KEY))
+            levelConstraint = equipment.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
     }
 
     fun setPDC() {
@@ -35,11 +43,10 @@ class ZincEquipment(
 
     fun setLore() {
         equipment.editMeta { meta ->
-            info("vhxlzbxl")
             meta.lore(
                 texts(
                     text(""),
-                    text("요구 스테이터스:", decoration = TextDecoration.BOLD).color(Colors.green)
+                    text("요구 스테이터스:").color(Colors.green)
                 ).apply {
                     if(constraint.strength > 0)
                         add(text("STR").color(Colors.red).append(
@@ -57,6 +64,15 @@ class ZincEquipment(
                         add(text("CON").color(Colors.gold).append(
                             text(": ${constraint.concentration}", decoration = TextDecoration.BOLD).color(Colors.white))
                         )
+                }.apply {
+                    if(levelConstraint > 0) {
+                        add(text(""))
+                        add(
+                            text("요구 레벨: ").color(Colors.beige).append(
+                                text(": $levelConstraint", decoration = TextDecoration.BOLD).color(Colors.white)
+                            )
+                        )
+                    }
                 }
             )
         }
@@ -90,6 +106,7 @@ data class Status(
 
     fun setStatus(itemStack: ItemStack) {
         itemStack.type.name.split('_').run {
+            // info(this)
 
             //enchants
             itemStack.itemMeta.enchants.entries.forEach{
@@ -107,7 +124,10 @@ data class Status(
 
             when(size) {
                 //NON-TYPED tools
-                1 -> toolMap[get(0)]?.let(::add) ?: return
+                1 -> toolMap[itemStack.type.name]?.let(::add) ?: run {
+                    if(itemStack.type.name == ELYTRA) itemStack.addLevelConstraint(200)
+                    return
+                }
 
                 //TYPED tools
                 2 -> {
@@ -118,7 +138,7 @@ data class Status(
                     }
 
                     val amplifier: Double = materialMap[get(0)] ?: return
-                    val constraint = typedToolMap[get(1)]?.times(amplifier) ?: return
+                    val constraint = typedToolMap[get(1)]?.times(amplifier) ?: equipmentMap[get(1)]?.times(amplifier) ?: return
 
                     add(constraint)
                 }
@@ -141,13 +161,14 @@ private const val CROSSBOW = "CROSSBOW"
 private const val TRIDENT = "TRIDENT"
 private const val SHIELD = "SHIELD"
 private const val FISHING_ROD = "FISHING_ROD"
+private const val ELYTRA = "ELYTRA"
 
 private val toolMap: Map<String, Status> = mapOf(
     BOW to Status(concentration = 150),
     CROSSBOW to Status(strength = 70, concentration = 70),
     TRIDENT to Status(concentration = 30, strength = 30, balance = 30),
     SHIELD to Status(balance = 100),
-    FISHING_ROD to Status(concentration = 30, balance = 30)
+    FISHING_ROD to Status(concentration = 30, balance = 30),
 )
 
 private const val PICKAXE ="PICKAXE"
@@ -157,7 +178,7 @@ private const val SWORD = "SWORD"
 private val typedToolMap: Map<String, Status> = mapOf(
     PICKAXE to Status(balance = 60, strength = 20),
     AXE to Status(strength = 60, balance = 20),
-    SWORD to Status(swiftness = 60, strength = 20)
+    SWORD to Status(swiftness = 60, strength = 20),
 )
 
 private const val HELMET = "HELMET"
@@ -195,12 +216,12 @@ internal fun ItemStack.isTool(): Boolean {
 }
 
 private fun ItemStack.setLevelConstraint(level: Int) {
-    val constraint = this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER) ?: return
+    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!! else 0
     if(constraint < level) this.setPersistent(LEVEL_CONSTRAINT_KEY, level, PersistentDataType.INTEGER)
 }
 
 private fun ItemStack.addLevelConstraint(level: Int) {
-    val constraint = this.getPersistent(LEVEL_CONSTRAINT_KEY)?.toInt() ?: 0
+    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!! else 0
     this.setPersistent(LEVEL_CONSTRAINT_KEY, level + constraint, PersistentDataType.INTEGER)
 }
 

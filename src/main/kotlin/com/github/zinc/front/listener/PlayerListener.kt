@@ -1,12 +1,9 @@
 package com.github.zinc.front.listener
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
-import com.destroystokyo.paper.loottable.LootableInventoryReplenishEvent
 import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.container.PlayerContainer
-import com.github.zinc.core.equipment.STATUS_KEY
-import com.github.zinc.core.equipment.ToolManager.isEquipment
-import com.github.zinc.core.equipment.ZincEquipment
+import com.github.zinc.core.equipment.*
 import com.github.zinc.core.equipment.isTool
 import com.github.zinc.core.player.PlayerDAO
 import com.github.zinc.core.player.PlayerData
@@ -17,7 +14,6 @@ import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.front.event.PlayerEquipEvent
 import com.github.zinc.front.event.PlayerGetItemEvent
 import com.github.zinc.front.event.PlayerUseToolEvent
-import com.github.zinc.info
 import com.github.zinc.util.ChainEventCall
 import com.github.zinc.util.Sounds
 import com.github.zinc.util.async
@@ -27,6 +23,7 @@ import com.github.zinc.util.extension.hasPersistent
 import com.github.zinc.util.extension.isNullOrAir
 import com.github.zinc.util.extension.text
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.LivingEntity
@@ -34,6 +31,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.enchantment.EnchantItemEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -41,7 +39,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerLevelChangeEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerStatisticIncrementEvent
-import org.bukkit.event.world.LootGenerateEvent
 import org.bukkit.inventory.EquipmentSlot
 import java.util.*
 import kotlin.collections.ArrayList
@@ -94,7 +91,7 @@ class PlayerListener: Listener {
     }
 
     @EventHandler
-    @ChainEventCall(PlayerUseToolEvent::class, QuestClearEvent::class)
+    @ChainEventCall(QuestClearEvent::class)
     fun onEntityDamage(e: EntityDamageByEntityEvent) {
         if(e.entity !is LivingEntity) return
 
@@ -110,7 +107,24 @@ class PlayerListener: Listener {
         }
         val playerData = PlayerContainer[player.name]!!
 
-        if(!PlayerUseToolEvent(player, player.inventory.itemInMainHand, player.inventory.itemInOffHand).callEvent()) return
+        //checks if player can use the equipment
+        run {
+            ArrayList<String>().apply {
+                if(player.inventory.itemInMainHand.hasPersistent(STATUS_KEY))
+                    add(player.inventory.itemInMainHand.getPersistent(STATUS_KEY)!!)
+
+                if(player.inventory.itemInOffHand.hasPersistent(STATUS_KEY))
+                    add(player.inventory.itemInOffHand.getPersistent(STATUS_KEY)!!)
+            }.let { uuids ->
+                if(uuids.isEmpty()) return@run
+
+                if(! uuids.map { EquipmentContainer[it] ?: return@run }.all { it.isDeserved(playerData) }) {
+                    player.sendMessage("아직 사용하기엔 이르다.")
+                    e.isCancelled = true
+                    return
+                }
+            }
+        }
 
         val manager = playerData.manager ?: return
         e.damage = if(manager.rollCritical()) {
@@ -131,31 +145,51 @@ class PlayerListener: Listener {
         async { QuestClearEvent(playerData, enemy).callEvent() }
     }
 
+
+
     @EventHandler
     @ChainEventCall(PlayerEquipEvent::class, PlayerGetItemEvent::class)
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
-        async{
-            e.player.inventory.getItem(e.slot)?.let { item ->
-                if(isNullOrAir(item)) return@async
+        e.player.inventory.getItem(e.slot)?.let { item ->
+            if(isNullOrAir(item) || !item.isTool()) return
+            // e.player.sendMessage(item.itemMeta.persistentDataContainer.keys.toString())
+            return@let if(item.hasPersistent(STATUS_KEY)) {
+                val uuid = item.getPersistent(STATUS_KEY)!!
 
-                return@let if(item.hasPersistent(STATUS_KEY)) EquipmentContainer[item.getPersistent(STATUS_KEY)!!]
-                else {
-                    UUID.randomUUID().let { uuid ->
-                        item.setPersistent(STATUS_KEY, uuid.toString())
-
-                        ZincEquipment(item).apply {
-                            setStatus()
-                            setPDC()
-                            setLore()
-                            EquipmentContainer[uuid.toString()] = this
-                        }
+                if(EquipmentContainer.has(uuid)) EquipmentContainer[uuid]
+                else ZincEquipment(item).apply {
+                    setStatus()
+                    setPDC()
+                    setLore()
+                    EquipmentContainer[uuid] = this
+                }
+            }
+            else {
+                UUID.randomUUID().let { uuid ->
+                    item.setPersistent(STATUS_KEY, uuid.toString())
+                    ZincEquipment(item).apply {
+                        setStatus()
+                        setPDC()
+                        setLore()
+                        EquipmentContainer[uuid.toString()] = this
                     }
                 }
-            }?.let { equipment ->
-                if(e.slot in 36..39)
-                    PlayerEquipEvent(e.player, equipment, slots[e.slot - 36]).callEvent()
             }
+        }?.let { equipment ->
+            if(e.slot in 36..39)
+                async { PlayerEquipEvent(e.player, equipment, slots[e.slot - 36]).callEvent() }
         }
+    }
+
+    /**
+     * 1. 직접 인챈트시
+     * 2. 모루 사용시
+     * 3. 숫돌로 인챈트 롤백시
+     * 4. 도구 조합으로 인첸트 롤백시
+     */
+    @EventHandler
+    fun onEnchantEquipment(e: EnchantItemEvent) {
+        if(!e.item.hasPersistent(STATUS_KEY)) return
     }
 
     @EventHandler

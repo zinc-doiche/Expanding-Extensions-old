@@ -9,4 +9,5 @@ object Colors {
     val red = TextColor.fromHexString("#FF415B")
     val green = TextColor.fromHexString("#A0FFC4")
     val white = TextColor.fromHexString("#FFFFFF")
+    val beige = TextColor.fromHexString("#b5863e")
 }

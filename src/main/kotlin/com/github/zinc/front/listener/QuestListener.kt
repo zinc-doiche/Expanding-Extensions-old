@@ -36,7 +36,7 @@ class QuestListener: Listener {
     fun onQuestClear(e: QuestClearEvent) {
         val player = e.playerData.manager?.playerEntity ?: return
         QuestDAO().use { dao ->
-            info("qc, ${e.playerData.playerVO.playerId}, ${e.enemy.name}")
+            //info("qc, ${e.playerData.playerVO.playerId}, ${e.enemy.name}")
             val questDTO = dao.select(e.playerData.playerVO.playerId, e.enemy) ?: return@use
             if(questDTO.appendedQuestCleared) {
                 player.sendMessage("§6이미 ${e.enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")

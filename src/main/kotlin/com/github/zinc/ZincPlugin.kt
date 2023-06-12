@@ -2,7 +2,7 @@ package com.github.zinc;
 
 import com.doiche.zinc.DependencyTest
 import com.github.zinc.mybatis.MybatisConfig
-import com.github.zinc.command.StatusOpenCommand
+import com.github.zinc.command.StatusCommand
 import com.github.zinc.core.player.PlayerDAO
 import com.github.zinc.command.QuestCommand
 import com.github.zinc.container.PlayerContainer
@@ -31,7 +31,7 @@ class ZincPlugin: JavaPlugin() {
             PlayerWorldListener()
         )
         executors(
-            "status" to StatusOpenCommand(),
+            "status" to StatusCommand(),
             "test" to TestCommand(),
             "quest" to QuestCommand()
         )
