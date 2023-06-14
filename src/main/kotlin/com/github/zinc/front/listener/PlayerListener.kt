@@ -135,9 +135,10 @@ class PlayerListener: Listener {
                 if(player.inventory.itemInOffHand.hasPersistent(STATUS_KEY))
                     add(player.inventory.itemInOffHand.getPersistent(STATUS_KEY)!!)
             }.let { uuids ->
-                if(uuids.isEmpty()) return@run
-
-                if(! uuids.map { EquipmentContainer[it] ?: return@run }.all { it.isDeserved(playerData) }) {
+                if(uuids.isNotEmpty() && uuids
+                        .map { EquipmentContainer[it] ?: return@run }
+                        .all { it.isDeserved(playerData) }.not()
+                ) {
                     player.sendMessage("아직 사용하기엔 이르다.")
                     e.isCancelled = true
                     return
@@ -172,24 +173,12 @@ class PlayerListener: Listener {
             // e.player.sendMessage(item.itemMeta.persistentDataContainer.keys.toString())
             return@let if(item.hasPersistent(STATUS_KEY)) {
                 val uuid = item.getPersistent(STATUS_KEY)!!
-
-                if(EquipmentContainer.has(uuid)) EquipmentContainer[uuid]
-                else ZincEquipment(item).apply {
-                    setStatus()
-                    setPDC()
-                    setLore()
-                    EquipmentContainer[uuid] = this
-                }
+                if(EquipmentContainer.has(uuid)) EquipmentContainer[uuid] else ZincEquipment.register(uuid, item)
             }
             else {
                 UUID.randomUUID().let { uuid ->
                     item.setPersistent(STATUS_KEY, uuid.toString())
-                    ZincEquipment(item).apply {
-                        setStatus()
-                        setPDC()
-                        setLore()
-                        EquipmentContainer[uuid.toString()] = this
-                    }
+                    ZincEquipment.register(uuid.toString(), item)
                 }
             }
         }?.let { equipment ->
@@ -205,7 +194,7 @@ class PlayerListener: Listener {
      * 4. 도구 조합으로 인첸트 롤백시
      */
     @EventHandler
-    fun onEnchantEquipment(e: EnchantItemEvent) {
+    fun onChangeEnchantE(e: ItemChangeEnchantEvent) {
         if(!e.item.hasPersistent(STATUS_KEY)) return
     }
 

@@ -11,6 +11,7 @@ import com.github.zinc.util.PassedBy
 import com.github.zinc.util.async
 import com.github.zinc.util.extension.*
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
+import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Trident
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -51,8 +52,7 @@ class PlayerUseToolListener: Listener {
 
     @EventHandler
     fun onCharge(e: PlayerLaunchProjectileEvent) {
-        if(e.projectile !is Trident) return
-
+        if(e.projectile !is AbstractArrow) return
         val playerData = PlayerContainer[e.player.name] ?: return
 
         if (e.itemStack.hasPersistent(STATUS_KEY)) {

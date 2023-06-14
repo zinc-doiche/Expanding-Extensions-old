@@ -19,7 +19,7 @@ object QuestManager {
     )
 
     private val dailyQuests: Map<String, Pair<Int, Int>> = hashMapOf(
-        //OverWorld - 기본 퀘스트
+        //OverWorld
         "Phantom" to Pair(10, 70),
         "Zombie" to Pair(30, 70),
         "Creeper" to Pair(30, 100),
@@ -27,22 +27,20 @@ object QuestManager {
         "Drowned" to Pair(30, 70),
         "Spider" to Pair(30, 50),
 
-        //Nether - daily
+        //Nether
         "Blaze" to Pair(30, 500),
         "WitherSkeleton" to Pair(30, 500),
         "PigZombie" to Pair(20, 150),
 
         //Ender
         "Shulker" to Pair(20, 2500),
-
-        //Boss
-
     )
 
     val weekendQuests = hashMapOf(
+        //Bosses
         "Wither" to Pair(3, 5000),
         "Warden" to Pair(1, 30000),
-        "Raid" to Pair(2, 5000)
+        "Raid" to Pair(2, 10000)
     )
 
     val randomQuests:  Map<String, Pair<Int, Int>> = hashMapOf(
@@ -70,7 +68,7 @@ object QuestManager {
 
     val clearMap: HashMap<String, HashSet<String>> = hashMapOf()
 
-    fun registerAllQuestList() {
+    fun saveAllQuestList() {
         QuestDAO().use { dao ->
             dailyQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "daily") }
             weekendQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "weekend") }
@@ -94,21 +92,4 @@ object QuestManager {
             dao.insertChance(playerData.playerVO.playerId)
         }
     }
-
-    /*fun appendQuestUpdater() {
-        val currentDate = Calendar.getInstance(Locale.KOREA)
-        val resetDate = (currentDate.clone() as Calendar).apply {
-            this.add(Calendar.DATE, 1)
-            this.set(Calendar.HOUR_OF_DAY, 2)
-            this.set(Calendar.MINUTE, 0)
-            this.set(Calendar.SECOND, 0)
-        }.time
-        val delay = resetDate.time - currentDate.time.time
-        info(delay / (1000L * 60L * 60L * 24L))
-        info((delay % (1000L * 60L * 60L * 24L)) / (1000L * 60L * 60L))
-        loop(resetDate.time - currentDate.time.time, 1000L * 60L * 60L * 24L) {
-            info("reset quests...")
-            QuestDAO().use(QuestDAO::resetAll)
-        }
-    }*/
 }

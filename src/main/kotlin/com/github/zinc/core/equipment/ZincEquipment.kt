@@ -1,5 +1,6 @@
 package com.github.zinc.core.equipment
 
+import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.info
 import com.github.zinc.util.Colors
@@ -75,6 +76,15 @@ class ZincEquipment(
                     }
                 }
             )
+        }
+    }
+
+    companion object {
+        fun register(uuid: String, itemStack: ItemStack) = ZincEquipment(itemStack).apply {
+            setStatus()
+            setPDC()
+            setLore()
+            EquipmentContainer[uuid] = this
         }
     }
 }
