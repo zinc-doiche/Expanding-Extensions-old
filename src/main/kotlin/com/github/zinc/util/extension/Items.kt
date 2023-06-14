@@ -7,6 +7,7 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
@@ -95,4 +96,7 @@ internal fun Player.giveItem(itemStack: ItemStack) {
     //sendMessage(itemStack.type.toString())
 }
 
+fun Inventory.isFull(): Boolean {
+    return this.maxStackSize == this.size
+}
 

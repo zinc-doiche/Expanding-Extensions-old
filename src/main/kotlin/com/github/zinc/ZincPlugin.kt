@@ -43,7 +43,6 @@ class ZincPlugin: JavaPlugin() {
 
         QuestDAO().use(QuestDAO::questTimer)
 
-        DependencyTest().doSth("포티큐티")
     }
 
     override fun onDisable() {

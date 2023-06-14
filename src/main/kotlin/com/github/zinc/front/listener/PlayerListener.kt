@@ -13,6 +13,7 @@ import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.front.event.*
 import com.github.zinc.info
 import com.github.zinc.util.ChainEventCall
+import com.github.zinc.util.Interaction
 import com.github.zinc.util.Sounds
 import com.github.zinc.util.async
 import com.github.zinc.util.extension.*
@@ -21,6 +22,7 @@ import com.github.zinc.util.extension.hasPersistent
 import com.github.zinc.util.extension.isNullOrAir
 import com.github.zinc.util.extension.text
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.AbstractArrow
@@ -32,6 +34,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.enchantment.EnchantItemEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.inventory.PrepareSmithingEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -222,6 +227,26 @@ class PlayerListener: Listener {
             Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR -> return
             Action.PHYSICAL -> return
         }
+    }
+
+    @EventHandler
+    fun onInvClick(e: InventoryClickEvent) {
+        if(e.inventory != e.view.topInventory) return
+
+        when(e.inventory.type) {
+            InventoryType.SMITHING -> {
+                if(e.rawSlot != 2 || isNullOrAir(e.currentItem)) return
+                Interaction.doInteraction(Interaction.GET, e.view, e.rawSlot, e.isShiftClick)
+
+            }
+
+            else -> return
+        }
+    }
+
+    @EventHandler
+    fun onPrepare(e: PrepareSmithingEvent) {
+
     }
 }
 
