@@ -79,6 +79,10 @@ class ZincEquipment(
         }
     }
 
+    override fun toString(): String {
+        return "ZincEquipment(equipment=$equipment, constraint=$constraint, levelConstraint=$levelConstraint)"
+    }
+
     companion object {
         fun register(uuid: String, itemStack: ItemStack) = ZincEquipment(itemStack).apply {
             setStatus()
@@ -155,6 +159,10 @@ data class Status(
             }
         }
     }
+
+    override fun toString(): String {
+        return "Status(strength=$strength, swiftness=$swiftness, balance=$balance, concentration=$concentration)"
+    }
 }
 
 private const val WOOD = "WOODEN"
@@ -218,11 +226,11 @@ internal fun ItemStack.isEquipment(): Boolean {
 }
 
 internal fun ItemStack.isTool(): Boolean {
-    return this.type.name.let {
+    return this.isEquipment()   || this.type.name.let {
         it.contains(PICKAXE)    || it.contains(AXE)         || it.contains(SWORD)       ||
         it.contains(BOW)        || it.contains(CROSSBOW)    || it.contains(TRIDENT)     ||
         it.contains(SHIELD)     || it.contains(FISHING_ROD)
-    } || this.isEquipment()
+    }
 }
 
 private fun ItemStack.setLevelConstraint(level: Int) {

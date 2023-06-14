@@ -5,16 +5,16 @@ import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.front.event.PlayerEquipEvent
-import com.github.zinc.front.event.PlayerShieldBlockEvent
-import com.github.zinc.info
 import com.github.zinc.util.PassedBy
-import com.github.zinc.util.async
 import com.github.zinc.util.extension.*
+import com.github.zinc.util.sync
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
-import org.bukkit.entity.AbstractArrow
+import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.entity.Trident
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -38,21 +38,20 @@ class PlayerUseToolListener: Listener {
     @EventHandler
     @PassedBy(PlayerListener::class, PlayerInventorySlotChangeEvent::class)
     fun onEquip(e: PlayerEquipEvent) {
-        async {
-            val playerData = PlayerContainer[e.player.name] ?: return@async
-            val equipment: ItemStack = e.equipment.equipment
+        val playerData = PlayerContainer[e.player.name] ?: return
+        val equipment: ItemStack = e.equipment.equipment
 
-            if (!e.equipment.isDeserved(playerData)) {
-                e.player.sendMessage("아직 사용하기엔 이르다.")
-                e.player.removeSlot(e.equipSlot)
-                e.player.giveItem(equipment)
-            }
+        if (!e.equipment.isDeserved(playerData)) {
+            e.player.giveItem(equipment)
+            e.player.sendMessage("아직 사용하기엔 이르다.")
+            e.player.removeSlot(e.equipSlot)
         }
     }
 
+    //Not Called by launching arrows, but called by launching the projectiles like Trident
     @EventHandler
     fun onCharge(e: PlayerLaunchProjectileEvent) {
-        if(e.projectile !is AbstractArrow) return
+        if(e.projectile !is Trident) return
         val playerData = PlayerContainer[e.player.name] ?: return
 
         if (e.itemStack.hasPersistent(STATUS_KEY)) {
@@ -66,12 +65,31 @@ class PlayerUseToolListener: Listener {
     }
 
     @EventHandler
-    fun onShieldBlock(e: PlayerShieldBlockEvent) {
-        val playerData = PlayerContainer[e.player.name] ?: return
-        if(!e.shield.isDeserved(playerData)) {
-            e.player.sendMessage("아직 사용하기엔 이르다.")
+    fun onShootArrow(e: EntityShootBowEvent) {
+        if(e.entity !is Player) return
+        val playerData = PlayerContainer[e.entity.name] ?: return
 
-            e.isCancelled = true
+        e.bow?.let { item ->
+            if(item.hasPersistent(STATUS_KEY)) {
+                val uuid = item.getPersistent(STATUS_KEY) ?: return
+                val equipment = EquipmentContainer[uuid] ?: return
+
+                if(!equipment.isDeserved(playerData)) {
+                    val player = playerData.manager?.playerEntity ?: return
+                    val isCrossbow = item.type == Material.CROSSBOW
+
+                    player.sendMessage("아직 사용하기엔 이르다.")
+                    e.setConsumeItem(isCrossbow)
+                    if(isCrossbow) {
+                        e.consumable?.let { consumable ->
+                            val arrow = consumable.clone()
+                            arrow.amount = 1
+                            player.giveItem(arrow)
+                        }
+                    }
+                    e.isCancelled = true
+                }
+            }
         }
     }
 }

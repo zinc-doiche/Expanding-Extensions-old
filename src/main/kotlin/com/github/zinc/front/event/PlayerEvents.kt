@@ -13,8 +13,3 @@ class PlayerEquipEvent(playerEntity: Player, val equipment: ZincEquipment, val e
 
 class PlayerGetItemEvent(playerEntity: Player, val equipment: ZincEquipment) : PlayerEventAdapter(playerEntity, true)
 
-class PlayerShieldBlockEvent(playerEntity: Player, val shield: ZincEquipment) : PlayerEventAdapter(playerEntity), Cancellable {
-    private var cancelled: Boolean = false
-    override fun isCancelled() = cancelled
-    override fun setCancelled(cancel: Boolean) { cancelled = cancel }
-}

@@ -94,36 +94,39 @@ class PlayerListener: Listener {
     fun onEntityDamage(e: EntityDamageByEntityEvent) {
         if(e.entity !is LivingEntity) return
 
-        val player: Player = when(e.damager) {
-            is Player -> e.damager as Player
-            is AbstractArrow -> {
-                val abstractArrow = e.damager as AbstractArrow
-                val shooter = abstractArrow.shooter ?: return
-                if(shooter !is Player) return
-                shooter
-            }
-            else -> {
-                if(e.entity is Player && (e.entity as Player).isBlocking) {
-                    val playerData = PlayerContainer[(e.entity as Player).name] ?: return
-                    val player = playerData.manager?.playerEntity ?: return
-
-                    val uuid =
-                        if(player.inventory.itemInOffHand.type == Material.SHIELD)
-                            player.inventory.itemInOffHand.getPersistent(STATUS_KEY)
-                        else if(player.inventory.itemInMainHand.type == Material.SHIELD)
-                            player.inventory.itemInMainHand.getPersistent(STATUS_KEY)
-                        else return
-
-                    val equipment = EquipmentContainer[uuid ?: return] ?: return
-
-                    if(!equipment.isDeserved(playerData)) {
-                        player.sendMessage("아직 사용하기엔 이르다.")
-                        player.damage(e.damage)
-                    }
+        val player: Player =
+            when(e.damager) {
+                is Player -> e.damager as Player
+                is AbstractArrow -> {
+                    val abstractArrow = e.damager as AbstractArrow
+                    val shooter = abstractArrow.shooter ?: return
+                    if(shooter !is Player) return
+                    shooter
                 }
+                //check if player is blocking when player cant use the shield
+                else -> {
+                    if(e.entity is Player && (e.entity as Player).isBlocking) {
+                        val playerData = PlayerContainer[(e.entity as Player).name] ?: return
+                        val player = playerData.manager?.playerEntity ?: return
+
+                        val uuid =
+                            if(player.inventory.itemInOffHand.type == Material.SHIELD)
+                                player.inventory.itemInOffHand.getPersistent(STATUS_KEY)
+                            else if(player.inventory.itemInMainHand.type == Material.SHIELD)
+                                player.inventory.itemInMainHand.getPersistent(STATUS_KEY)
+                            else return
+
+                        val equipment = EquipmentContainer[uuid ?: return] ?: return
+
+                        if(!equipment.isDeserved(playerData)) {
+                            player.sendMessage("아직 사용하기엔 이르다.")
+                            player.playSound(Sounds.ironGolemDamaged)
+                            player.damage(e.damage, e.damager)
+                        }
+                    }
                 return
+                }
             }
-        }
         val playerData = PlayerContainer[player.name]!!
 
         //checks if player can use the equipment
@@ -170,15 +173,19 @@ class PlayerListener: Listener {
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
         e.player.inventory.getItem(e.slot)?.let { item ->
             if(isNullOrAir(item) || !item.isTool()) return
-            // e.player.sendMessage(item.itemMeta.persistentDataContainer.keys.toString())
+
             return@let if(item.hasPersistent(STATUS_KEY)) {
                 val uuid = item.getPersistent(STATUS_KEY)!!
-                if(EquipmentContainer.has(uuid)) EquipmentContainer[uuid] else ZincEquipment.register(uuid, item)
+                EquipmentContainer[uuid]?.apply {
+                    if(isNullOrAir(equipment)) equipment = item
+                } ?: ZincEquipment.register(uuid, item)
             }
             else {
                 UUID.randomUUID().let { uuid ->
                     item.setPersistent(STATUS_KEY, uuid.toString())
-                    ZincEquipment.register(uuid.toString(), item)
+                    ZincEquipment.register(uuid.toString(), item).apply {
+                        info("init new $uuid to ${item.type} with $constraint")
+                    }
                 }
             }
         }?.let { equipment ->
@@ -194,7 +201,7 @@ class PlayerListener: Listener {
      * 4. 도구 조합으로 인첸트 롤백시
      */
     @EventHandler
-    fun onChangeEnchantE(e: ItemChangeEnchantEvent) {
+    fun onChangeEnchant(e: ItemChangeEnchantEvent) {
         if(!e.item.hasPersistent(STATUS_KEY)) return
     }
 
