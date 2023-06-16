@@ -1,6 +1,5 @@
 package com.github.zinc;
 
-import com.doiche.zinc.DependencyTest
 import com.github.zinc.mybatis.MybatisConfig
 import com.github.zinc.command.StatusCommand
 import com.github.zinc.core.player.PlayerDAO
@@ -9,6 +8,7 @@ import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.command.TestCommand
 import com.github.zinc.core.player.PlayerData
+import com.github.zinc.core.recipe.Recipes
 import com.github.zinc.front.listener.*
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
@@ -43,6 +43,7 @@ class ZincPlugin: JavaPlugin() {
 
         QuestDAO().use(QuestDAO::questTimer)
 
+        Recipes.registerAll()
     }
 
     override fun onDisable() {
