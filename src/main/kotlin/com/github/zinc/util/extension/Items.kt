@@ -1,6 +1,5 @@
 package com.github.zinc.util.extension
 
-import com.github.zinc.info
 import com.github.zinc.util.Synchronous
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -31,13 +30,13 @@ internal fun getCustomItem(
     material: Material,
     name: Component,
     customModelNumber: Int,
-    block: ((ItemMeta) -> Unit)? = null
+    init: ((ItemMeta) -> Unit)? = null
 ): ItemStack {
     return ItemStack(material).apply {
         editMeta { meta ->
             meta.displayName(name)
             meta.setCustomModelData(customModelNumber)
-            block?.invoke(meta) ?: return@editMeta
+            init?.invoke(meta) ?: return@editMeta
         }
     }
 }
@@ -48,20 +47,35 @@ internal fun isNullOrAir(itemStack: ItemStack?): Boolean {
 }
 
 internal fun ItemStack.getPersistent(key: NamespacedKey)
-        = this.itemMeta.persistentDataContainer.get(key, PersistentDataType.STRING)
+        = this.itemMeta.getPersistent(key)
+
+internal fun<T, Z> ItemStack.getPersistent(key: NamespacedKey, type: PersistentDataType<T, Z>)
+        = this.itemMeta.getPersistent(key, type)
+
+internal fun ItemMeta.getPersistent(key: NamespacedKey)
+        = this.persistentDataContainer.get(key, PersistentDataType.STRING)
+
+internal fun<T, Z> ItemMeta.getPersistent(key: NamespacedKey, type: PersistentDataType<T, Z>)
+        = this.persistentDataContainer.get(key, type)
 
 internal fun ItemStack.setPersistent(key: NamespacedKey, value: String)
-        = this.editMeta{ it.persistentDataContainer.set(key, PersistentDataType.STRING, value) }
-
- internal fun<T, Z> ItemStack.getPersistent(key: NamespacedKey, type: PersistentDataType<T, Z>)
-        = this.itemMeta.persistentDataContainer.get(key, type)
+        = this.setPersistent(key, value, PersistentDataType.STRING)
 
 internal fun<T, Z : Any> ItemStack.setPersistent(key: NamespacedKey, value: Z, type: PersistentDataType<T, Z>)
-        = this.editMeta{ it.persistentDataContainer.set(key, type, value) }
+        = this.editMeta{ it.setPersistent(key, value, type) }
+
+internal fun ItemMeta.setPersistent(key: NamespacedKey, value: String)
+        = this.setPersistent(key, value, PersistentDataType.STRING)
+
+internal fun<T, Z: Any> ItemMeta.setPersistent(key: NamespacedKey, value: Z, type: PersistentDataType<T, Z>)
+        = this.persistentDataContainer.set(key, type, value)
 
 // itemMeta is nullable
 internal fun ItemStack.hasPersistent(key: NamespacedKey)
-        = this.itemMeta?.persistentDataContainer?.has(key) ?: false
+        = this.itemMeta?.hasPersistent(key) ?: false
+
+internal fun ItemMeta.hasPersistent(key: NamespacedKey)
+        = this.persistentDataContainer.has(key)
 
 internal val AIR: ItemStack = ItemStack(Material.AIR)
 
