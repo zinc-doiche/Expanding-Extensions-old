@@ -47,15 +47,15 @@ object Recipes {
         }
     private val netherStarRecipe =
         ShapelessRecipe(NamespacedKey.minecraft("nether_star_fragment"), ItemStack(Material.NETHER_STAR)).setup {
-            this as ShapelessRecipe
+                    this as ShapelessRecipe
             addIngredient(4, netherStarFragment)
             this.category = CraftingBookCategory.MISC
         }
 
-    private val statusElement = getCustomItem(Material.PAPER, text(""), 8) {
+    private val statusElement = getCustomItem(Material.PAPER, text("엔더 정수"), 8) {
         it.lore()
     }
-    private val statusFragment = getCustomItem(Material.PAPER, text(""), 9) {
+    private val statusFragment = getCustomItem(Material.PAPER, text("엔더 파편"), 9) {
         it.lore()
     }
 
