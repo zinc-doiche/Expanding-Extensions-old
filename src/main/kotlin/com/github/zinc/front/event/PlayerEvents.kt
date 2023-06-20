@@ -10,6 +10,3 @@ import org.bukkit.inventory.ItemStack
 class PlayerGetExpEvent(player: Player, val amount: Int): PlayerEventAdapter(player)
 
 class PlayerEquipEvent(playerEntity: Player, val equipment: ZincEquipment, val equipSlot: EquipmentSlot) : PlayerEventAdapter(playerEntity, true)
-
-class PlayerGetItemEvent(playerEntity: Player, val equipment: ZincEquipment) : PlayerEventAdapter(playerEntity, true)
-

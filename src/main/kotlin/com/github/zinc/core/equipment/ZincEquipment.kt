@@ -29,7 +29,15 @@ class ZincEquipment(
                playerData.playerVO.playerLevel >= levelConstraint
     }
 
+    // ordered.
+    fun setAll() {
+        setStatus()
+        setPDC()
+        setLore()
+    }
+
     fun setStatus() {
+        levelConstraint = 0
         constraint.setStatus(equipment)
         if(equipment.hasPersistent(LEVEL_CONSTRAINT_KEY))
             levelConstraint = equipment.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
@@ -118,7 +126,17 @@ data class Status(
         concentration += status.concentration
     }
 
+    private fun clear() {
+        strength = 0
+        swiftness = 0
+        balance = 0
+        concentration = 0
+    }
+
     fun setStatus(itemStack: ItemStack) {
+        //prevent status from multiply
+        clear()
+
         itemStack.type.name.split('_').run {
             // info(this)
 

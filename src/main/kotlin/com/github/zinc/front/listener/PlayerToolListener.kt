@@ -4,10 +4,10 @@ import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
 import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.equipment.STATUS_KEY
+import com.github.zinc.front.event.EquipmentUpdateEvent
 import com.github.zinc.front.event.PlayerEquipEvent
 import com.github.zinc.util.PassedBy
 import com.github.zinc.util.extension.*
-import com.github.zinc.util.sync
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack
  * 2. 꽉 차면 뱉는다.
  * 3. 캔슬
  */
-class PlayerUseToolListener: Listener {
+class PlayerToolListener: Listener {
 
     @EventHandler
     @PassedBy(PlayerListener::class, PlayerInventorySlotChangeEvent::class)
@@ -90,6 +90,16 @@ class PlayerUseToolListener: Listener {
                     e.isCancelled = true
                 }
             }
+        }
+    }
+
+    @EventHandler
+    @PassedBy(PlayerListener::class, PlayerInventorySlotChangeEvent::class)
+    fun onEquipmentUpdated(e: EquipmentUpdateEvent) {
+        e.equipment.run {
+            setStatus()
+            setPDC()
+            setLore()
         }
     }
 }

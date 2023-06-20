@@ -1,5 +1,6 @@
 package com.github.zinc.front.listener
 
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.container.PlayerContainer
@@ -10,6 +11,8 @@ import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.PlayerStatusManager
 import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.core.quest.QuestManager
+import com.github.zinc.core.recipe.DynamicRecipe
+import com.github.zinc.core.recipe.Recipes
 import com.github.zinc.front.event.*
 import com.github.zinc.info
 import com.github.zinc.util.ChainEventCall
@@ -23,10 +26,12 @@ import com.github.zinc.util.extension.isNullOrAir
 import com.github.zinc.util.extension.text
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
+import io.papermc.paper.inventory.ItemRarity
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Enemy
+import org.bukkit.entity.Item
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -174,15 +179,17 @@ class PlayerListener: Listener {
     }
 
     @EventHandler
-    @ChainEventCall(PlayerEquipEvent::class, PlayerGetItemEvent::class)
+    @ChainEventCall(PlayerEquipEvent::class, EquipmentUpdateEvent::class)
     fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
         e.player.inventory.getItem(e.slot)?.let { item ->
             if(isNullOrAir(item) || !item.isTool()) return
-
             return@let if(item.hasPersistent(STATUS_KEY)) {
                 val uuid = item.getPersistent(STATUS_KEY)!!
                 EquipmentContainer[uuid]?.apply {
-                    if(isNullOrAir(equipment)) equipment = item
+                    if(isNullOrAir(equipment) || !equipment.isSimilar(item)) {
+                        equipment = item
+                        EquipmentUpdateEvent(this).callEvent()
+                    }
                 } ?: ZincEquipment.register(uuid, item)
             }
             else {
@@ -235,18 +242,34 @@ class PlayerListener: Listener {
 
         when(e.inventory.type) {
             InventoryType.SMITHING -> {
-                if(e.rawSlot != 2 || isNullOrAir(e.currentItem)) return
+                if(e.rawSlot != 2 || isNullOrAir(e.currentItem) || !isNullOrAir(e.cursor)) return
                 Interaction.doInteraction(Interaction.GET, e.view, e.rawSlot, e.isShiftClick)
-
+                e.inventory.setItem(0, AIR)
+                e.inventory.getItem(1)?.subtract() ?: return
             }
-
             else -> return
         }
     }
 
     @EventHandler
     fun onPrepare(e: PrepareSmithingEvent) {
+        val origin = e.inventory.getItem(0) ?: return
+        val ingredient = e.inventory.getItem(1) ?: return
 
+        for (recipe in Recipes.customRecipes) {
+            if(recipe.isCorrect(origin, ingredient)) {
+                e.result = recipe.getResult(origin)
+                break
+            }
+        }
+    }
+
+    @EventHandler
+    fun onItemRemove(e: EntityRemoveFromWorldEvent) {
+        if(e.entity !is Item) return
+        val entity = e.entity as Item
+        if(!entity.itemStack.hasPersistent(STATUS_KEY)) return
+        EquipmentContainer.container.remove(entity.itemStack.getPersistent(STATUS_KEY))
     }
 }
 

@@ -75,22 +75,27 @@ class PlayerStatusManager(
         return when(type) {
             StatusType.STRENGTH -> {
                 playerData.playerVO.playerStrength += amount
+                if(playerData.playerVO.playerStrength < 0) playerData.playerVO.playerStrength = 0
                 playerData.playerVO.playerStrength
             }
             StatusType.BALANCE -> {
                 playerData.playerVO.playerBalance += amount
+                if(playerData.playerVO.playerBalance < 0) playerData.playerVO.playerBalance = 0
                 playerData.playerVO.playerBalance
             }
             StatusType.SWIFTNESS -> {
                 playerData.playerVO.playerSwiftness += amount
+                if(playerData.playerVO.playerSwiftness < 0) playerData.playerVO.playerSwiftness = 0
                 playerData.playerVO.playerSwiftness
             }
             StatusType.CONCENTRATION -> {
                 playerData.playerVO.playerConcentration += amount
+                if(playerData.playerVO.playerConcentration < 0) playerData.playerVO.playerConcentration = 0
                 playerData.playerVO.playerConcentration
             }
             StatusType.REMAIN -> {
                 playerData.playerVO.playerStatusRemain += amount
+                if(playerData.playerVO.playerStatusRemain < 0) playerData.playerVO.playerStatusRemain = 0
                 playerData.playerVO.playerStatusRemain
             }
         }
