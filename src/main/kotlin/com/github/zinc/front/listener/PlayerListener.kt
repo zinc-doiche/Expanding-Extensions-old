@@ -185,11 +185,19 @@ class PlayerListener: Listener {
             if(isNullOrAir(item) || !item.isTool()) return
             return@let if(item.hasPersistent(STATUS_KEY)) {
                 val uuid = item.getPersistent(STATUS_KEY)!!
-                EquipmentContainer[uuid]?.apply {
-                    if(isNullOrAir(equipment) || !equipment.isSimilar(item)) {
-                        equipment = item
-                        EquipmentUpdateEvent(this).callEvent()
+                // will be extended with a map (namespacekey, ? extends ZincEq)
+                if(item.hasPersistent(OceanArmor.KEY)) EquipmentContainer[uuid] = OceanArmor(item)
+                EquipmentContainer[uuid]?.let { equipment ->
+                    info(equipment.equipment.itemMeta)
+                    info(item.itemMeta)
+                    if(isNullOrAir(equipment.equipment) || equipment.equipment.itemMeta != item.itemMeta) {
+                        equipment.equipment = item
+                        info("=============================")
+                        info("updated ${item.type.name}")
+                        info("=============================")
+                        EquipmentUpdateEvent(equipment).callEvent()
                     }
+                    equipment
                 } ?: ZincEquipment.register(uuid, item)
             }
             else {

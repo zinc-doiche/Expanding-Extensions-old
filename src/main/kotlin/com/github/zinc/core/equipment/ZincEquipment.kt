@@ -9,17 +9,18 @@ import com.github.zinc.util.extension.getPersistent
 import com.github.zinc.util.extension.setPersistent
 import com.github.zinc.util.extension.text
 import com.github.zinc.util.extension.texts
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-class ZincEquipment(
+open class ZincEquipment(
     var equipment: ItemStack,
     val constraint: Status = Status()
 ) {
-    private var levelConstraint = 0
+    protected var levelConstraint = 0
 
     fun isDeserved(playerData: PlayerData): Boolean {
         return playerData.playerVO.playerStrength >= constraint.strength &&
@@ -36,55 +37,55 @@ class ZincEquipment(
         setLore()
     }
 
-    fun setStatus() {
+    open fun setStatus() {
         levelConstraint = 0
         constraint.setStatus(equipment)
         if(equipment.hasPersistent(LEVEL_CONSTRAINT_KEY))
             levelConstraint = equipment.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
     }
 
-    fun setPDC() {
+    open fun setPDC() {
         equipment.setPersistent(STRENGTH, constraint.strength, PersistentDataType.INTEGER)
         equipment.setPersistent(SWIFTNESS, constraint.swiftness, PersistentDataType.INTEGER)
         equipment.setPersistent(BALANCE, constraint.balance, PersistentDataType.INTEGER)
         equipment.setPersistent(CONCENTRATION, constraint.concentration, PersistentDataType.INTEGER)
     }
 
-    fun setLore() {
-        equipment.editMeta { meta ->
-            meta.lore(
-                texts(
-                    text(""),
-                    text("요구 스테이터스:").color(Colors.green)
-                ).apply {
-                    if(constraint.strength > 0)
-                        add(text("STR").color(Colors.red).append(
-                            text(": ${constraint.strength}", decoration = TextDecoration.BOLD).color(Colors.white))
-                        )
-                    if(constraint.swiftness > 0)
-                        add(text("SWT").color(Colors.skyblue).append(
-                            text(": ${constraint.swiftness}", decoration = TextDecoration.BOLD).color(Colors.white))
-                        )
-                    if(constraint.balance > 0)
-                        add(text("BAL").color(Colors.green).append(
-                            text(": ${constraint.balance}", decoration = TextDecoration.BOLD).color(Colors.white))
-                        )
-                    if(constraint.concentration > 0)
-                        add(text("CON").color(Colors.gold).append(
-                            text(": ${constraint.concentration}", decoration = TextDecoration.BOLD).color(Colors.white))
-                        )
-                }.apply {
-                    if(levelConstraint > 0) {
-                        add(text(""))
-                        add(
-                            text("요구 레벨: ").color(Colors.beige).append(
-                                text(": $levelConstraint", decoration = TextDecoration.BOLD).color(Colors.white)
-                            )
-                        )
-                    }
-                }
-            )
+    open fun getLore(): List<Component> {
+        return texts(
+            text(""),
+            text("요구 스테이터스:").color(Colors.green)
+        ).apply {
+            if(constraint.strength > 0)
+                add(text("STR").color(Colors.red).append(
+                    text(": ${constraint.strength}", decoration = TextDecoration.BOLD).color(Colors.white))
+                )
+            if(constraint.swiftness > 0)
+                add(text("SWT").color(Colors.skyblue).append(
+                    text(": ${constraint.swiftness}", decoration = TextDecoration.BOLD).color(Colors.white))
+                )
+            if(constraint.balance > 0)
+                add(text("BAL").color(Colors.green).append(
+                    text(": ${constraint.balance}", decoration = TextDecoration.BOLD).color(Colors.white))
+                )
+            if(constraint.concentration > 0)
+                add(text("CON").color(Colors.gold).append(
+                    text(": ${constraint.concentration}", decoration = TextDecoration.BOLD).color(Colors.white))
+                )
+        }.apply {
+            if(levelConstraint > 0) {
+                add(text(""))
+                add(
+                    text("요구 레벨: ").color(Colors.beige).append(
+                        text(": $levelConstraint", decoration = TextDecoration.BOLD).color(Colors.white)
+                    )
+                )
+            }
         }
+    }
+
+    fun setLore() {
+        equipment.editMeta { it.lore(getLore()) }
     }
 
     override fun toString(): String {

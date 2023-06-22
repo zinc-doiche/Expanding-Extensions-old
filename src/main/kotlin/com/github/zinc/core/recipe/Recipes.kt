@@ -1,6 +1,7 @@
 package com.github.zinc.core.recipe
 
 import com.github.zinc.container.EquipmentContainer
+import com.github.zinc.core.equipment.OceanArmor
 import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.plugin
 import com.github.zinc.util.Colors
@@ -24,7 +25,7 @@ object Recipes {
 
     val customRecipes = HashSet<DynamicRecipe>()
 
-    val oceanArmorKey = NamespacedKey.minecraft("ocean_armor")
+
     private val oceanArmorRecipe = DynamicSmitingRecipe(
         result = {
             it.clone().apply {
@@ -36,7 +37,7 @@ object Recipes {
                     meta.displayName(
                         text("바다의 심장 ").append(displayName())
                     )
-                    meta.setPersistent(oceanArmorKey, oceanArmorKey.namespace)
+                    meta.setPersistent(OceanArmor.KEY, OceanArmor.KEY.key)
                 }
             }
         },
