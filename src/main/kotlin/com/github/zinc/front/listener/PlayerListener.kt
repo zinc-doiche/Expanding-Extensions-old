@@ -188,8 +188,7 @@ class PlayerListener: Listener {
                 // will be extended with a map (namespacekey, ? extends ZincEq)
                 if(item.hasPersistent(OceanArmor.KEY)) EquipmentContainer[uuid] = OceanArmor(item)
                 EquipmentContainer[uuid]?.let { equipment ->
-                    info(equipment.equipment.itemMeta)
-                    info(item.itemMeta)
+                    //needs the custom overrode equals of itemMeta
                     if(isNullOrAir(equipment.equipment) || equipment.equipment.itemMeta != item.itemMeta) {
                         equipment.equipment = item
                         info("=============================")
