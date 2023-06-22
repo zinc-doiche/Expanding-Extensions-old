@@ -3,10 +3,10 @@ package com.github.zinc.front.ui
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.StatusType
 import com.github.zinc.util.Sounds
-import com.github.zinc.util.extension.getCustomItem
-import com.github.zinc.util.extension.item
-import com.github.zinc.util.extension.text
-import com.github.zinc.util.extension.texts
+import com.github.zinc.util.getCustomItem
+import com.github.zinc.util.item
+import com.github.zinc.util.text
+import com.github.zinc.util.texts
 import io.github.monun.invfx.InvFX
 import io.github.monun.invfx.frame.InvFrame
 import io.github.monun.invfx.frame.InvSlot

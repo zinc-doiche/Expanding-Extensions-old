@@ -12,7 +12,9 @@ data class PlayerVO(
     var playerSwiftness: Int,
     var playerConcentration: Int,
     var playerBalance: Int
-)
+) {
+    fun getStatus() = Status(playerStrength, playerSwiftness, playerBalance, playerConcentration)
+}
 
 class PlayerData(val playerVO: PlayerVO) {
     var manager: PlayerStatusManager? = null

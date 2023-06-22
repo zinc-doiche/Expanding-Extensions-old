@@ -1,7 +1,5 @@
 package com.github.zinc.util
 
-import com.github.zinc.util.extension.isFull
-import com.github.zinc.util.extension.isNullOrAir
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.InventoryView
 

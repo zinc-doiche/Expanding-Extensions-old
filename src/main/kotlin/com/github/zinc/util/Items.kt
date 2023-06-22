@@ -1,4 +1,4 @@
-package com.github.zinc.util.extension
+package com.github.zinc.util
 
 import com.github.zinc.util.Synchronous
 import net.kyori.adventure.text.Component

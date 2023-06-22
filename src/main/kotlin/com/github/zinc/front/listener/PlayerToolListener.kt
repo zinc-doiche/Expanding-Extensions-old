@@ -7,7 +7,7 @@ import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.front.event.EquipmentUpdateEvent
 import com.github.zinc.front.event.PlayerEquipEvent
 import com.github.zinc.util.PassedBy
-import com.github.zinc.util.extension.*
+import com.github.zinc.util.*
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -15,7 +15,6 @@ import org.bukkit.entity.Trident
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityShootBowEvent
-import org.bukkit.inventory.ItemStack
 
 /**
  * pdc를 추가해야 되는 상황:
@@ -39,10 +38,9 @@ class PlayerToolListener: Listener {
     @PassedBy(PlayerListener::class, PlayerInventorySlotChangeEvent::class)
     fun onEquip(e: PlayerEquipEvent) {
         val playerData = PlayerContainer[e.player.name] ?: return
-        val equipment: ItemStack = e.equipment.equipment
 
         if (!e.equipment.isDeserved(playerData)) {
-            e.player.giveItem(equipment)
+            e.player.giveItem(e.equipment.item)
             e.player.sendMessage("아직 사용하기엔 이르다.")
             e.player.removeSlot(e.equipSlot)
         }

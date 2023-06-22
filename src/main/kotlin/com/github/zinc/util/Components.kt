@@ -1,4 +1,4 @@
-package com.github.zinc.util.extension
+package com.github.zinc.util
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -8,10 +8,9 @@ import net.kyori.adventure.text.format.TextDecoration
 
 internal fun text(
     text: String,
-    style: Style = Style.empty(),
-    decoration: TextDecoration = TextDecoration.ITALIC
+    style: Style = Style.empty()
 ): TextComponent {
-    return Component.text(text, style).decoration(decoration, false)
+    return Component.text(text, style).decoration(TextDecoration.ITALIC, false)
 }
 internal fun texts(vararg components: Component): MutableList<Component> = components.toMutableList()
 internal fun texts(vararg texts: String, style: Style = Style.empty()): List<TextComponent> = texts.map { text(it, style) }

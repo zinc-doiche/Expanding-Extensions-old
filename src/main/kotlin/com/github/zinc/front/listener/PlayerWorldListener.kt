@@ -1,6 +1,6 @@
 package com.github.zinc.front.listener
 
-import com.github.zinc.util.extension.hasPersistent
+import com.github.zinc.util.hasPersistent
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import org.bukkit.NamespacedKey
 import org.bukkit.World

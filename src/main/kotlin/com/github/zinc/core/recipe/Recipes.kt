@@ -1,22 +1,14 @@
 package com.github.zinc.core.recipe
 
-import com.github.zinc.container.EquipmentContainer
 import com.github.zinc.core.equipment.OceanArmor
-import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.plugin
-import com.github.zinc.util.Colors
-import com.github.zinc.util.extension.*
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.ComponentLike
-import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.event.HoverEventSource
-import net.kyori.adventure.text.format.Style
-import net.kyori.adventure.text.format.TextDecoration
+import com.github.zinc.util.getCustomItem
+import com.github.zinc.util.setPersistent
+import com.github.zinc.util.text
+import com.github.zinc.util.texts
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.*
-import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.recipe.CraftingBookCategory
 import java.util.*
 
@@ -25,22 +17,8 @@ object Recipes {
 
     val customRecipes = HashSet<DynamicRecipe>()
 
-
     private val oceanArmorRecipe = DynamicSmitingRecipe(
-        result = {
-            it.clone().apply {
-                editMeta { meta ->
-                    val lore = meta.lore() ?: texts()
-                    lore.add(text(""))
-                    lore.add(text("바다의 가호").color(Colors.skyblue))
-                    meta.lore(lore)
-                    meta.displayName(
-                        text("바다의 심장 ").append(displayName())
-                    )
-                    meta.setPersistent(OceanArmor.KEY, OceanArmor.KEY.key)
-                }
-            }
-        },
+        result = OceanArmor.getArmor(),
         origin =  {it.type.name.contains("CHESTPLATE")},
         ingredient = {it.type == Material.HEART_OF_THE_SEA}
     )

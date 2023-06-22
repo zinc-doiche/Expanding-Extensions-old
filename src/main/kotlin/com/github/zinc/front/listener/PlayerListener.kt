@@ -19,16 +19,9 @@ import com.github.zinc.util.ChainEventCall
 import com.github.zinc.util.Interaction
 import com.github.zinc.util.Sounds
 import com.github.zinc.util.async
-import com.github.zinc.util.extension.*
-import com.github.zinc.util.extension.getPersistent
-import com.github.zinc.util.extension.hasPersistent
-import com.github.zinc.util.extension.isNullOrAir
-import com.github.zinc.util.extension.text
+import com.github.zinc.util.*
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
-import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
-import io.papermc.paper.inventory.ItemRarity
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.AbstractArrow
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.Item
@@ -37,7 +30,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
-import org.bukkit.event.enchantment.EnchantItemEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
@@ -185,25 +177,24 @@ class PlayerListener: Listener {
             if(isNullOrAir(item) || !item.isTool()) return
             return@let if(item.hasPersistent(STATUS_KEY)) {
                 val uuid = item.getPersistent(STATUS_KEY)!!
-                // will be extended with a map (namespacekey, ? extends ZincEq)
+                // will be extended with a map (namespaced key, ? extends ZincEq)
                 if(item.hasPersistent(OceanArmor.KEY)) EquipmentContainer[uuid] = OceanArmor(item)
                 EquipmentContainer[uuid]?.let { equipment ->
                     //needs the custom overrode equals of itemMeta
-                    if(isNullOrAir(equipment.equipment) || equipment.equipment.itemMeta != item.itemMeta) {
-                        equipment.equipment = item
-                        info("=============================")
+                    if(isNullOrAir(equipment.item) || equipment.item.itemMeta != item.itemMeta) {
+                        equipment.item = item
                         info("updated ${item.type.name}")
-                        info("=============================")
                         EquipmentUpdateEvent(equipment).callEvent()
                     }
                     equipment
-                } ?: ZincEquipment.register(uuid, item)
+                } ?: Equipment.register(uuid, ZincEquipment(item))
             }
             else {
                 UUID.randomUUID().let { uuid ->
                     item.setPersistent(STATUS_KEY, uuid.toString())
-                    ZincEquipment.register(uuid.toString(), item).apply {
-                        info("init new $uuid to ${item.type} with $constraint")
+
+                    Equipment.register(uuid.toString(), ZincEquipment(item)).apply {
+                        info("init new $uuid to ${item.type} with $status")
                     }
                 }
             }
@@ -265,7 +256,9 @@ class PlayerListener: Listener {
 
         for (recipe in Recipes.customRecipes) {
             if(recipe.isCorrect(origin, ingredient)) {
-                e.result = recipe.getResult(origin)
+                e.result = recipe.getResult(origin).apply {
+                    if(hasPersistent(DynamicRecipe.dynamicKey)) editMeta { it.displayName(displayName()) }
+                }
                 break
             }
         }

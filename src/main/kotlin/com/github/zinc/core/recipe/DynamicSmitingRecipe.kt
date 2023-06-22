@@ -1,8 +1,7 @@
 package com.github.zinc.core.recipe
 
-import com.github.zinc.util.extension.hasPersistent
-import com.github.zinc.util.extension.setPersistent
-import org.bukkit.NamespacedKey
+import com.github.zinc.util.hasPersistent
+import com.github.zinc.util.setPersistent
 import org.bukkit.inventory.ItemStack
 
 class DynamicSmitingRecipe(
@@ -18,12 +17,12 @@ class DynamicSmitingRecipe(
 
     override fun isCorrect(origin: ItemStack, ingredient: ItemStack): Boolean {
         return origin(origin) && ingredient(ingredient) &&
-                !origin.hasPersistent(dynamicKey) && !ingredient.hasPersistent(dynamicKey)
+                !origin.hasPersistent(DynamicRecipe.dynamicKey) && !ingredient.hasPersistent(DynamicRecipe.dynamicKey)
     }
 
     override fun getResult(item: ItemStack): ItemStack {
-        return result(item).apply { setPersistent(dynamicKey, dynamicKey.namespace) }
+        return result(item).apply { setPersistent(DynamicRecipe.dynamicKey, DynamicRecipe.dynamicKey.key) }
     }
 
-    companion object { val dynamicKey = NamespacedKey.minecraft("dynamic_smote") }
+
 }

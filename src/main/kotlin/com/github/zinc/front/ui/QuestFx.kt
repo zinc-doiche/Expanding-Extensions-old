@@ -6,10 +6,10 @@ import com.github.zinc.core.quest.QuestDTO
 import com.github.zinc.core.quest.QuestVO
 import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.util.Colors
-import com.github.zinc.util.extension.getCustomItem
-import com.github.zinc.util.extension.item
-import com.github.zinc.util.extension.text
-import com.github.zinc.util.extension.texts
+import com.github.zinc.util.getCustomItem
+import com.github.zinc.util.item
+import com.github.zinc.util.text
+import com.github.zinc.util.texts
 import io.github.monun.invfx.InvFX
 import io.github.monun.invfx.frame.InvFrame
 import io.github.monun.invfx.openFrame
@@ -36,18 +36,22 @@ object QuestFx {
         val color = if(questDTO.appendedQuestCleared) Colors.green else Colors.red
         return item(Material.BOOK, text("임무: ${questDTO.appendedQuestName}").color(color)) { meta ->
             if(questDTO.appendedQuestCleared) {
-                meta.lore(texts(
+                meta.lore(
+                    texts(
                     text(""),
                     text("수령함 : ${questDTO.questReward} XP").color(Colors.green)
-                ))
+                )
+                )
                 meta.addEnchant(Enchantment.MENDING, 1, true)
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
             } else {
-                meta.lore(texts(
+                meta.lore(
+                    texts(
                     text(""),
                     text("현황 : ${questDTO.appendedQuestProgress} / ${questDTO.questRequire}").color(Colors.skyblue),
                     text("임무 리워드 : ${questDTO.questReward} XP").color(Colors.skyblue)
-                ))
+                )
+                )
             }
         }
     }
@@ -107,10 +111,12 @@ object QuestFx {
                 transform{ quest ->
                     if(quest.questType == "limit") getQuestIcon(quest).apply {
                         editMeta { meta ->
-                            meta.lore()?.addAll(texts(
+                            meta.lore()?.addAll(
+                                texts(
                                 text(""),
                                 text("Shift Click으로 새 임무를 받습니다").color(Colors.gold)
-                            )) ?: return@editMeta
+                            )
+                            ) ?: return@editMeta
                         }
                     } else getQuestIcon(quest)
                 }
