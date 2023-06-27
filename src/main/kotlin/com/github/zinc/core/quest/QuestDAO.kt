@@ -1,7 +1,7 @@
 package com.github.zinc.core.quest
 
 import com.github.zinc.mybatis.QuestMapper
-import com.github.zinc.core.AbstractDAO
+import com.github.zinc.util.AbstractDAO
 import org.bukkit.entity.Enemy
 
 class QuestDAO : AbstractDAO() {

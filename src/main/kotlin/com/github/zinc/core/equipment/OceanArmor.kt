@@ -1,13 +1,10 @@
 package com.github.zinc.core.equipment
 
-import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.Status
-import com.github.zinc.info
 import com.github.zinc.util.Colors
 import com.github.zinc.util.setPersistent
 import com.github.zinc.util.text
 import com.github.zinc.util.texts
-import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 
