@@ -2,6 +2,7 @@ name: zinc-plugin
 version: '1.0-ALPHA'
 main: com.github.zinc.ZincPlugin
 api-version: 1.19
+depend: ['io.github.monun:kommand-core:3.1.7']
 commands:
   status:
     aliases: '스테이터스'

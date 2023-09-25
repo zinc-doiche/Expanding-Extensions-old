@@ -1,6 +1,7 @@
 package com.github.zinc.front.listener
 
 import com.github.zinc.util.loop
+import com.github.zinc.warn
 //import io.github.monun.kommand.kommand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -17,6 +18,8 @@ class ServerListener: Listener {
 
     companion object {
         private val updatedTasks = HashMap<String, () -> Unit>()
+
+        fun execute(key: String) = updatedTasks[key]?.invoke() ?: warn("the task \'$key\' is not registered.")
 
         fun add(key: String, task: () -> Unit) { updatedTasks[key] = task }
         fun remove(key: String) { updatedTasks.remove(key) }

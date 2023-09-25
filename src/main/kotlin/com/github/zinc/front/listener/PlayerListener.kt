@@ -178,7 +178,7 @@ class PlayerListener: Listener {
             return@let if(item.hasPersistent(STATUS_KEY)) {
                 val uuid = item.getPersistent(STATUS_KEY)!!
                 // will be extended with a map (namespaced key, ? extends ZincEq)
-                if(item.hasPersistent(OceanArmor.KEY)) EquipmentContainer[uuid] = OceanArmor(item)
+                //if(item.hasPersistent(OceanArmor.KEY)) EquipmentContainer[uuid] = OceanArmor(item)
                 EquipmentContainer[uuid]?.let { equipment ->
                     //needs the custom overrode equals of itemMeta
                     if(isNullOrAir(equipment.item) || equipment.item.itemMeta != item.itemMeta) {

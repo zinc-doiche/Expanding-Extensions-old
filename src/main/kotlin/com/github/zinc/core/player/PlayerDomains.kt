@@ -1,5 +1,7 @@
 package com.github.zinc.core.player
 
+import com.github.zinc.module.user.`object`.Status
+
 data class PlayerVO(
     var playerId: Long,
     var playerName: String,

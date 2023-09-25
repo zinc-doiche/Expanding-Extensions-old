@@ -41,9 +41,24 @@ internal fun getCustomItem(
     }
 }
 
+internal fun item(
+    material: Material,
+    displayName: Component,
+    customModelNumber: Int,
+    lore: List<Component>,
+    editMeta: (ItemMeta) -> Unit
+): ItemStack {
+    return ItemStack(material)
+}
+
 internal fun isNullOrAir(itemStack: ItemStack?): Boolean {
     val type = itemStack?.type ?: return true // null
-    return type == Material.AIR // air
+    return type.isAir // air
+}
+
+internal fun ItemStack.edit(editMeta: (ItemMeta) -> Unit): ItemStack {
+    this.editMeta(editMeta)
+    return this
 }
 
 internal fun ItemStack.getPersistent(key: NamespacedKey)

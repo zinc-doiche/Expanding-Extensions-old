@@ -1,7 +1,7 @@
 package com.github.zinc.core.equipment
 
 import com.github.zinc.core.player.PlayerData
-import com.github.zinc.core.player.Status
+import com.github.zinc.module.user.`object`.Status
 import com.github.zinc.util.getPersistent
 import com.github.zinc.util.hasPersistent
 import com.github.zinc.util.setPersistent

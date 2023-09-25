@@ -1,6 +1,6 @@
-package com.github.zinc.core.player
+package com.github.zinc.module.user.`object`
 
-import com.github.zinc.core.equipment.*
+import com.github.zinc.core.equipment.LEVEL_CONSTRAINT_KEY
 import com.github.zinc.util.getPersistent
 import com.github.zinc.util.hasPersistent
 import com.github.zinc.util.setPersistent

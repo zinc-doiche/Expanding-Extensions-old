@@ -1,11 +1,11 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.8.21"
-    id ("java")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("org.jetbrains.kotlin.jvm") version "1.9.10"
+    id("io.papermc.paperweight.userdev") version "1.5.5"
+    id ("xyz.jpenilla.run-paper") version "2.1.0" // Adds runServer task for testing
 }
 
 group = "com.github"
-version = "1.0-ALPHA"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -22,16 +22,38 @@ repositories {
 }
 
 dependencies {
-    implementation("org.mybatis:mybatis:3.5.13")
-    implementation("mysql:mysql-connector-java:8.0.33")
-    implementation("io.github.monun:invfx-api:3.3.0")
-    implementation("io.github.monun:invfx-core:3.3.0")
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation(files("libs/nmsLoader.jar"))
+    paperweight.paperDevBundle("1.20.1-R0.1-SNAPSHOT")
+    compileOnly("com.google.code.gson:gson:2.10.1")
+    implementation("org.mongodb:mongodb-driver-sync:4.9.0")
+    implementation("io.github.monun:kommand-api:3.1.7")
 }
 
 tasks.withType(JavaCompile::class.java) {
     options.encoding = "UTF-8"
+}
+
+tasks {
+    compileJava {
+        options.encoding = "UTF-8" // We want UTF-8 for everything
+        options.release.set(17)
+    }
+    javadoc {
+        options.encoding = "UTF-8" // We want UTF-8 for everything
+    }
+    processResources {
+        filteringCharset = "UTF-8" // We want UTF-8 for everything
+        val props = mapOf(
+            "name" to project.name,
+            "version" to  project.version,
+            "description" to project.description,
+            "apiVersion" to "1.19"
+        )
+
+        inputs.properties(props)
+
+        filesMatching("plugin.yml") {
+            expand(props)
+        }
+    }
 }
 

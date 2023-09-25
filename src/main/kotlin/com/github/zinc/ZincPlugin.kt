@@ -10,18 +10,24 @@ import com.github.zinc.command.TestCommand
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.recipe.Recipes
 import com.github.zinc.front.listener.*
+import com.github.zinc.util.async
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
 
 class ZincPlugin: JavaPlugin() {
 
+    private val runSaving = {
+        if(PlayerContainer.container.isNotEmpty()) {
+            info("saving...")
+            PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
+        }
+    }
+
     override fun onEnable() {
         plugin = this
         MybatisConfig.init()
-
         //QuestManager.registerAllQuestList()
-
         registerAll(
             ServerListener(),
             PlayerExpListener(),
@@ -35,22 +41,13 @@ class ZincPlugin: JavaPlugin() {
             "test" to TestCommand(),
             "quest" to QuestCommand()
         )
-        ServerListener.add("updateAll") {
-            if(PlayerContainer.container.isEmpty()) return@add
-            info("saving...")
-            PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
-        }
-
+        ServerListener.add("updateAll", runSaving)
         QuestDAO().use(QuestDAO::questTimer)
-
         Recipes.registerAll()
     }
 
     override fun onDisable() {
-        if(PlayerContainer.container.isNotEmpty()) {
-            info("saving...")
-            PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
-        }
+        ServerListener.execute("updateAll")
     }
 
     private fun registerAll(vararg listener: Listener) {

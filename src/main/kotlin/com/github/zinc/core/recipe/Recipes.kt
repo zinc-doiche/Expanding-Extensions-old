@@ -1,6 +1,5 @@
 package com.github.zinc.core.recipe
 
-import com.github.zinc.core.equipment.OceanArmor
 import com.github.zinc.plugin
 import com.github.zinc.util.getCustomItem
 import com.github.zinc.util.setPersistent
@@ -17,11 +16,11 @@ object Recipes {
 
     val customRecipes = HashSet<DynamicRecipe>()
 
-    private val oceanArmorRecipe = DynamicSmitingRecipe(
-        result = OceanArmor.getArmor(),
-        origin =  {it.type.name.contains("CHESTPLATE")},
-        ingredient = {it.type == Material.HEART_OF_THE_SEA}
-    )
+//    private val oceanArmorRecipe = DynamicSmitingRecipe(
+//        result = {OceanArmor.getArmorBy(it.type)},
+//        origin =  {it.type.name.contains("CHESTPLATE")},
+//        ingredient = {it.type == Material.HEART_OF_THE_SEA}
+//    )
 
     private val starKey = NamespacedKey.minecraft("nether_star_fragment")
     val netherStarFragment = getCustomItem(Material.PAPER, text("네더의 별 파편"), 7) {
