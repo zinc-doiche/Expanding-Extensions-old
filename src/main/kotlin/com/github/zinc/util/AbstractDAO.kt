@@ -1,4 +1,4 @@
-package com.github.zinc.core
+package com.github.zinc.util
 
 import com.github.zinc.mybatis.IMapper
 import com.github.zinc.mybatis.MybatisConfig
