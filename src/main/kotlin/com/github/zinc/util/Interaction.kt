@@ -41,11 +41,11 @@ enum class Interaction {
             } else when(interaction) {
                 EXCHANGE -> {
                     val temp = view.cursor
-                    view.cursor = view.getItem(slot)
+                    view.setCursor(view.getItem(slot))
                     view.setItem(slot, temp)
                 }
                 PUT -> view.setItem(slot, view.cursor)
-                GET -> view.cursor = view.getItem(slot)
+                GET -> view.setCursor(view.getItem(slot))
             }
         }
 

@@ -1,9 +1,6 @@
 package com.github.zinc.command
 
-import com.github.zinc.container.PlayerContainer
-import com.github.zinc.front.ui.QuestFx
 import com.github.zinc.info
-import io.github.monun.invfx.openFrame
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -15,7 +12,7 @@ class QuestCommand : CommandExecutor {
             return false
         }
         info(sender.name)
-        sender.openFrame(QuestFx.getQuestMainFx(PlayerContainer[sender.name]!!))
+//        sender.openFrame(QuestFx.getQuestMainFx(PlayerContainer[sender.name]!!))
 
         return true
     }

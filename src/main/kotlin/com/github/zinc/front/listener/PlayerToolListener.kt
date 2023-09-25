@@ -1,8 +1,6 @@
 package com.github.zinc.front.listener
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
-import com.github.zinc.container.EquipmentContainer
-import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.front.event.EquipmentUpdateEvent
 import com.github.zinc.front.event.PlayerEquipEvent
@@ -37,58 +35,58 @@ class PlayerToolListener: Listener {
     @EventHandler
     @PassedBy(PlayerListener::class, PlayerInventorySlotChangeEvent::class)
     fun onEquip(e: PlayerEquipEvent) {
-        val playerData = PlayerContainer[e.player.name] ?: return
-
-        if (!e.equipment.isDeserved(playerData)) {
-            e.player.giveItem(e.equipment.item)
-            e.player.sendMessage("아직 사용하기엔 이르다.")
-            e.player.removeSlot(e.equipSlot)
-        }
+//        val playerData = PlayerContainer[e.player.name] ?: return
+//
+//        if (!e.equipment.isDeserved(playerData)) {
+//            e.player.giveItem(e.equipment.item)
+//            e.player.sendMessage("아직 사용하기엔 이르다.")
+//            e.player.removeSlot(e.equipSlot)
+//        }
     }
 
     //Not Called by launching arrows, but called by launching the projectiles like Trident
     @EventHandler
     fun onCharge(e: PlayerLaunchProjectileEvent) {
         if(e.projectile !is Trident) return
-        val playerData = PlayerContainer[e.player.name] ?: return
-
-        if (e.itemStack.hasPersistent(STATUS_KEY)) {
-            val equipment = EquipmentContainer[e.itemStack.getPersistent(STATUS_KEY)!!] ?: return
-            if (!equipment.isDeserved(playerData)) {
-                e.player.sendMessage("아직 사용하기엔 이르다.")
-
-                e.isCancelled = true
-            }
-        }
+//        val playerData = PlayerContainer[e.player.name] ?: return
+//
+//        if (e.itemStack.hasPersistent(STATUS_KEY)) {
+//            val equipment = EquipmentContainer[e.itemStack.getPersistent(STATUS_KEY)!!] ?: return
+//            if (!equipment.isDeserved(playerData)) {
+//                e.player.sendMessage("아직 사용하기엔 이르다.")
+//
+//                e.isCancelled = true
+//            }
+//        }
     }
 
     @EventHandler
     fun onShootArrow(e: EntityShootBowEvent) {
         if(e.entity !is Player) return
-        val playerData = PlayerContainer[e.entity.name] ?: return
-
-        e.bow?.let { item ->
-            if(item.hasPersistent(STATUS_KEY)) {
-                val uuid = item.getPersistent(STATUS_KEY) ?: return
-                val equipment = EquipmentContainer[uuid] ?: return
-
-                if(!equipment.isDeserved(playerData)) {
-                    val player = playerData.manager?.playerEntity ?: return
-                    val isCrossbow = item.type == Material.CROSSBOW
-
-                    player.sendMessage("아직 사용하기엔 이르다.")
-                    e.setConsumeItem(isCrossbow)
-                    if(isCrossbow) {
-                        e.consumable?.let { consumable ->
-                            val arrow = consumable.clone()
-                            arrow.amount = 1
-                            player.giveItem(arrow)
-                        }
-                    }
-                    e.isCancelled = true
-                }
-            }
-        }
+//        val playerData = PlayerContainer[e.entity.name] ?: return
+//
+//        e.bow?.let { item ->
+//            if(item.hasPersistent(STATUS_KEY)) {
+//                val uuid = item.getPersistent(STATUS_KEY) ?: return
+//                val equipment = EquipmentContainer[uuid] ?: return
+//
+//                if(!equipment.isDeserved(playerData)) {
+//                    val player = playerData.manager?.playerEntity ?: return
+//                    val isCrossbow = item.type == Material.CROSSBOW
+//
+//                    player.sendMessage("아직 사용하기엔 이르다.")
+//                    e.setConsumeItem(isCrossbow)
+//                    if(isCrossbow) {
+//                        e.consumable?.let { consumable ->
+//                            val arrow = consumable.clone()
+//                            arrow.amount = 1
+//                            player.giveItem(arrow)
+//                        }
+//                    }
+//                    e.isCancelled = true
+//                }
+//            }
+//        }
     }
 
     @EventHandler

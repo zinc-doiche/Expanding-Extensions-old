@@ -1,11 +1,9 @@
 package com.github.zinc.command
 
-import com.github.zinc.container.PlayerContainer
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.player.StatusType
 import com.github.zinc.front.ui.StatusFx
 import com.github.zinc.util.Sounds
-import io.github.monun.invfx.openFrame
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
@@ -35,19 +33,19 @@ class StatusCommand: TabExecutor {
         if (sender !is Player) {
             return false
         }
-        val playerData = PlayerContainer[sender.name]!!
+//        val playerData = PlayerContainer[sender.name]!!
 
         when (args.size) {
             1 -> {
                 when(args[0]) {
                     "open" -> {
                         sender.playSound(Sounds.uiOpen)
-                        sender.openFrame(StatusFx.getStatusFrame(playerData))
+//                        sender.openFrame(StatusFx.getStatusFrame(playerData))
                         return true
                     }
                     "view" -> {
                         sender.playSound(Sounds.uiOpen)
-                        sendStatusViewMessage(playerData)
+//                        sendStatusViewMessage(playerData)
                         return true
                     }
                 }
@@ -57,33 +55,33 @@ class StatusCommand: TabExecutor {
             //ex) add str 3
             3 -> {
                 val amount = args[2].toIntOrNull() ?: return false
-                when(args[1]) {
-                    "str" -> {
-                        playerData.manager?.updateStatus(StatusType.STRENGTH, amount)
-                        playerData.manager?.applyStatus(StatusType.STRENGTH)
-                    }
-                    "swt" -> {
-                        playerData.manager?.updateStatus(StatusType.SWIFTNESS, amount)
-                        playerData.manager?.applyStatus(StatusType.SWIFTNESS)
-                    }
-                    "bal" -> {
-                        playerData.manager?.updateStatus(StatusType.BALANCE, amount)
-                        playerData.manager?.applyStatus(StatusType.BALANCE)
-                    }
-                    "con" -> {
-                        playerData.manager?.updateStatus(StatusType.CONCENTRATION, amount)
-                        playerData.manager?.applyStatus(StatusType.CONCENTRATION)
-                    }
-                    "rem" -> {
-                        playerData.manager?.updateStatus(StatusType.REMAIN, amount)
-                    }
-                    "lv" -> {
-                        playerData.playerVO.playerExperience = 0
-                        playerData.manager?.levelUp(amount)
-                    }
-                }
-
-                sendStatusViewMessage(playerData)
+//                when(args[1]) {
+//                    "str" -> {
+//                        playerData.manager?.updateStatus(StatusType.STRENGTH, amount)
+//                        playerData.manager?.applyStatus(StatusType.STRENGTH)
+//                    }
+//                    "swt" -> {
+//                        playerData.manager?.updateStatus(StatusType.SWIFTNESS, amount)
+//                        playerData.manager?.applyStatus(StatusType.SWIFTNESS)
+//                    }
+//                    "bal" -> {
+//                        playerData.manager?.updateStatus(StatusType.BALANCE, amount)
+//                        playerData.manager?.applyStatus(StatusType.BALANCE)
+//                    }
+//                    "con" -> {
+//                        playerData.manager?.updateStatus(StatusType.CONCENTRATION, amount)
+//                        playerData.manager?.applyStatus(StatusType.CONCENTRATION)
+//                    }
+//                    "rem" -> {
+//                        playerData.manager?.updateStatus(StatusType.REMAIN, amount)
+//                    }
+//                    "lv" -> {
+//                        playerData.playerVO.playerExperience = 0
+//                        playerData.manager?.levelUp(amount)
+//                    }
+//                }
+//
+//                sendStatusViewMessage(playerData)
                 return true
             }
         }

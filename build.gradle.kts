@@ -40,20 +40,20 @@ tasks {
     javadoc {
         options.encoding = "UTF-8" // We want UTF-8 for everything
     }
-    processResources {
-        filteringCharset = "UTF-8" // We want UTF-8 for everything
-        val props = mapOf(
-            "name" to project.name,
-            "version" to  project.version,
-            "description" to project.description,
-            "apiVersion" to "1.19"
-        )
-
-        inputs.properties(props)
-
-        filesMatching("plugin.yml") {
-            expand(props)
-        }
-    }
+//    processResources {
+//        filteringCharset = "UTF-8" // We want UTF-8 for everything
+//        val props = mapOf(
+//            "name" to project.name,
+//            "version" to  project.version,
+//            "description" to project.description,
+//            "apiVersion" to "1.20"
+//        )
+//
+//        inputs.properties(props)
+//
+//        filesMatching("plugin.yml") {
+//            expand(props)
+//        }
+//    }
 }
 

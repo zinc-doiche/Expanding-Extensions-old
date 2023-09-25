@@ -1,16 +1,11 @@
 package com.github.zinc;
 
-import com.github.zinc.mybatis.MybatisConfig
 import com.github.zinc.command.StatusCommand
-import com.github.zinc.core.player.PlayerDAO
 import com.github.zinc.command.QuestCommand
-import com.github.zinc.container.PlayerContainer
-import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.command.TestCommand
-import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.recipe.Recipes
 import com.github.zinc.front.listener.*
-import com.github.zinc.util.async
+import com.github.zinc.mongodb.MongoDB
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,15 +13,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 class ZincPlugin: JavaPlugin() {
 
     private val runSaving = {
-        if(PlayerContainer.container.isNotEmpty()) {
-            info("saving...")
-            PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
-        }
+//        if(PlayerContainer.container.isNotEmpty()) {
+//            info("saving...")
+//            PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
+//        }
     }
 
     override fun onEnable() {
         plugin = this
-        MybatisConfig.init()
+        MongoDB.register()
         //QuestManager.registerAllQuestList()
         registerAll(
             ServerListener(),
@@ -42,7 +37,7 @@ class ZincPlugin: JavaPlugin() {
             "quest" to QuestCommand()
         )
         ServerListener.add("updateAll", runSaving)
-        QuestDAO().use(QuestDAO::questTimer)
+//        QuestDAO().use(QuestDAO::questTimer)
         Recipes.registerAll()
     }
 

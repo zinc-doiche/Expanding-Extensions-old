@@ -1,9 +1,6 @@
 package com.github.zinc.front.listener
 
-import com.github.zinc.container.PlayerContainer
-import com.github.zinc.info
 import com.github.zinc.front.event.PlayerGetExpEvent
-import com.github.zinc.core.quest.QuestDAO
 import com.github.zinc.front.event.QuestClearEvent
 import com.github.zinc.core.quest.QuestManager
 import com.github.zinc.util.ChainEventCall
@@ -35,24 +32,24 @@ class QuestListener: Listener {
     @ChainEventCall(PlayerGetExpEvent::class)
     fun onQuestClear(e: QuestClearEvent) {
         val player = e.playerData.manager?.playerEntity ?: return
-        QuestDAO().use { dao ->
-            //info("qc, ${e.playerData.playerVO.playerId}, ${e.enemy.name}")
-            val questDTO = dao.select(e.playerData.playerVO.playerId, e.enemy) ?: return@use
-            if(questDTO.appendedQuestCleared) {
-                player.sendMessage("§6이미 ${e.enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
-                QuestManager.clearMap[player.name]?.add(e.enemy.name)
-                return@use
-            }
-            player.sendMessage("§4${e.enemy.name}: (${++questDTO.appendedQuestProgress}/${questDTO.questRequire})")
-
-            if(questDTO.appendedQuestProgress >= questDTO.questRequire) {
-                questDTO.appendedQuestCleared = true
-                player.playSound(Sounds.questClear)
-                PlayerGetExpEvent(player, questDTO.questReward).callEvent()
-                player.sendMessage("\n§6${e.enemy.name} 퀘스트 완료! (+${questDTO.questReward} xp)\n ")
-            }
-
-            dao.update(questDTO)
-        }
+//        QuestDAO().use { dao ->
+//            //info("qc, ${e.playerData.playerVO.playerId}, ${e.enemy.name}")
+//            val questDTO = dao.select(e.playerData.playerVO.playerId, e.enemy) ?: return@use
+//            if(questDTO.appendedQuestCleared) {
+//                player.sendMessage("§6이미 ${e.enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
+//                QuestManager.clearMap[player.name]?.add(e.enemy.name)
+//                return@use
+//            }
+//            player.sendMessage("§4${e.enemy.name}: (${++questDTO.appendedQuestProgress}/${questDTO.questRequire})")
+//
+//            if(questDTO.appendedQuestProgress >= questDTO.questRequire) {
+//                questDTO.appendedQuestCleared = true
+//                player.playSound(Sounds.questClear)
+//                PlayerGetExpEvent(player, questDTO.questReward).callEvent()
+//                player.sendMessage("\n§6${e.enemy.name} 퀘스트 완료! (+${questDTO.questReward} xp)\n ")
+//            }
+//
+//            dao.update(questDTO)
+//        }
     }
 }
