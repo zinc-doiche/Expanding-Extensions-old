@@ -14,7 +14,7 @@ import java.io.File
 object MongoDB {
     lateinit var client: MongoClient
         private set
-    lateinit var databaseName: String
+    lateinit var database: MongoDatabase
         private set
 
     fun register() {
@@ -30,10 +30,9 @@ object MongoDB {
                 .build()
             client = MongoClients.create(settings)
         }
-        databaseName = YamlConfiguration.loadConfiguration(yml).get("name") as String
+        val databaseName = YamlConfiguration.loadConfiguration(yml).get("name") as String
+        database = client.getDatabase(databaseName)
     }
 
-    operator fun get(name: String): MongoCollection<Document> = client.getDatabase(databaseName).getCollection(name)
-
-    fun getDataBase(): MongoDatabase = client.getDatabase(databaseName)
+    operator fun get(name: String): MongoCollection<Document> = database.getCollection(name)
 }

@@ -12,19 +12,22 @@ data class Status(
     var strength: Int = 0,
     var swiftness: Int = 0,
     var balance: Int = 0,
-    var concentration: Int = 0
+    var concentration: Int = 0,
+    var remains: Int = 0
 ) {
-    constructor() : this(0,0,0,0)
-
-    constructor(
-        strength: Double = .0,
-        swiftness: Double = .0,
-        balance: Double = .0,
-        concentration: Double = .0
-    ) : this(strength.toInt(), swiftness.toInt(), balance.toInt(), concentration.toInt())
+    val total: Int
+        get() = strength + swiftness + balance + concentration + remains
 
     operator fun times(times: Double)
-            = Status(strength * times, swiftness * times, balance * times, concentration * times)
+            = Status((strength * times).toInt(), (swiftness * times).toInt(), (balance * times).toInt(), (concentration * times).toInt())
+
+    private fun clear() {
+        strength = 0
+        swiftness = 0
+        balance = 0
+        concentration = 0
+        remains = 0
+    }
 
     fun add(status: Status) {
         strength += status.strength
@@ -33,12 +36,7 @@ data class Status(
         concentration += status.concentration
     }
 
-    private fun clear() {
-        strength = 0
-        swiftness = 0
-        balance = 0
-        concentration = 0
-    }
+    //=========================================================================================
 
     fun setStatus(itemStack: ItemStack) {
         //prevent status from multiply
@@ -86,7 +84,7 @@ data class Status(
     }
 
     override fun toString(): String {
-        return "Status(strength=$strength, swiftness=$swiftness, balance=$balance, concentration=$concentration)"
+        return "Status(strength=$strength, swiftness=$swiftness, balance=$balance, concentration=$concentration, remains=$remains)"
     }
 
     companion object {
@@ -200,11 +198,17 @@ data class Status(
 }
 
 private fun ItemStack.setLevelConstraint(level: Int) {
-    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!! else 0
-    if(constraint < level) this.setPersistent(LEVEL_CONSTRAINT_KEY, level, PersistentDataType.INTEGER)
+    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) {
+        this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
+    } else 0
+    if(constraint < level) {
+        this.setPersistent(LEVEL_CONSTRAINT_KEY, level, PersistentDataType.INTEGER)
+    }
 }
 
 private fun ItemStack.addLevelConstraint(level: Int) {
-    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!! else 0
+    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) {
+        this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
+    } else 0
     this.setPersistent(LEVEL_CONSTRAINT_KEY, level + constraint, PersistentDataType.INTEGER)
 }

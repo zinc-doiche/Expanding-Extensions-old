@@ -1,6 +1,7 @@
 package com.github.zinc.lib.gui
 
 import org.bukkit.event.inventory.InventoryEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
@@ -19,10 +20,12 @@ abstract class SquareGUI: GUI {
     }
 }
 
+internal fun Inventory.setItem(item: ItemStack, x: Int, y: Int) = setItem(x + y * 9, item)
+
+
 enum class EventType {
     CLICK,
     DRAG,
     CLOSE,
-    OPEN,
-    OTHER
+    OPEN
 }

@@ -1,6 +1,6 @@
 package com.github.zinc.util
 
-import com.github.zinc.util.Synchronous
+import com.github.zinc.plugin
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -9,28 +9,48 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.io.BukkitObjectInputStream
+import org.bukkit.util.io.BukkitObjectOutputStream
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 
 internal fun item(material: Material, block: (ItemMeta) -> Unit): ItemStack {
-    return ItemStack(material).apply {
-        editMeta(block)
+    return ItemStack(material).edit(block)
+}
+
+internal fun item(
+    material: Material,
+    name: Component,
+    amount: Int = 1,
+    customModelNumber: Int? = null,
+    block: ((ItemMeta) -> Unit)? = null,
+): ItemStack {
+    return ItemStack(material, amount).edit { meta ->
+        meta.displayName(name)
+        if(customModelNumber != null) {
+            meta.setCustomModelData(customModelNumber)
+        }
+        block?.invoke(meta)
     }
 }
 
-internal fun item(material: Material, name: Component, block: ((ItemMeta) -> Unit)? = null): ItemStack {
-    return ItemStack(material).apply {
-        this.editMeta {
-            it.displayName(name)
-            block?.invoke(it) ?: return@editMeta
-        }
-    }
+internal fun getSkull(player: Player): ItemStack = item(Material.PLAYER_HEAD) { meta ->
+    (meta as SkullMeta).owningPlayer = player
+}
+
+internal fun getSkull(player: Player, editMeta: (ItemMeta) -> Unit): ItemStack = item(Material.PLAYER_HEAD) { meta ->
+    (meta as SkullMeta).owningPlayer = player
+    editMeta(meta)
 }
 
 internal fun getCustomItem(
     material: Material,
     name: Component,
     customModelNumber: Int,
-    init: ((ItemMeta) -> Unit)? = null
+    init: ((ItemMeta) -> Unit)? = null,
 ): ItemStack {
     return ItemStack(material).apply {
         editMeta { meta ->
@@ -46,15 +66,24 @@ internal fun item(
     displayName: Component,
     customModelNumber: Int,
     lore: List<Component>,
-    editMeta: (ItemMeta) -> Unit
+    editMeta: (ItemMeta) -> Unit,
 ): ItemStack {
     return ItemStack(material)
 }
 
-internal fun isNullOrAir(itemStack: ItemStack?): Boolean {
+internal fun isNull(itemStack: ItemStack?): Boolean {
     val type = itemStack?.type ?: return true // null
     return type.isAir // air
 }
+
+internal fun isNotNull(itemStack: ItemStack?): Boolean {
+    return !isNull(itemStack)
+}
+
+
+internal val ItemStack.isFullStack: Boolean
+    get() = getMaxStackSize() == amount || getMaxStackSize() == 1
+
 
 internal fun ItemStack.edit(editMeta: (ItemMeta) -> Unit): ItemStack {
     this.editMeta(editMeta)
@@ -102,12 +131,10 @@ internal fun Player.setItem(equipmentSlot: EquipmentSlot, itemStack: ItemStack) 
     inventory.setItem(equipmentSlot, itemStack)
 }
 
-@Synchronous
 internal fun Player.removeSlot(slot: Int) {
     inventory.setItem(slot, AIR)
 }
 
-@Synchronous
 internal fun Player.removeSlot(equipmentSlot: EquipmentSlot) {
     inventory.setItem(equipmentSlot, AIR)
 }
@@ -117,7 +144,6 @@ internal fun Player.removeSlot(equipmentSlot: EquipmentSlot) {
  *
  * 2. 안되면 뱉음
  */
-@Synchronous
 internal fun Player.giveItem(itemStack: ItemStack) {
     val emptySlot = inventory.firstEmpty()
     if(emptySlot == -1) world.dropItem(location, itemStack)
@@ -129,3 +155,29 @@ fun Inventory.isFull(): Boolean {
     return this.maxStackSize == this.size
 }
 
+internal fun ItemStack.toJson(): String? {
+    try {
+        ByteArrayOutputStream().use { arrayOutputStream ->
+            BukkitObjectOutputStream(arrayOutputStream).use { objectOutputStream ->
+                objectOutputStream.writeObject(this)
+                return Base64Coder.encodeLines(arrayOutputStream.toByteArray())
+            }
+        }
+    } catch (e: Exception) {
+        plugin.slF4JLogger.error("Error: itemstack -> json", e)
+    }
+    return null
+}
+
+internal fun toItemStack(json: String): ItemStack? {
+    try {
+        ByteArrayInputStream(Base64Coder.decodeLines(json)).use { arrayInputStream ->
+            BukkitObjectInputStream(
+                arrayInputStream
+            ).use { objectInputStream -> return objectInputStream.readObject() as ItemStack }
+        }
+    } catch (e: Exception) {
+        plugin.slF4JLogger.error("Error: json -> itemstack", e)
+    }
+    return null
+}

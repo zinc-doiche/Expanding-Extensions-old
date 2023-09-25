@@ -1,14 +1,22 @@
-package com.github.zinc.front.listener
+package com.github.zinc.module.user.listener
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
-import com.github.zinc.core.equipment.*
+import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.core.recipe.DynamicRecipe
 import com.github.zinc.core.recipe.Recipes
-import com.github.zinc.front.event.*
-import com.github.zinc.util.ChainEventCall
-import com.github.zinc.util.Interaction
+import com.github.zinc.front.event.EquipmentUpdateEvent
+import com.github.zinc.front.event.ItemChangeEnchantEvent
+import com.github.zinc.front.event.PlayerEquipEvent
+import com.github.zinc.front.event.QuestClearEvent
+import com.github.zinc.module.user.`object`.User
+import com.github.zinc.mongodb.MongoDB
+import com.github.zinc.plugin
 import com.github.zinc.util.*
+import com.github.zinc.util.AIR
+import com.github.zinc.util.hasPersistent
+import com.github.zinc.util.isNull
+import com.mongodb.client.model.Filters
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
@@ -18,34 +26,27 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareSmithingEvent
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerLevelChangeEvent
-import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.player.PlayerStatisticIncrementEvent
-import org.bukkit.inventory.EquipmentSlot
-import kotlin.collections.ArrayList
+import org.bukkit.event.player.*
 
-class PlayerListener: Listener {
-
-    private val slots: ArrayList<EquipmentSlot> = arrayListOf(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD)
-
+class UserListener: Listener {
     @EventHandler
-    fun onLogin(e: AsyncPlayerPreLoginEvent) {
-//        var isNewbie = false
-//        val playerName = e.playerProfile.name ?: return
-//        val playerVO = PlayerDAO().use { dao ->
-//            dao.select(playerName) ?: run {
-//                isNewbie = true
-//                dao.insert(playerName)
-//                dao.select(playerName)
-//            } ?: run {
-//                e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("Login Cancelled, please retry login."))
-//                return
-//            }
-//        }
-//
+    fun onLogin(event: AsyncPlayerPreLoginEvent) {
+        try {
+            val collection = MongoDB["user"]
+            val uuid = event.uniqueId.toString()
+            val user: User = collection
+                .find(Filters.eq("uuid", uuid))
+                .first()
+                ?.toObject(User::class)
+                ?: User(uuid).apply {
+                    collection.insertOne(toDocument(this))
+                }
+            User[uuid] = user
+        } catch (e: Exception) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("로그인에 실패하였습니다. 관리자에게 문의해주세요."))
+            plugin.slF4JLogger.error("Failed to login: ${event.playerProfile.name}", e)
+        }
+
 //        if(isNewbie) QuestManager.registerAllQuests(playerVO.playerId)
 //        PlayerContainer.add(playerName, PlayerData(playerVO))
 //
@@ -56,16 +57,11 @@ class PlayerListener: Listener {
     }
 
     @EventHandler
-    fun onJoin(e: PlayerJoinEvent) {
-//        val playerData = PlayerContainer[e.player.name]!!
-//        playerData.manager = PlayerStatusManager(playerData, e.player)
-    }
+    fun onQuit(event: PlayerQuitEvent) {
+        User[event.player.uniqueId.toString()]?.let { user ->
+            MongoDB["user"].updateOne(Filters.eq("uuid", user.uuid), toDocument(user))
+        } ?: plugin.slF4JLogger.warn("Failed to save user data: ${event.player.name}")
 
-    @EventHandler
-    fun onQuit(e: PlayerQuitEvent) {
-//        val playerData = PlayerContainer.remove(e.player.name) ?: return
-//        PlayerDAO().use { it.update(playerData.playerVO) }
-//
 //        QuestManager.clearMap.remove(e.player.name)
     }
 
@@ -255,4 +251,3 @@ class PlayerListener: Listener {
 //        EquipmentContainer.container.remove(entity.itemStack.getPersistent(STATUS_KEY))
     }
 }
-

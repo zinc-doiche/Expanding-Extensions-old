@@ -6,13 +6,16 @@ import java.util.*
 
 class User(
     val uuid: String,
-    val status: Status,
-    val level: Level,
-    val trinket: Trinket
+    val status: Status = Status(),
+    val level: Level = Level(),
+    val trinket: Trinket = Trinket(),
 ) {
 
     val player: Player?
         get() = Bukkit.getPlayer(UUID.fromString(uuid))
+
+    val name: String?
+        get() = player?.name
 
     companion object {
         private val users: HashMap<String, User> = HashMap()

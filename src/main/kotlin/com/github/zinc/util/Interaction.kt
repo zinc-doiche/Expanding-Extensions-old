@@ -17,11 +17,11 @@ enum class Interaction {
 
     companion object {
         fun get(view: InventoryView, slot: Int): Interaction? {
-            return if(isNullOrAir(view.getItem(slot))) {
-                if(isNullOrAir(view.cursor)) null
+            return if(isNull(view.getItem(slot))) {
+                if(isNull(view.cursor)) null
                 else PUT
             } else {
-                if(isNullOrAir(view.cursor)) GET
+                if(isNull(view.cursor)) GET
                 else EXCHANGE
             }
         }

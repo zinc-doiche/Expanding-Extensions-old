@@ -4,59 +4,70 @@ import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.quest.QuestDTO
 import com.github.zinc.core.quest.QuestVO
 import com.github.zinc.core.quest.QuestManager
-import com.github.zinc.util.Colors
+import com.github.zinc.lib.gui.EventType
+import com.github.zinc.lib.gui.SquareGUI
+import com.github.zinc.module.user.`object`.User
+import com.github.zinc.util.*
 import com.github.zinc.util.getCustomItem
+import com.github.zinc.util.getSkull
 import com.github.zinc.util.item
 import com.github.zinc.util.text
 import com.github.zinc.util.texts
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
-object QuestFx {
-//    private val witherIcon = item(Material.WITHER_SKELETON_SKULL, text("주간 임무 목록 바로가기").color(Colors.gold))
-//    private val creeperIcon = item(Material.CREEPER_HEAD, text("일일 특별 임무 목록 바로가기").color(Colors.skyblue))
-//    private val returnIcon = getCustomItem(Material.PAPER, text("돌아가기"), 3)
-//    private val woodenPane = getCustomItem(Material.PAPER, text(""), 2)
-//
-//    private fun getHeadIcon(player: Player) = item(Material.PLAYER_HEAD) { meta ->
-//        (meta as SkullMeta).owningPlayer = player
-//        meta.displayName(text("일일 임무 목록 바로가기").color(Colors.skyblue))
-//    }
-//
-//    private fun getQuestIcon(questDTO: QuestDTO): ItemStack {
-//        val color = if(questDTO.appendedQuestCleared) Colors.green else Colors.red
-//        return item(Material.BOOK, text("임무: ${questDTO.appendedQuestName}").color(color)) { meta ->
-//            if(questDTO.appendedQuestCleared) {
-//                meta.lore(
-//                    texts(
-//                    text(""),
-//                    text("수령함 : ${questDTO.questReward} XP").color(Colors.green)
-//                )
-//                )
-//                meta.addEnchant(Enchantment.MENDING, 1, true)
-//                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-//            } else {
-//                meta.lore(
-//                    texts(
-//                    text(""),
-//                    text("현황 : ${questDTO.appendedQuestProgress} / ${questDTO.questRequire}").color(Colors.skyblue),
-//                    text("임무 리워드 : ${questDTO.questReward} XP").color(Colors.skyblue)
-//                )
-//                )
-//            }
-//        }
-//    }
-//
-//    fun getQuestMainFx(playerData: PlayerData): InvFrame {
-//        val manager = playerData.manager!!
-//        return InvFX.frame(1, text("${manager.playerEntity.name}의 임무")) {
-//            slot(0, 0) {
-//                item = getHeadIcon(manager.playerEntity)
+class QuestGUI(private val uuid: String) : SquareGUI() {
+    private val returnIcon = getCustomItem(Material.PAPER, text("돌아가기"), 3)
+    private val woodenPane = getCustomItem(Material.PAPER, text(""), 2)
+
+    private val main: Inventory = Bukkit.createInventory(this, 9, text("${User[uuid]?.name}의 임무"))
+    private val list: Inventory = Bukkit.createInventory(this, 6 * 9, text("임무 목록"))
+
+    override fun getInventory(): Inventory {
+        return if(main.viewers.size == 0) list else main
+    }
+
+    private fun getHeadIcon(player: Player) = getSkull(player) { meta ->
+        meta.displayName(text("일일 임무 목록 바로가기").color(Colors.skyblue))
+    }
+
+    private fun getQuestIcon(questDTO: QuestDTO): ItemStack {
+        val color = if(questDTO.appendedQuestCleared) NamedTextColor.GREEN else NamedTextColor.RED
+        return item(Material.BOOK, text("임무: ${questDTO.appendedQuestName}").color(color)) { meta ->
+            if(questDTO.appendedQuestCleared) {
+                meta.lore(
+                    texts(
+                    text(""),
+                    text("수령함 : ${questDTO.questReward} XP").color(NamedTextColor.GREEN)
+                )
+                )
+                meta.addEnchant(Enchantment.MENDING, 1, true)
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+            } else {
+                meta.lore(
+                    texts(
+                    text(""),
+                    text("현황 : ${questDTO.appendedQuestProgress} / ${questDTO.questRequire}").color(Colors.skyblue),
+                    text("임무 리워드 : ${questDTO.questReward} XP").color(Colors.skyblue)
+                )
+                )
+            }
+        }
+    }
+
+    fun openMain() {
+        val player = Bukkit.getPlayer(uuid) ?: return
+        main.clear()
+        setItem(getHeadIcon(player), 0, 0)
 //                onClick {
 //                    val list = QuestDAO().use { dao ->
 //                        dao.selectList(playerData.playerVO.playerId)
@@ -66,9 +77,7 @@ object QuestFx {
 //                        manager.playerEntity.openFrame(it)
 //                    }
 //                }
-//            }
-//            slot(1, 0) {
-//                item = witherIcon
+        setItem(item(Material.WITHER_SKELETON_SKULL, text("주간 임무 목록 바로가기").color(NamedTextColor.GOLD)), 1, 0)
 //                onClick {
 //                    val list = QuestDAO().use { dao ->
 //                        dao.selectList(playerData.playerVO.playerId)
@@ -78,27 +87,25 @@ object QuestFx {
 //                        manager.playerEntity.openFrame(it)
 //                    }
 //                }
+        setItem(item(Material.CREEPER_HEAD, text("일일 특별 임무 목록 바로가기").color(Colors.skyblue)), 2, 0)
+//        onClick {
+//            val list = QuestDAO().use { dao ->
+//                dao.selectList(playerData.playerVO.playerId)
+//                    ?.filter { it.questType == "limit" } ?: return@onClick
 //            }
-//            slot(2, 0) {
-//                item = creeperIcon
-//                onClick {
-//                    val list = QuestDAO().use { dao ->
-//                        dao.selectList(playerData.playerVO.playerId)
-//                            ?.filter { it.questType == "limit" } ?: return@onClick
-//                    }
-//                    getQuestListFx(playerData, text("일일 특별 임무"), list).let {
-//                        manager.playerEntity.openFrame(it)
-//                    }
-//                }
+//            getQuestListFx(playerData, text("일일 특별 임무"), list).let {
+//                manager.playerEntity.openFrame(it)
 //            }
 //        }
-//    }
-//
-//    private fun getQuestListFx(playerData: PlayerData, name: Component, questList: List<QuestDTO>): InvFrame {
+    }
+
+    private fun openList() {
 //        val cleared = questList.filter(QuestDTO::appendedQuestCleared)
 //        val unCleared = questList.filterNot(QuestDTO::appendedQuestCleared)
 //
-//        return InvFX.frame(6, name) {
+//        for (i in 0..17) {
+//
+//        }
 //            list(0, 0, 8, 1, true, { cleared }) {
 //                transform(QuestFx::getQuestIcon)
 //            }
@@ -157,5 +164,23 @@ object QuestFx {
 //                }
 //            }
 //        }
-//    }
+    }
+
+    override fun open() {
+        openMain()
+    }
+
+    override fun onEvent(event: InventoryEvent, type: EventType) {
+        when(type) {
+            EventType.CLICK -> {
+
+            }
+            EventType.CLOSE -> {
+
+            }
+            else -> {
+
+            }
+        }
+    }
 }
