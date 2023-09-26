@@ -1,4 +1,4 @@
-package com.github.zinc.front.event
+package com.github.zinc.lib.event
 
 import org.bukkit.entity.Player
 import org.bukkit.event.Event

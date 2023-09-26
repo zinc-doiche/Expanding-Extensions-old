@@ -1,13 +1,10 @@
 package com.github.zinc.front.listener
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
-import com.github.zinc.core.equipment.STATUS_KEY
-import com.github.zinc.front.event.EquipmentUpdateEvent
-import com.github.zinc.front.event.PlayerEquipEvent
+import com.github.zinc.lib.event.EquipmentUpdateEvent
+import com.github.zinc.lib.event.PlayerEquipEvent
 import com.github.zinc.util.PassedBy
-import com.github.zinc.util.*
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.entity.Trident
 import org.bukkit.event.EventHandler

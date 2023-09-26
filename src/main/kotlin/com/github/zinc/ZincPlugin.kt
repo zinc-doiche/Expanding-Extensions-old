@@ -5,40 +5,40 @@ import com.github.zinc.command.QuestCommand
 import com.github.zinc.command.TestCommand
 import com.github.zinc.core.recipe.Recipes
 import com.github.zinc.front.listener.*
+import com.github.zinc.module.user.UserModule
 import com.github.zinc.mongodb.MongoDB
+import io.github.monun.heartbeat.coroutines.HeartbeatScope
+import kotlinx.coroutines.*
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
+import kotlin.coroutines.CoroutineContext
 
 class ZincPlugin: JavaPlugin() {
-
-    private val runSaving = {
-//        if(PlayerContainer.container.isNotEmpty()) {
-//            info("saving...")
-//            PlayerDAO().use { PlayerContainer.container.values.map(PlayerData::playerVO).forEach(it::update) }
-//        }
-    }
 
     override fun onEnable() {
         plugin = this
         MongoDB.register()
+        UserModule().run {
+            registerCommands()
+            registerListeners()
+        }
         //QuestManager.registerAllQuestList()
-        registerAll(
-            ServerListener(),
-            PlayerExpListener(),
-            PlayerListener(),
-            QuestListener(),
-            PlayerToolListener(),
-            PlayerWorldListener()
-        )
-        executors(
-            "status" to StatusCommand(),
-            "test" to TestCommand(),
-            "quest" to QuestCommand()
-        )
-        ServerListener.add("updateAll", runSaving)
+//        registerAll(
+//            ServerListener(),
+//            PlayerExpListener(),
+//            PlayerListener(),
+//            QuestListener(),
+//            PlayerToolListener(),
+//            PlayerWorldListener()
+//        )
+//        executors(
+//            "status" to StatusCommand(),
+//            "test" to TestCommand(),
+//            "quest" to QuestCommand()
+//        )
 //        QuestDAO().use(QuestDAO::questTimer)
-        Recipes.registerAll()
+//        Recipes.registerAll()
     }
 
     override fun onDisable() {

@@ -32,11 +32,4 @@ class GUIListener: Listener {
             (event.inventory.holder as GUI).onEvent(event, EventType.OPEN)
         }
     }
-
-    @EventHandler
-    fun onOther(event: InventoryClickEvent) {
-        if(event.inventory.holder is GUI) {
-            (event.inventory.holder as GUI).onEvent(event, EventType.OTHER)
-        }
-    }
 }

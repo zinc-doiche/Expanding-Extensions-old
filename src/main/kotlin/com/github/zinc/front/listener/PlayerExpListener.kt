@@ -1,9 +1,8 @@
 package com.github.zinc.front.listener
 
-import com.github.zinc.front.event.PlayerGetExpEvent
-import com.github.zinc.front.event.QuestClearEvent
+import com.github.zinc.lib.event.PlayerGetExpEvent
+import com.github.zinc.lib.event.QuestClearEvent
 import com.github.zinc.util.PassedBy
-import com.github.zinc.util.Sounds
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 

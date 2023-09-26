@@ -5,19 +5,24 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.core.recipe.DynamicRecipe
 import com.github.zinc.core.recipe.Recipes
-import com.github.zinc.front.event.EquipmentUpdateEvent
-import com.github.zinc.front.event.ItemChangeEnchantEvent
-import com.github.zinc.front.event.PlayerEquipEvent
-import com.github.zinc.front.event.QuestClearEvent
+import com.github.zinc.lib.event.EquipmentUpdateEvent
+import com.github.zinc.lib.event.ItemChangeEnchantEvent
+import com.github.zinc.lib.event.PlayerEquipEvent
+import com.github.zinc.lib.event.QuestClearEvent
 import com.github.zinc.module.user.`object`.User
 import com.github.zinc.mongodb.MongoDB
+import com.github.zinc.mongodb.findOne
+import com.github.zinc.mongodb.toDocument
+import com.github.zinc.mongodb.toObject
 import com.github.zinc.plugin
 import com.github.zinc.util.*
 import com.github.zinc.util.AIR
 import com.github.zinc.util.hasPersistent
 import com.github.zinc.util.isNull
 import com.mongodb.client.model.Filters
+import io.github.monun.heartbeat.coroutines.HeartbeatScope
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
+import kotlinx.coroutines.async
 import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -34,16 +39,12 @@ class UserListener: Listener {
         try {
             val collection = MongoDB["user"]
             val uuid = event.uniqueId.toString()
-            val user: User = collection
-                .find(Filters.eq("uuid", uuid))
-                .first()
-                ?.toObject(User::class)
-                ?: User(uuid).apply {
-                    collection.insertOne(toDocument(this))
-                }
+            val user: User = collection.findOne("uuid", uuid)?.toObject(User::class) ?: User(uuid).apply {
+                collection.insertOne(toDocument(this@apply))
+            }
             User[uuid] = user
         } catch (e: Exception) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("로그인에 실패하였습니다. 관리자에게 문의해주세요."))
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("정보를 불러오는 데에 실패했어요.."))
             plugin.slF4JLogger.error("Failed to login: ${event.playerProfile.name}", e)
         }
 
@@ -58,10 +59,16 @@ class UserListener: Listener {
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
-        User[event.player.uniqueId.toString()]?.let { user ->
-            MongoDB["user"].updateOne(Filters.eq("uuid", user.uuid), toDocument(user))
-        } ?: plugin.slF4JLogger.warn("Failed to save user data: ${event.player.name}")
-
+        HeartbeatScope().async {
+            try {
+                User[event.player.uniqueId.toString()]?.let { user ->
+                    MongoDB["user"].updateOne(Filters.eq("uuid", user.uuid), toDocument(user))
+                    User.remove(user.uuid)
+                } ?: throw NullPointerException("User is null")
+            } catch (e: Exception) {
+                plugin.slF4JLogger.error("Failed to save user data: ${event.player.name}", e)
+            }
+        }
 //        QuestManager.clearMap.remove(e.player.name)
     }
 

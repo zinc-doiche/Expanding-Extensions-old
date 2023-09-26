@@ -5,7 +5,10 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.core.equipment.*
 import com.github.zinc.core.recipe.DynamicRecipe
 import com.github.zinc.core.recipe.Recipes
-import com.github.zinc.front.event.*
+import com.github.zinc.lib.event.EquipmentUpdateEvent
+import com.github.zinc.lib.event.ItemChangeEnchantEvent
+import com.github.zinc.lib.event.PlayerEquipEvent
+import com.github.zinc.lib.event.QuestClearEvent
 import com.github.zinc.util.ChainEventCall
 import com.github.zinc.util.Interaction
 import com.github.zinc.util.*
