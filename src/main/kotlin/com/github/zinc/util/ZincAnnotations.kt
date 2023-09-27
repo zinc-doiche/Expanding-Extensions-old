@@ -10,3 +10,6 @@ annotation class ChainEventCall(vararg val calls: KClass<*>)
 @Retention(AnnotationRetention.SOURCE)
 annotation class PassedBy(val listener: KClass<*>, val triggered: KClass<*>)
 
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.SOURCE)
+annotation class Asynchronous

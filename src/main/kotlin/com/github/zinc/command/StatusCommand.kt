@@ -1,9 +1,7 @@
 package com.github.zinc.command
 
 import com.github.zinc.core.player.PlayerData
-import com.github.zinc.core.player.StatusType
-import com.github.zinc.front.ui.StatusFx
-import com.github.zinc.util.Sounds
+import com.github.zinc.lib.constant.Sounds
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
@@ -39,12 +37,12 @@ class StatusCommand: TabExecutor {
             1 -> {
                 when(args[0]) {
                     "open" -> {
-                        sender.playSound(Sounds.uiOpen)
+                        sender.playSound(Sounds.UI_OPEN)
 //                        sender.openFrame(StatusFx.getStatusFrame(playerData))
                         return true
                     }
                     "view" -> {
-                        sender.playSound(Sounds.uiOpen)
+                        sender.playSound(Sounds.UI_OPEN)
 //                        sendStatusViewMessage(playerData)
                         return true
                     }

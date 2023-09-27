@@ -1,6 +1,9 @@
 package com.github.zinc.module.user.`object`
 
-import com.github.zinc.lib.event.UserLevelUpEvent
+import com.github.zinc.lib.event.AsyncUserLevelUpEvent
+import org.bukkit.Bukkit
+
+internal const val MAX_LEVEL = 300
 
 class Level(
     @Transient
@@ -10,6 +13,9 @@ class Level(
         private set
     var experience: Long = 0
         private set
+
+    val isMax: Boolean
+        get() = level >= MAX_LEVEL
 
     fun addLevel(addedLevel: Int) {
         level += addedLevel
@@ -21,9 +27,9 @@ class Level(
         while(experience >= requiredExp) {
             level++
             //call event
-            UserLevelUpEvent(uuid).callEvent()
             experience -= requiredExp
             requiredExp = requiredExpForNextLevel(level)
+            Bukkit.getPluginManager().callEvent(AsyncUserLevelUpEvent(uuid))
         }
     }
 

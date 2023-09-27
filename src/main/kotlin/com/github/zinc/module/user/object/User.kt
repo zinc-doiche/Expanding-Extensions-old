@@ -1,5 +1,6 @@
 package com.github.zinc.module.user.`object`
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
@@ -43,5 +44,9 @@ class User(
 
     override fun hashCode(): Int {
         return uuid.hashCode()
+    }
+
+    fun sendMessage(message: Component) {
+        player?.sendMessage(message)
     }
 }

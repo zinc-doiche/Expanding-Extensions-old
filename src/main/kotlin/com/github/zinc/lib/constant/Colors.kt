@@ -1,4 +1,4 @@
-package com.github.zinc.util
+package com.github.zinc.lib.constant
 
 import net.kyori.adventure.text.format.TextColor
 import org.w3c.dom.Text

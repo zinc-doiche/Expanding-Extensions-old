@@ -1,15 +1,9 @@
 package com.github.zinc.front.ui
 
-import com.github.zinc.core.player.PlayerData
-import com.github.zinc.core.player.StatusType
-import com.github.zinc.util.Sounds
 import com.github.zinc.util.getCustomItem
 import com.github.zinc.util.item
 import com.github.zinc.util.text
-import com.github.zinc.util.texts
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
 
 object StatusFx {

@@ -53,7 +53,7 @@ class ZincPlugin: JavaPlugin() {
         executors.forEach { plugin.getCommand(it.first)!!.setExecutor(it.second) }
     }
 }
-
+internal const val NAMESPACE = "zinc"
 internal lateinit var plugin: JavaPlugin
 internal fun info(msg: Any) { plugin.logger.info(msg.toString()) }
 internal fun warn(msg: Any) { plugin.logger.warning(msg.toString()) }

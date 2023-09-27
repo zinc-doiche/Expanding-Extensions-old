@@ -34,5 +34,5 @@ object MongoDB {
         database = client.getDatabase(databaseName)
     }
 
-    operator fun get(name: String): MongoCollection<Document> = database.getCollection(name)
+    operator fun get(collectionName: String): MongoCollection<Document> = database.getCollection(collectionName)
 }

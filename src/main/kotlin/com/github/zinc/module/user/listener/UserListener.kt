@@ -5,10 +5,8 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.core.recipe.DynamicRecipe
 import com.github.zinc.core.recipe.Recipes
-import com.github.zinc.lib.event.EquipmentUpdateEvent
-import com.github.zinc.lib.event.ItemChangeEnchantEvent
-import com.github.zinc.lib.event.PlayerEquipEvent
-import com.github.zinc.lib.event.QuestClearEvent
+import com.github.zinc.lib.constant.Sounds
+import com.github.zinc.lib.event.*
 import com.github.zinc.module.user.`object`.User
 import com.github.zinc.mongodb.MongoDB
 import com.github.zinc.mongodb.findOne
@@ -23,6 +21,12 @@ import com.mongodb.client.model.Filters
 import io.github.monun.heartbeat.coroutines.HeartbeatScope
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import kotlinx.coroutines.async
+import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.title.Title
 import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -32,6 +36,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareSmithingEvent
 import org.bukkit.event.player.*
+import java.time.Duration
 
 class UserListener: Listener {
     @EventHandler
@@ -59,17 +64,36 @@ class UserListener: Listener {
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
+        val uuid = event.player.uniqueId.toString()
         HeartbeatScope().async {
             try {
-                User[event.player.uniqueId.toString()]?.let { user ->
-                    MongoDB["user"].updateOne(Filters.eq("uuid", user.uuid), toDocument(user))
-                    User.remove(user.uuid)
-                } ?: throw NullPointerException("User is null")
+                val user = User[uuid]!!
+                MongoDB["user"].updateOne(Filters.eq("uuid", uuid), toDocument(user))
+                User.remove(uuid)
             } catch (e: Exception) {
                 plugin.slF4JLogger.error("Failed to save user data: ${event.player.name}", e)
             }
         }
 //        QuestManager.clearMap.remove(e.player.name)
+    }
+
+    @EventHandler
+    fun onUserLevelUp(event: AsyncUserLevelUpEvent) {
+        val user = User[event.uuid] ?: return
+        val player = user.player ?: return
+        user.status.remains++
+        player.sendMessage(text("레벨 업!").decoration(TextDecoration.BOLD, true)
+                .append(text(" (잔여 스텟 +1)", NamedTextColor.GRAY, TextDecoration.ITALIC)))
+
+        if(user.level.level % 50 == 0) {
+            player.playSound(Sounds.CHALLENGE_COMPLETED)
+            player.showTitle(Title.title(
+                text(user.level.level, GREEN, TextDecoration.BOLD),
+                empty(),
+                Title.Times.times(Duration.ZERO, Duration.ofSeconds(3), Duration.ofSeconds(2))))
+        } else {
+            player.playSound(Sounds.LEVEL_UP)
+        }
     }
 
     @EventHandler

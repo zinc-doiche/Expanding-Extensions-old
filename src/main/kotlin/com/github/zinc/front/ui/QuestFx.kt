@@ -1,19 +1,15 @@
 package com.github.zinc.front.ui
 
-import com.github.zinc.core.player.PlayerData
 import com.github.zinc.core.quest.QuestDTO
-import com.github.zinc.core.quest.QuestVO
-import com.github.zinc.core.quest.QuestManager
+import com.github.zinc.lib.constant.Colors
 import com.github.zinc.lib.gui.EventType
 import com.github.zinc.lib.gui.SquareGUI
 import com.github.zinc.module.user.`object`.User
-import com.github.zinc.util.*
 import com.github.zinc.util.getCustomItem
 import com.github.zinc.util.getSkull
 import com.github.zinc.util.item
 import com.github.zinc.util.text
-import com.github.zinc.util.texts
-import net.kyori.adventure.text.Component
+import com.github.zinc.util.list
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -23,7 +19,6 @@ import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 
 class QuestGUI(private val uuid: String) : SquareGUI() {
     private val returnIcon = getCustomItem(Material.PAPER, text("돌아가기"), 3)
@@ -45,7 +40,7 @@ class QuestGUI(private val uuid: String) : SquareGUI() {
         return item(Material.BOOK, text("임무: ${questDTO.appendedQuestName}").color(color)) { meta ->
             if(questDTO.appendedQuestCleared) {
                 meta.lore(
-                    texts(
+                    list(
                     text(""),
                     text("수령함 : ${questDTO.questReward} XP").color(NamedTextColor.GREEN)
                 )
@@ -54,7 +49,7 @@ class QuestGUI(private val uuid: String) : SquareGUI() {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
             } else {
                 meta.lore(
-                    texts(
+                    list(
                     text(""),
                     text("현황 : ${questDTO.appendedQuestProgress} / ${questDTO.questRequire}").color(Colors.skyblue),
                     text("임무 리워드 : ${questDTO.questReward} XP").color(Colors.skyblue)

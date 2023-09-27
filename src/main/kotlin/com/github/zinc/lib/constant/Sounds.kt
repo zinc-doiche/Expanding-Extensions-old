@@ -1,37 +1,37 @@
-package com.github.zinc.util
+package com.github.zinc.lib.constant
 
 import net.kyori.adventure.sound.Sound
 
 object Sounds {
-    val uiOpen = Sound.sound()
+    val UI_OPEN = Sound.sound()
         .type(org.bukkit.Sound.UI_TOAST_IN)
         .build()
 
-    val uiClose = Sound.sound()
+    val UI_CLOSE = Sound.sound()
         .type(org.bukkit.Sound.UI_TOAST_OUT)
         .build()
 
-    val challengeCompleted = Sound.sound()
+    val CHALLENGE_COMPLETED = Sound.sound()
         .type(org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE)
         .build()
 
-    val ironGolemDamaged = Sound.sound()
+    val IRON_GOLEM_DAMAGED = Sound.sound()
         .type(org.bukkit.Sound.ENTITY_IRON_GOLEM_DAMAGE)
         .pitch(0F)
         .seed(2L)
         .build()
 
-    val click = Sound.sound()
+    val CLICK = Sound.sound()
         .type(org.bukkit.Sound.UI_BUTTON_CLICK)
         .build()
 
-    val questClear = Sound.sound()
+    val QUEST_CLEAR = Sound.sound()
         .type(org.bukkit.Sound.BLOCK_NOTE_BLOCK_BELL)
         .pitch(1F)
         .seed(64L)
         .build()
 
-     val levelUp = Sound.sound()
+     val LEVEL_UP = Sound.sound()
         .type(org.bukkit.Sound.ENTITY_PLAYER_LEVELUP)
         .pitch(0F)
         .seed(1L)

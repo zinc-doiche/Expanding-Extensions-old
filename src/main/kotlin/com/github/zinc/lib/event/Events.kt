@@ -9,4 +9,4 @@ class QuestClearEvent(val playerData: PlayerData, val enemy: Enemy) : EventAdapt
 class ItemChangeEnchantEvent(val item: ItemStack) : EventAdapter()
 class EquipmentUpdateEvent(val equipment: Equipment) : EventAdapter()
 
-class UserLevelUpEvent(val uuid: String): EventAdapter(true)
+class AsyncUserLevelUpEvent(val uuid: String): EventAdapter(true)

@@ -1,6 +1,6 @@
 package com.github.zinc.core.equipment
 
-import com.github.zinc.util.Colors
+import com.github.zinc.lib.constant.Colors
 import com.github.zinc.util.item
 import com.github.zinc.util.text
 import org.bukkit.Material

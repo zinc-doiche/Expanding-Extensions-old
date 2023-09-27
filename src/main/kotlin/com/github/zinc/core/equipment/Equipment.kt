@@ -2,9 +2,9 @@ package com.github.zinc.core.equipment
 
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.module.user.`object`.Status
-import com.github.zinc.util.Colors
+import com.github.zinc.lib.constant.Colors
 import com.github.zinc.util.text
-import com.github.zinc.util.texts
+import com.github.zinc.util.list
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -16,7 +16,7 @@ interface Equipment {
 
     fun isDeserved(playerData: PlayerData): Boolean
     fun getLore(): MutableList<Component> {
-        return texts(
+        return list(
             text(""),
             text("요구 스테이터스:").color(Colors.green)
         ).apply {
