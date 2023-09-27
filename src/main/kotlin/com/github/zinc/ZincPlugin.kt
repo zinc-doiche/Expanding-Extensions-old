@@ -1,28 +1,22 @@
 package com.github.zinc;
 
-import com.github.zinc.command.StatusCommand
-import com.github.zinc.command.QuestCommand
-import com.github.zinc.command.TestCommand
-import com.github.zinc.core.recipe.Recipes
-import com.github.zinc.front.listener.*
+import com.github.zinc.lib.LibraryModule
+import com.github.zinc.module.item.ItemModule
 import com.github.zinc.module.user.UserModule
 import com.github.zinc.mongodb.MongoDB
-import io.github.monun.heartbeat.coroutines.HeartbeatScope
-import kotlinx.coroutines.*
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
-import kotlin.coroutines.CoroutineContext
 
 class ZincPlugin: JavaPlugin() {
 
     override fun onEnable() {
         plugin = this
         MongoDB.register()
-        UserModule().run {
-            registerCommands()
-            registerListeners()
-        }
+        LibraryModule().register()
+        UserModule().register()
+        ItemModule().register()
+
         //QuestManager.registerAllQuestList()
 //        registerAll(
 //            ServerListener(),
@@ -42,7 +36,7 @@ class ZincPlugin: JavaPlugin() {
     }
 
     override fun onDisable() {
-        ServerListener.execute("updateAll")
+
     }
 
     private fun registerAll(vararg listener: Listener) {

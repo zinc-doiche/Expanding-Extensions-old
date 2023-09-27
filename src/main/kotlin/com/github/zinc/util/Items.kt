@@ -80,10 +80,8 @@ internal fun isNotNull(itemStack: ItemStack?): Boolean {
     return !isNull(itemStack)
 }
 
-
 internal val ItemStack.isFullStack: Boolean
     get() = getMaxStackSize() == amount || getMaxStackSize() == 1
-
 
 internal fun ItemStack.edit(editMeta: (ItemMeta) -> Unit): ItemStack {
     this.editMeta(editMeta)
@@ -144,15 +142,15 @@ internal fun Player.removeSlot(equipmentSlot: EquipmentSlot) {
  *
  * 2. 안되면 뱉음
  */
-internal fun Player.giveItem(itemStack: ItemStack) {
-    val emptySlot = inventory.firstEmpty()
-    if(emptySlot == -1) world.dropItem(location, itemStack)
-    else setItem(emptySlot, itemStack)
-    //sendMessage(itemStack.type.toString())
+internal fun Player.addItem(itemStack: ItemStack) {
+    val exceed = inventory.addItem(itemStack)
+    if(exceed.isNotEmpty()) {
+        world.dropItem(location, exceed[0]!!)
+    }
 }
 
 fun Inventory.isFull(): Boolean {
-    return this.maxStackSize == this.size
+    return fold(false) { isPrevFull, itemStack -> isNotNull(itemStack) && isPrevFull && itemStack.isFullStack }
 }
 
 internal fun ItemStack.toJson(): String? {
@@ -169,7 +167,7 @@ internal fun ItemStack.toJson(): String? {
     return null
 }
 
-internal fun toItemStack(json: String): ItemStack? {
+internal fun toItemStack(json: String?): ItemStack? {
     try {
         ByteArrayInputStream(Base64Coder.decodeLines(json)).use { arrayInputStream ->
             BukkitObjectInputStream(

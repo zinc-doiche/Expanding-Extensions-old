@@ -1,5 +1,7 @@
 package com.github.zinc.module.user.`object`
 
+import com.github.zinc.module.item.`object`.trinket.Trinket
+import com.github.zinc.module.item.`object`.trinket.TrinketSlot
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

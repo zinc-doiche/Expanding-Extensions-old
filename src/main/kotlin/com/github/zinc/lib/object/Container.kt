@@ -1,4 +1,4 @@
-package com.github.zinc.lib
+package com.github.zinc.lib.`object`
 
 import com.github.zinc.lib.brief.BriefItem
 import com.github.zinc.util.isFullStack
@@ -6,6 +6,9 @@ import com.github.zinc.util.isNotNull
 import com.github.zinc.util.toJson
 import org.bukkit.inventory.ItemStack
 
+/**
+ * 크기가 자유로운 가상 인벤토리
+ */
 class Container(val size: Int) {
     private var items: Array<ItemStack?> = arrayOfNulls(size)
 
