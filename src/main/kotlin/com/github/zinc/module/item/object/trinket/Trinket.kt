@@ -14,6 +14,7 @@ interface Trinket {
     val _id: ObjectId
     val name: String
     val slot: TrinketSlot
+
     val item: ItemStack?
         get() {
             val serializedItem = MongoDB["trinket"]
