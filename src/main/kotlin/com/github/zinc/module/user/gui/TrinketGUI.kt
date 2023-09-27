@@ -46,13 +46,24 @@ class TrinketGUI(val uuid: String): SquareGUI() {
                 event as InventoryClickEvent
                 player = event.whoClicked as Player
 
-                if(event.rawSlot < 9) {
-                    event.isCancelled = true
-                    val trinket = event.currentItem ?: return
-                    if(event.cursor.hasPersistent(Trinket.namespace)) {
+                if(event.isShiftClick) {
+                    if(event.rawSlot < 9) {
+                        val trinket = event.currentItem ?: return
+                        if(!trinket.hasPersistent(Trinket.namespace)) {
+                            return
+                        }
 
                     }
-                    if(event.rawSlot != )
+                }
+
+                if (event.rawSlot < 9) {
+                    event.isCancelled = true
+                }
+                if (event.cursor.hasPersistent(Trinket.namespace)) {
+
+                }
+                if (event.rawSlot != 1) {
+
                 }
             }
             EventType.CLOSE -> {

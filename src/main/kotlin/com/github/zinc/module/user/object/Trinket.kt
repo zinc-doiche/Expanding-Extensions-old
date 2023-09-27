@@ -4,7 +4,6 @@ import com.github.zinc.NAMESPACE
 import com.github.zinc.mongodb.MongoDB
 import com.github.zinc.mongodb.findOne
 import com.github.zinc.util.toItemStack
-import io.netty.handler.codec.spdy.SpdyHttpHeaders.Names
 import org.bson.types.ObjectId
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -30,7 +29,10 @@ import org.bukkit.inventory.ItemStack
  * ...
  * }
  */
-class Trinket(val _id: ObjectId) {
+class Trinket(
+    val _id: ObjectId,
+    val name: String
+) {
     companion object {
         val namespace: NamespacedKey = NamespacedKey(NAMESPACE, "trinket")
     }
