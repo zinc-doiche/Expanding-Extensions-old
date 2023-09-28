@@ -8,8 +8,8 @@ import com.github.zinc.module.user.`object`.User
 import com.github.zinc.util.getCustomItem
 import com.github.zinc.util.getSkull
 import com.github.zinc.util.item
-import com.github.zinc.util.text
 import com.github.zinc.util.list
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material

@@ -3,9 +3,9 @@ package com.github.zinc.core.equipment
 import com.github.zinc.core.player.PlayerData
 import com.github.zinc.module.user.`object`.Status
 import com.github.zinc.lib.constant.Colors
-import com.github.zinc.util.text
 import com.github.zinc.util.list
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 

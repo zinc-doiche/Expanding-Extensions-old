@@ -3,8 +3,9 @@ package com.github.zinc.core.recipe
 import com.github.zinc.plugin
 import com.github.zinc.util.getCustomItem
 import com.github.zinc.util.setPersistent
-import com.github.zinc.util.text
 import com.github.zinc.util.list
+import com.github.zinc.util.texts
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.*
@@ -40,10 +41,10 @@ object Recipes {
         }
 
     val statusElement = getCustomItem(Material.PAPER, text("엔더 정수"), 8) {
-        it.lore(list("asd", "dsa"))
+        it.lore(texts("asd", "dsa"))
     }
     val statusFragment = getCustomItem(Material.PAPER, text("엔더 파편"), 9) {
-        it.lore(list("asd", "dsa"))
+        it.lore(texts("asd", "dsa"))
     }
 
     //setIngredient 는 수량을 제외하고 ItemMeta 까지 비교를 해준다.

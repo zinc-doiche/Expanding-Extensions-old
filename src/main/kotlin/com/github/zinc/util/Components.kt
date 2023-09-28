@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration
 
 internal fun list(vararg components: Component): MutableList<Component> = components.toMutableList()
+internal fun texts(vararg texts: String): List<Component> = texts.map(Component::text)
 
 internal fun TextComponent.setHoverText(text: Component)
         = this.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, text))

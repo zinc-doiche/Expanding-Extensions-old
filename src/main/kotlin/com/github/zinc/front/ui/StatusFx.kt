@@ -2,7 +2,7 @@ package com.github.zinc.front.ui
 
 import com.github.zinc.util.getCustomItem
 import com.github.zinc.util.item
-import com.github.zinc.util.text
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 

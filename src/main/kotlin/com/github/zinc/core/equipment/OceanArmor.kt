@@ -2,7 +2,7 @@ package com.github.zinc.core.equipment
 
 import com.github.zinc.lib.constant.Colors
 import com.github.zinc.util.item
-import com.github.zinc.util.text
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack

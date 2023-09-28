@@ -1,7 +1,7 @@
 name: zinc-plugin
-version: '1.0-ALPHA'
+version: '1.0.0'
 main: com.github.zinc.ZincPlugin
-api-version: 1.19
+api-version: 1.20
 libraries: ['io.github.monun:kommand-core:3.1.7']
 commands:
   status:

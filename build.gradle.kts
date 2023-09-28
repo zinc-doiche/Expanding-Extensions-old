@@ -16,11 +16,11 @@ repositories {
 
 dependencies {
     paperweight.paperDevBundle("1.20.1-R0.1-SNAPSHOT")
-    implementation("io.github.monun:kommand-api:3.1.7")
     implementation("org.mongodb:mongodb-driver-sync:4.9.0")
+    compileOnly("com.google.code.gson:gson:2.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("io.github.monun:heartbeat-coroutines:0.0.5")
-    compileOnly("com.google.code.gson:gson:2.10.1")
+    implementation("io.github.monun:kommand-api:3.1.7")
 }
 
 //의존성 탐색하도록 설정(duplicatesStrategy 설정시 필요)
@@ -31,8 +31,12 @@ configurations.implementation.configure {
 tasks {
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        //destinationDirectory = file(env.JAR_DIR.value)
-        from(configurations.implementation.get().map { if (it.isDirectory) it else zipTree(it) })
+        from(configurations.implementation.get()
+            .filter{
+//                println(it.name)
+                !it.name.contains("kommand") && !it.name.contains("kotlin-")
+            }
+            .map { if (it.isDirectory) it else zipTree(it) })
     }
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(17))
@@ -46,18 +50,6 @@ tasks {
     }
     assemble {
         dependsOn(reobfJar)
-    }
-    processResources {
-        filteringCharset = "UTF-8" // We want UTF-8 for everything
-        val props = mapOf(
-            "name" to project.name,
-            "version" to project.version,
-            "apiVersion" to "1.20"
-        )
-        inputs.properties(props)
-        filesMatching("plugin.yml") {
-            expand(props)
-        }
     }
 }
 

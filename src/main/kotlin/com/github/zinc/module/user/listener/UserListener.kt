@@ -68,7 +68,7 @@ class UserListener: Listener {
         HeartbeatScope().async {
             try {
                 val user = User[uuid]!!
-                MongoDB["user"].updateOne(Filters.eq("uuid", uuid), toDocument(user))
+                MongoDB["user"].replaceOne(Filters.eq("uuid", uuid), toDocument(user))
                 User.remove(uuid)
             } catch (e: Exception) {
                 plugin.slF4JLogger.error("Failed to save user data: ${event.player.name}", e)
