@@ -16,20 +16,17 @@ interface Trinket {
     val slot: TrinketSlot
 
     val item: ItemStack?
-        get() {
-            val serializedItem = MongoDB["trinket"]
+        get() = toItemStack(MongoDB["trinket"]
                 .findOne("_id", _id)
-                ?.getString("item")
-            return toItemStack(serializedItem)
-        }
+                ?.getString("item"))
 
     companion object {
         val namespace: NamespacedKey = NamespacedKey(NAMESPACE, "trinket")
-        private val trinkets: Map<String, Trinket> = HashMap()
+        private val trinkets: MutableMap<String, Trinket> = HashMap()
 
         operator fun get(name: String): Trinket? = trinkets[name]
         operator fun set(name: String, trinket: Trinket) {
-            (trinkets as HashMap)[name] = trinket
+            trinkets[name] = trinket
         }
         operator fun contains(name: String): Boolean = trinkets.containsKey(name)
     }

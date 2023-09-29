@@ -1,18 +1,26 @@
 package com.github.zinc.module.item.`object`
 
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 
 interface Passive {
     fun on(player: Player)
     fun off(player: Player)
 }
 
-interface Active {
-    fun active()
+/**
+ * 타격 시 판정
+ */
+interface OnHit: Passive {
+    fun onCloseHit(player: Player, entity: LivingEntity, event: EntityDamageByEntityEvent)
+    fun onLongHit(player: Player, entity: LivingEntity, event: EntityDamageByEntityEvent)
+}
 
-    companion object {
-        private val onCloseHit: Set<() -> Unit> = HashSet()
-        private val onLongHit: Set<() -> Unit> = HashSet()
-        private val onHitDetection: Set<() -> Unit> = HashSet()
-    }
+/**
+ * 피격 시 판정
+ */
+interface OnHitDetection: Passive {
+    fun onCloseHitDetection(damager: LivingEntity, player: Player, event: EntityDamageByEntityEvent)
+    fun onLongHitDetection(damager: LivingEntity, player: Player, event: EntityDamageByEntityEvent)
 }

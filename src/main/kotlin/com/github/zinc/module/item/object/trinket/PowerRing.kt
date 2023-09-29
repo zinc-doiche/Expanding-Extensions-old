@@ -13,7 +13,7 @@ class PowerRing(
     override val _id: ObjectId,
     override val name: String,
     override val slot: TrinketSlot
-) : Trinket, Passive {
+): Trinket, Passive {
     private val modifier: AttributeModifier
         get() = AttributeModifier("power_ring", 0.1, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
 

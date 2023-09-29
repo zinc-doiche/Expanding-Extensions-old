@@ -12,27 +12,7 @@ import io.github.monun.kommand.kommand
 
 class UserModule: Module {
     override fun registerCommands() {
-        plugin.kommand {
-            register("trinket", "장신구", "트링켓") {
-                then("open") {
-                    executes {
-                        TrinketGUI(player.uniqueId.toString()).open()
-                    }
-                }
-                then("get", "name" to string()) {
-                    requires { player.isOp }
-                    executes {
-                        val name: String by it
-                        val trinket = Trinket[name] ?: run {
-                            player.warn("존재하지 않는 장신구입니다.")
-                            return@executes
-                        }
-                        val item = trinket.item ?: return@executes
-                        player.addItem(item)
-                    }
-                }
-            }
-        }
+
     }
 
     override fun registerListeners() {

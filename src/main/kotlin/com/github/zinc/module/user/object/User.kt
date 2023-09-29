@@ -52,3 +52,6 @@ class User(
         player?.sendMessage(message)
     }
 }
+
+internal val Player.user: User?
+    get() = User[uniqueId.toString()]
