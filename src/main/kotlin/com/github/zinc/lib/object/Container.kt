@@ -1,6 +1,5 @@
 package com.github.zinc.lib.`object`
 
-import com.github.zinc.lib.brief.BriefItem
 import com.github.zinc.util.isFullStack
 import com.github.zinc.util.isNotNull
 import com.github.zinc.util.toJson

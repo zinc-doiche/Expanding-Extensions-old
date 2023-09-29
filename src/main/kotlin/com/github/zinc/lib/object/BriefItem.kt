@@ -1,4 +1,4 @@
-package com.github.zinc.lib.brief
+package com.github.zinc.lib.`object`
 
 import com.github.zinc.util.edit
 import net.kyori.adventure.text.Component
