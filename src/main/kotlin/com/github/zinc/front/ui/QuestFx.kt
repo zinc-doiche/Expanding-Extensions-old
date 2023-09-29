@@ -5,9 +5,8 @@ import com.github.zinc.lib.constant.Colors
 import com.github.zinc.lib.gui.EventType
 import com.github.zinc.lib.gui.SquareGUI
 import com.github.zinc.module.user.`object`.User
-import com.github.zinc.util.getCustomItem
-import com.github.zinc.util.getSkull
 import com.github.zinc.util.item
+import com.github.zinc.util.getSkull
 import com.github.zinc.util.list
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -21,8 +20,8 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 class QuestGUI(private val uuid: String) : SquareGUI() {
-    private val returnIcon = getCustomItem(Material.PAPER, text("돌아가기"), 3)
-    private val woodenPane = getCustomItem(Material.PAPER, text(""), 2)
+    private val returnIcon = item(Material.PAPER, text("돌아가기"), customModelNumber = 3)
+    private val woodenPane = item(Material.PAPER, text(""), customModelNumber = 2)
 
     private val main: Inventory = Bukkit.createInventory(this, 9, text("${User[uuid]?.name}의 임무"))
     private val list: Inventory = Bukkit.createInventory(this, 6 * 9, text("임무 목록"))

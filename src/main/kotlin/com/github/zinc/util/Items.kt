@@ -50,31 +50,6 @@ internal fun getSkull(player: Player, editMeta: (ItemMeta) -> Unit): ItemStack =
     editMeta(meta)
 }
 
-internal fun getCustomItem(
-    material: Material,
-    name: Component,
-    customModelNumber: Int,
-    init: ((ItemMeta) -> Unit)? = null,
-): ItemStack {
-    return ItemStack(material).apply {
-        editMeta { meta ->
-            meta.displayName(name)
-            meta.setCustomModelData(customModelNumber)
-            init?.invoke(meta) ?: return@editMeta
-        }
-    }
-}
-
-internal fun item(
-    material: Material,
-    displayName: Component,
-    customModelNumber: Int,
-    lore: List<Component>,
-    editMeta: (ItemMeta) -> Unit,
-): ItemStack {
-    return ItemStack(material)
-}
-
 internal fun isNull(itemStack: ItemStack?): Boolean {
     val type = itemStack?.type ?: return true // null
     return type.isAir // air
@@ -123,7 +98,8 @@ internal fun ItemStack.hasPersistent(key: NamespacedKey)
 internal fun ItemMeta.hasPersistent(key: NamespacedKey)
         = this.persistentDataContainer.has(key)
 
-internal val AIR: ItemStack = ItemStack(Material.AIR)
+internal val AIR: ItemStack
+    get() = ItemStack(Material.AIR)
 
 internal fun Player.setItem(slot: Int, itemStack: ItemStack) {
     inventory.setItem(slot, itemStack)
@@ -131,14 +107,6 @@ internal fun Player.setItem(slot: Int, itemStack: ItemStack) {
 
 internal fun Player.setItem(equipmentSlot: EquipmentSlot, itemStack: ItemStack) {
     inventory.setItem(equipmentSlot, itemStack)
-}
-
-internal fun Player.removeSlot(slot: Int) {
-    inventory.setItem(slot, AIR)
-}
-
-internal fun Player.removeSlot(equipmentSlot: EquipmentSlot) {
-    inventory.setItem(equipmentSlot, AIR)
 }
 
 /**

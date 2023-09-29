@@ -1,6 +1,6 @@
 package com.github.zinc.front.ui
 
-import com.github.zinc.util.getCustomItem
+import com.github.zinc.util.item
 import com.github.zinc.util.item
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
 
 object StatusFx {
     private val clear = ItemStack(Material.AIR)
-    private val upIcon: ItemStack = getCustomItem(Material.PAPER, text("UP"), 1)
+    private val upIcon: ItemStack = item(Material.PAPER, text("UP"), customModelNumber = 1)
 
     private val statusIcons: List<ItemStack> = listOf(
         item(Material.RED_STAINED_GLASS_PANE, text("STRENGTH")),

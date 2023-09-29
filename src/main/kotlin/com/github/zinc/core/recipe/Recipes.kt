@@ -1,7 +1,7 @@
 package com.github.zinc.core.recipe
 
 import com.github.zinc.plugin
-import com.github.zinc.util.getCustomItem
+import com.github.zinc.util.item
 import com.github.zinc.util.setPersistent
 import com.github.zinc.util.list
 import com.github.zinc.util.texts
@@ -24,7 +24,7 @@ object Recipes {
 //    )
 
     private val starKey = NamespacedKey.minecraft("nether_star_fragment")
-    val netherStarFragment = getCustomItem(Material.PAPER, text("네더의 별 파편"), 7) {
+    val netherStarFragment = item(Material.PAPER, text("네더의 별 파편"), amount = 7) {
         it.setPersistent(starKey, starKey.namespace)
     }
     private val netherStarFragmentRecipe =
@@ -40,10 +40,10 @@ object Recipes {
             this.category = CraftingBookCategory.MISC
         }
 
-    val statusElement = getCustomItem(Material.PAPER, text("엔더 정수"), 8) {
+    val statusElement = item(Material.PAPER, text("엔더 정수"), customModelNumber = 8) {
         it.lore(texts("asd", "dsa"))
     }
-    val statusFragment = getCustomItem(Material.PAPER, text("엔더 파편"), 9) {
+    val statusFragment = item(Material.PAPER, text("엔더 파편"), customModelNumber = 9) {
         it.lore(texts("asd", "dsa"))
     }
 
