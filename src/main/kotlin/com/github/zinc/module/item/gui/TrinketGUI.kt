@@ -1,4 +1,4 @@
-package com.github.zinc.module.user.gui
+package com.github.zinc.module.item.gui
 
 import com.github.zinc.lib.gui.EventType
 import com.github.zinc.lib.gui.SquareGUI
@@ -28,13 +28,14 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
     override fun open() {
         HeartbeatScope().async {
             val user = User[uuid]?: return@async
-            MongoDB["trinket"]
-                .find(Filters.`in`("_id", user.trinkets.map { it.value._id }))
-                .forEach { document ->
-                    val trinket = toItemStack(document.getString("item")) ?: ItemStack(Material.GRAY_STAINED_GLASS_PANE)
-                    val slot = TrinketSlot.valueOf(document.getString("slot"))
-                    setItem(trinket, slot.ordinal)
+
+            TrinketSlot.entries.forEach { slot ->
+                with(user.trinkets) {
+                    val item = if(contains(slot)) get(slot)?.getItem() else ItemStack(Material.GRAY_STAINED_GLASS_PANE)
+                    setItem(item, slot.ordinal)
                 }
+            }
+
             user.player?.openInventory(inventory)
         }
     }

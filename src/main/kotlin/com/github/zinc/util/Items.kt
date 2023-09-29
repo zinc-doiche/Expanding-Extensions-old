@@ -24,12 +24,16 @@ internal fun item(material: Material, block: (ItemMeta) -> Unit): ItemStack {
 internal fun item(
     material: Material,
     name: Component,
+    lore: List<Component>? = null,
     amount: Int = 1,
     customModelNumber: Int? = null,
     block: ((ItemMeta) -> Unit)? = null,
 ): ItemStack {
     return ItemStack(material, amount).edit { meta ->
         meta.displayName(name)
+        if(lore != null) {
+            meta.lore(lore)
+        }
         if(customModelNumber != null) {
             meta.setCustomModelData(customModelNumber)
         }
