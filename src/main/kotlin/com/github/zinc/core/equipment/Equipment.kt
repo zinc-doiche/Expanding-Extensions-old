@@ -67,20 +67,20 @@ val BALANCE: NamespacedKey = NamespacedKey.minecraft("bal")
 val CONCENTRATION: NamespacedKey = NamespacedKey.minecraft("con")
 val LEVEL_CONSTRAINT_KEY: NamespacedKey = NamespacedKey.minecraft("level_constraint")
 
-internal fun ItemStack.isEquipment(): Boolean {
-    return this.type.name.let {
-        it.contains(Status.HELMET)     || it.contains(Status.CHESTPLATE) ||
-        it.contains(Status.LEGGINGS)   || it.contains(Status.BOOTS)
-    }
-}
-
-internal fun ItemStack.isTool(): Boolean {
-    return this.isEquipment()   || this.type.name.let {
-        it.contains(Status.PICKAXE)    || it.contains(Status.AXE)         || it.contains(Status.SWORD)       ||
-        it.contains(Status.BOW)        || it.contains(Status.CROSSBOW)    || it.contains(Status.TRIDENT)     ||
-        it.contains(Status.SHIELD)     || it.contains(Status.FISHING_ROD)
-    }
-}
+//internal fun ItemStack.isEquipment(): Boolean {
+//    return this.type.name.let {
+//        it.contains(Status.HELMET)     || it.contains(Status.CHESTPLATE) ||
+//        it.contains(Status.LEGGINGS)   || it.contains(Status.BOOTS)
+//    }
+//}
+//
+//internal fun ItemStack.isTool(): Boolean {
+//    return this.isEquipment()   || this.type.name.let {
+//        it.contains(Status.PICKAXE)    || it.contains(Status.AXE)         || it.contains(Status.SWORD)       ||
+//        it.contains(Status.BOW)        || it.contains(Status.CROSSBOW)    || it.contains(Status.TRIDENT)     ||
+//        it.contains(Status.SHIELD)     || it.contains(Status.FISHING_ROD)
+//    }
+//}
 
 
 

@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin;
 
-class ZincPlugin: JavaPlugin() {
+class ExpandingExtensionPlugin: JavaPlugin() {
 
     override fun onEnable() {
         plugin = this

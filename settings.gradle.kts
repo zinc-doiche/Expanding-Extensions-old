@@ -1,2 +1,2 @@
 
-rootProject.name = "zinc"
+rootProject.name = "ExpandingExtension"

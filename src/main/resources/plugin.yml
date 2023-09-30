@@ -1,4 +1,4 @@
-name: zinc-plugin
+name: Expanding-Extension
 version: '1.0.0'
 main: com.github.zinc.ZincPlugin
 api-version: 1.20

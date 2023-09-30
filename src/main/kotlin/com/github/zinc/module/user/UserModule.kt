@@ -58,6 +58,17 @@ class UserModule: Module {
                     }
                 }
             }
+
+            register("exp", "경험치") {
+                then("add", "amount" to long()) {
+                    requires { isOp }
+                    executes {
+                        val amount: Long by it
+                        val user = User[player] ?: return@executes
+                        user.level.addExperience(amount)
+                    }
+                }
+            }
         }
     }
 
