@@ -1,3 +1,3 @@
-# zinc
+# Expanding Extensions
 
 Vanilla+ Minecraft RPG Plugin.
