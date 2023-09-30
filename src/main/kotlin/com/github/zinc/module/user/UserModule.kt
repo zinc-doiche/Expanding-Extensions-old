@@ -1,43 +1,46 @@
 package com.github.zinc.module.user
 
 import com.github.zinc.module.Module
+import com.github.zinc.module.item.`object`.trinket.TrinketSlot
 import com.github.zinc.module.user.gui.StatusGUI
 import com.github.zinc.module.user.listener.UserListener
 import com.github.zinc.module.user.`object`.StatusType
 import com.github.zinc.module.user.`object`.User
-import com.github.zinc.module.user.`object`.user
 import com.github.zinc.plugin
 import com.github.zinc.util.warn
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import java.util.*
 
 class UserModule: Module {
     override fun registerCommands() {
         plugin.kommand {
-            register("status") {
+            register("status", "스테이터스", "스탯") {
                 executes { StatusGUI(player.uniqueId.toString()).open() }
-                then("add", "status" to dynamicByEnum(EnumSet.allOf(StatusType::class.java)), "amount" to int()) {
+
+                then("add", "status" to suggestion(TrinketSlot.entries), "amount" to int()) {
                     requires { isOp }
                     executes {
-                        val status: StatusType by it
+                        val status: String by it
+                        val statusType = StatusType.valueOf(status)
                         val amount: Int by it
                         val user = User[player] ?: return@executes
                         with(user.status) {
-                            if(checkAddition(status, amount)) {
-                                val afterAddition: Int = addStatus(status, amount)
+                            if(checkAddition(statusType, amount)) {
+                                val afterAddition: Int = addStatus(statusType, amount)
                                 applyStatus(player)
-                                player.sendMessage("현재 ${status.korName}: $afterAddition")
+                                player.sendMessage("현재 ${statusType.korName}: $afterAddition")
                             } else {
-                                player.warn("0 이하로 줄일 수 없습니다. (현재 ${status.korName}: ${get(status)})")
+                                player.warn("0 이하로 줄일 수 없습니다. (현재 ${statusType.korName}: ${get(statusType)})")
                             }
                         }
                     }
                 }
                 then("info") {
                     executes {
+                        player.sendMessage(User.users.toString())
+                        player.sendMessage(player.uniqueId.toString())
+
                         val user = User[player] ?: return@executes
                         val message = text("${player.name}의 스테이터스 :")
                             .appendNewline()
@@ -58,7 +61,9 @@ class UserModule: Module {
                     }
                 }
             }
+        }
 
+        plugin.kommand {
             register("exp", "경험치") {
                 then("add", "amount" to long()) {
                     requires { isOp }

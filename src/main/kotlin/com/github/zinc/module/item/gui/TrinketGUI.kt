@@ -34,7 +34,9 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
                 val item = if(user.trinkets.contains(slot)) {
                     user.trinkets[slot]?.getItem()
                 } else {
-                    item(Material.GRAY_STAINED_GLASS_PANE, text("${slot.korName} 슬롯", NamedTextColor.GRAY))
+                    item(Material.GRAY_STAINED_GLASS_PANE, text("${slot.korName} 슬롯")
+                        .color(NamedTextColor.GRAY)
+                        .noItalic())
                 }
                 setItem(item, slot.ordinal)
             }

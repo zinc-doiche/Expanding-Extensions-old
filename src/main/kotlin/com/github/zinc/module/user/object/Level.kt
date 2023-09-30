@@ -45,4 +45,8 @@ class Level(
         //111100
         else -> -1
     }.toLong()
+
+    override fun toString(): String {
+        return "Level(uuid='$uuid', level=$level, experience=$experience)"
+    }
 }

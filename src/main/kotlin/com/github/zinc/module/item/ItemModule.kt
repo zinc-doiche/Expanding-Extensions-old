@@ -17,8 +17,7 @@ class ItemModule: Module {
             register("trinket", "장신구", "트링켓") {
                 //open
                 executes { TrinketGUI(player.uniqueId.toString()).open() }
-
-                then("get", "name" to string().apply { suggests { Trinket.names } }) {
+                then("get", "name" to suggestion(Trinket.names)) {
                     requires { isOp }
                     executes {
                         val name: String by it

@@ -29,7 +29,7 @@ class User(
 
     companion object {
         @Transient
-        private val users: HashMap<String, User> = HashMap()
+        val users: HashMap<String, User> = HashMap()
 
         operator fun get(uuid: String): User? = users[uuid]
         operator fun get(player: Player): User? = users[player.uniqueId.toString()]

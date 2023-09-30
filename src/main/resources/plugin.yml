@@ -3,12 +3,5 @@ version: '1.0.0'
 main: com.github.zinc.ExpandingExtensionPlugin
 api-version: 1.20
 libraries: ['io.github.monun:kommand-core:3.1.7']
-commands:
-  status:
-    aliases: '스테이터스'
-    description: show your status
-  test:
-    description: test
-  quest:
-    description: open quest list
+
 

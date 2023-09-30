@@ -8,6 +8,13 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration
 import java.text.DecimalFormat
 
+internal fun plain(content: String): Component = Component.text(content)
+    .color(NamedTextColor.WHITE)
+    .decoration(TextDecoration.ITALIC, false)
+
+internal fun Component.noItalic(): Component = this.decoration(TextDecoration.ITALIC, false)
+internal fun Component.bold(): Component = this.decoration(TextDecoration.BOLD, true)
+
 internal fun list(vararg components: Component): MutableList<Component> = components.toMutableList()
 internal fun texts(vararg texts: String): List<Component> = texts.map(Component::text)
 
