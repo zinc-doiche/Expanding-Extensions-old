@@ -5,8 +5,11 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.core.recipe.DynamicRecipe
 import com.github.zinc.core.recipe.Recipes
+import com.github.zinc.info
 import com.github.zinc.lib.constant.Sounds
 import com.github.zinc.lib.event.*
+import com.github.zinc.module.item.`object`.trinket.Trinket
+import com.github.zinc.module.item.`object`.trinket.TrinketSlot
 import com.github.zinc.module.user.`object`.User
 import com.github.zinc.mongodb.MongoDB
 import com.github.zinc.mongodb.findOne
@@ -27,6 +30,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
+import org.bson.Document
 import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -39,12 +43,33 @@ import org.bukkit.event.player.*
 import java.time.Duration
 
 class UserListener: Listener {
+    private fun User.toDocument(): Document {
+        val document = toDocument(this)
+        val trinketMap = HashMap<String, String>()
+        trinkets.forEach { (slot, trinket) -> trinketMap[slot.name] = trinket.name }
+        document["trinkets"] = trinketMap
+        return document
+    }
+
+    private fun Document.toUser(): User {
+        val trinkets = get("trinkets") as Document
+        remove("trinkets")
+        val user = toObject(User::class)
+        user.init()
+        trinkets.values.forEach { name ->
+            name as String
+            val trinket = Trinket[name] ?: return@forEach
+            user.setTrinket(trinket)
+        }
+        return user
+    }
+
     @EventHandler
     fun onLogin(event: AsyncPlayerPreLoginEvent) {
         try {
             val collection = MongoDB["user"]
             val uuid = event.uniqueId.toString()
-            val user: User = collection.findOne("uuid", uuid)?.toObject(User::class) ?: User(uuid).apply {
+            val user: User = collection.findOne("uuid", uuid)?.toUser() ?: User(uuid).apply {
                 collection.insertOne(toDocument(this@apply))
             }
             User[uuid] = user
@@ -73,8 +98,8 @@ class UserListener: Listener {
         val uuid = event.player.uniqueId.toString()
         HeartbeatScope().async {
             try {
-                val user = User[uuid]!!
-                MongoDB["user"].replaceOne(Filters.eq("uuid", uuid), toDocument(user))
+                val user = User[uuid] ?: return@async
+                MongoDB["user"].replaceOne(Filters.eq("uuid", uuid), user.toDocument())
                 User.remove(uuid)
             } catch (e: Exception) {
                 plugin.slF4JLogger.error("Failed to save user data: ${event.player.name}", e)
@@ -99,11 +124,6 @@ class UserListener: Listener {
         } else {
             player.playSound(Sounds.LEVEL_UP)
         }
-    }
-
-    @EventHandler
-    fun onRespawn(e: PlayerPostRespawnEvent) {
-//        PlayerContainer[e.player.name]!!.manager?.applyAll() ?: return
     }
 
     @EventHandler

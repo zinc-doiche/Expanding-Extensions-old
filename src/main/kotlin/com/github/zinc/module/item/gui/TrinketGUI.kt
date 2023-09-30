@@ -45,11 +45,11 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
     }
 
     override fun onEvent(event: InventoryEvent, type: EventType) {
-        val player: Player
         when(type) {
             EventType.CLICK -> {
                 event as InventoryClickEvent
-                player = event.whoClicked as Player
+                val user = User[uuid] ?: return
+                val player = event.whoClicked as Player
 
                 //인벤토리 쉬프트 클릭
                 if(event.rawSlot >= 9 && event.isShiftClick) {
@@ -69,6 +69,7 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
                     }
                     setItem(item, trinket.slot.ordinal)
                     player.inventory.removeItem(item)
+                    user.setTrinket(trinket)
                     //Passive 존재 시 발동
                     if(trinket is Passive) {
                         trinket.on(player)
@@ -109,13 +110,13 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
                             val outItem = item.clone()
                             setItem(event.cursor, event.rawSlot)
                             player.setItemOnCursor(outItem)
-
+                            user.setTrinket(trinket)
                             //Passive 존재 시 발동
                             if(trinket is Passive) {
                                 trinket.on(player)
                             }
                         }
-
+                        user.removeTrinket(outTrinket.slot)
                         //Passive 존재 시 해제
                         if(outTrinket is Passive) {
                             outTrinket.off(player)
@@ -141,7 +142,7 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
                     }
                     setItem(event.cursor, event.rawSlot)
                     player.setItemOnCursor(null)
-
+                    user.setTrinket(trinket)
                     //Passive 존재 시 발동
                     if(trinket is Passive) {
                         trinket.on(player)

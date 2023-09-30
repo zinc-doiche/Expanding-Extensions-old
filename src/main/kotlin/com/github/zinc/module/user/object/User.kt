@@ -12,8 +12,11 @@ class User(
     val uuid: String,
     val status: Status = Status(),
     val level: Level = Level(),
-    val trinkets: Map<TrinketSlot, Trinket> = EnumMap(TrinketSlot::class.java)
 ) {
+    @Transient
+    var trinkets: Map<TrinketSlot, Trinket> = EnumMap(TrinketSlot::class.java)
+        private set
+
     val player: Player?
         get() = Bukkit.getPlayer(UUID.fromString(uuid))
 
@@ -24,8 +27,20 @@ class User(
     var criticalChance: Double = .0
         private set
 
+    fun init() {
+        trinkets = EnumMap(TrinketSlot::class.java)
+    }
+
     fun updateCriticalChance() {
         criticalChance = status.criticalChance
+    }
+
+    fun setTrinket(trinket: Trinket) {
+        (trinkets as MutableMap)[trinket.slot] = trinket
+    }
+
+    fun removeTrinket(slot: TrinketSlot) {
+        (trinkets as MutableMap).remove(slot)
     }
 
     companion object {

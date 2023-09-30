@@ -1,10 +1,8 @@
 package com.github.zinc.module.item.listener
 
-import com.github.zinc.info
 import com.github.zinc.module.item.`object`.OnHit
 import com.github.zinc.module.item.`object`.OnHitDetection
 import com.github.zinc.module.user.`object`.user
-import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile

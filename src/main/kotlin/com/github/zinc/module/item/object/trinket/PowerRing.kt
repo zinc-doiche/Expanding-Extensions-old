@@ -23,7 +23,9 @@ import java.util.UUID
  */
 class PowerRing: Trinket, Passive {
     override val name = "power_ring"
+    @Transient
     override val slot = TrinketSlot.RING
+
     private val modifier: AttributeModifier
         get() = AttributeModifier(UUID.nameUUIDFromBytes(name.toByteArray()), name, 0.1, AttributeModifier.Operation.MULTIPLY_SCALAR_1)
 
@@ -50,5 +52,9 @@ class PowerRing: Trinket, Passive {
                 info(modifier)
             }
         }
+    }
+
+    override fun toString(): String {
+        return "PowerRing(name='$name', slot=$slot)"
     }
 }

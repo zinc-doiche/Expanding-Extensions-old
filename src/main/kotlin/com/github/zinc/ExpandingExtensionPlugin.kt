@@ -17,8 +17,8 @@ class ExpandingExtensionPlugin: JavaPlugin() {
         MongoDB.register()
 
         modules.add(LibraryModule())
-        modules.add(UserModule())
         modules.add(ItemModule())
+        modules.add(UserModule())
 
         modules.forEach(Module::register)
 
