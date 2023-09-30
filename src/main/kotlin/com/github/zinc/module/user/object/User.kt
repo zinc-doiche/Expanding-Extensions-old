@@ -11,7 +11,7 @@ import java.util.*
 class User(
     val uuid: String,
     val status: Status = Status(),
-    val level: Level = Level(uuid),
+    val level: Level = Level(),
     val trinkets: Map<TrinketSlot, Trinket> = EnumMap(TrinketSlot::class.java)
 ) {
     val player: Player?
@@ -20,6 +20,7 @@ class User(
     val name: String?
         get() = player?.name
 
+    @Transient
     var criticalChance: Double = .0
         private set
 
@@ -29,7 +30,9 @@ class User(
 
     companion object {
         @Transient
-        val users: HashMap<String, User> = HashMap()
+        private val users: HashMap<String, User> = HashMap()
+
+        fun getUsers() = users.values.toList()
 
         operator fun get(uuid: String): User? = users[uuid]
         operator fun get(player: Player): User? = users[player.uniqueId.toString()]

@@ -63,6 +63,12 @@ class UserListener: Listener {
     }
 
     @EventHandler
+    fun onJoin(event: PlayerJoinEvent) {
+        val user = User[event.player] ?: return
+        user.status.applyStatus(event.player)
+    }
+
+    @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
         val uuid = event.player.uniqueId.toString()
         HeartbeatScope().async {
@@ -79,16 +85,15 @@ class UserListener: Listener {
 
     @EventHandler
     fun onUserLevelUp(event: AsyncUserLevelUpEvent) {
-        val user = User[event.uuid] ?: return
-        val player = user.player ?: return
-        user.status.addRemains(1)
+        val player = event.user.player ?: return
+        event.user.status.addRemains(1)
         player.sendMessage(text("레벨 업!").decoration(TextDecoration.BOLD, true)
                 .append(text(" (잔여 스텟 +1)", NamedTextColor.GRAY, TextDecoration.ITALIC)))
 
-        if(user.level.level % 50 == 0) {
+        if(event.user.level.level % 50 == 0) {
             player.playSound(Sounds.CHALLENGE_COMPLETED)
             player.showTitle(Title.title(
-                text(user.level.level, GREEN, TextDecoration.BOLD),
+                text(event.user.level.level, GREEN, TextDecoration.BOLD),
                 empty(),
                 Title.Times.times(Duration.ZERO, Duration.ofSeconds(3), Duration.ofSeconds(2))))
         } else {

@@ -151,3 +151,6 @@ internal fun toItemStack(json: String?): ItemStack? {
     }
     return null
 }
+
+internal val uniqueKey: NamespacedKey
+    get() = NamespacedKey(plugin, "unique")

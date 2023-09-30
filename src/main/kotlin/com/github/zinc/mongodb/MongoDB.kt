@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.TransactionBody
 import org.bson.Document
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
@@ -32,6 +33,10 @@ object MongoDB {
         }
         val databaseName = YamlConfiguration.loadConfiguration(yml).get("name") as String
         database = client.getDatabase(databaseName)
+    }
+
+    fun transaction(transactionBody: () -> Unit) {
+        client.startSession().withTransaction(transactionBody)
     }
 
     operator fun get(collectionName: String): MongoCollection<Document> = database.getCollection(collectionName)

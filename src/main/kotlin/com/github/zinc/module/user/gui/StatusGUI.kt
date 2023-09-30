@@ -1,5 +1,6 @@
 package com.github.zinc.module.user.gui
 
+import com.github.zinc.lib.constant.Sounds
 import com.github.zinc.lib.gui.EventType
 import com.github.zinc.lib.gui.SquareGUI
 import com.github.zinc.module.user.`object`.*
@@ -26,39 +27,41 @@ import org.bukkit.event.inventory.InventoryEvent
 import org.bukkit.inventory.Inventory
 
 class StatusGUI(val uuid: String): SquareGUI() {
-    private val inventory: Inventory = Bukkit.createInventory(this, 9)
+    private val inventory: Inventory = Bukkit.createInventory(this, 9, text("스테이터스"))
 
     private fun strengthLore(strength: Int, player: Player) = list(
-        empty(),
-        text("$strength")
-            .color(NamedTextColor.LIGHT_PURPLE)
+        text("$strength", NamedTextColor.LIGHT_PURPLE)
+            .noItalic()
             .bold(),
         empty(),
-        text("현재 기본 공격력: ${player.damage.format("#.##")}").color(NamedTextColor.GRAY)
+        text("현재 기본 공격력: ${player.damage.format("#.##")}")
+            .color(NamedTextColor.GRAY)
+            .noItalic()
     )
 
     private fun swiftnessLore(swiftness: Int, player: Player) = list(
-        empty(),
-        text("$swiftness")
-            .color(NamedTextColor.LIGHT_PURPLE)
+        text("$swiftness", NamedTextColor.LIGHT_PURPLE)
+            .noItalic()
             .bold(),
         empty(),
-        text("현재 이동속도: ${player.speed.format("#.##")}").color(NamedTextColor.GRAY)
+        text("현재 이동속도: ${player.speed.format("#.##")}")
+            .color(NamedTextColor.GRAY)
+            .noItalic()
     )
 
     private fun balanceLore(balance: Int, player: Player) = list(
-        empty(),
-        text("$balance")
-            .color(NamedTextColor.LIGHT_PURPLE)
+        text("$balance", NamedTextColor.LIGHT_PURPLE)
+            .noItalic()
             .bold(),
         empty(),
-        text("현재 체력: ${player.health.format("#.##")}").color(NamedTextColor.GRAY)
+        text("현재 체력: ${player.health.format("#.##")}")
+            .color(NamedTextColor.GRAY)
+            .noItalic()
     )
 
     private fun concentrationLore(concentration: Int, user: User) = list(
-        empty(),
-        text("$concentration")
-            .color(NamedTextColor.LIGHT_PURPLE)
+        text("$concentration", NamedTextColor.LIGHT_PURPLE)
+            .noItalic()
             .bold(),
         empty(),
         text("현재 치명타 확률: ${user.criticalChance.format("#.##")}")
@@ -67,12 +70,10 @@ class StatusGUI(val uuid: String): SquareGUI() {
     )
 
     private fun remainLore(status: Status) = list(
+        plain("${status.remains}").bold(),
         empty(),
-        text("${status.remains}")
-            .color(NamedTextColor.WHITE)
-            .decoration(TextDecoration.BOLD, true),
-        empty(),
-        plain("총 스탯(잔여 포함): ${status.total} / 600")
+        text("총 스탯(잔여 포함): ${status.total} / 600", NamedTextColor.GRAY)
+            .noItalic()
     )
 
     override fun open() {
@@ -129,17 +130,16 @@ class StatusGUI(val uuid: String): SquareGUI() {
                     return
                 }
                 val user = User[uuid] ?: return
+                val player = event.whoClicked as Player
                 val statusType = StatusType.entries[event.rawSlot]
 
                 if(user.status.remains == 0) {
                     return
                 }
+                player.playSound(Sounds.CLICK)
                 user.status.distribute(statusType)
-            }
-            EventType.CLOSE -> {
-                event as InventoryCloseEvent
-                val user = User[uuid] ?: return
-                user.status.applyStatus(event.player as Player)
+                user.status.applyStatus(player)
+                open()
             }
             else -> {
                 return

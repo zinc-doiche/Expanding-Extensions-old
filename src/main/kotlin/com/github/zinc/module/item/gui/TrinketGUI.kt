@@ -68,8 +68,7 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
                         return
                     }
                     setItem(item, trinket.slot.ordinal)
-                    setItem(null, event.rawSlot)
-
+                    player.inventory.removeItem(item)
                     //Passive 존재 시 발동
                     if(trinket is Passive) {
                         trinket.on(player)
@@ -78,22 +77,43 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
                 }
 
                 // 장신구 슬롯 클릭
-                else {
+                if(event.rawSlot < 9) {
                     event.isCancelled = true
                     val item = event.currentItem ?: return
 
-                    //맨손으로 클릭
-                    if(!event.cursor.hasPersistent(Trinket.namespace)) {
-                        //장신구가 없으면 리턴
-                        if(!item.hasPersistent(Trinket.namespace)) {
-                            return
-                        }
-                        event.isCancelled = false
+                    //장신구가 있으면
+                    if(item.hasPersistent(Trinket.namespace)) {
                         val outTrinket = Trinket[item.getPersistent(Trinket.namespace)!!] ?: return
 
-                        //클릭에 따라 분배
-                        if(!event.isShiftClick) {
+                        //쉬프트 클릭이면
+                        if(event.isShiftClick) {
+                            player.inventory.addItem(item)
                             setItem(ItemStack(Material.GRAY_STAINED_GLASS_PANE), event.rawSlot)
+                        }
+                        //빈손 or 장신구가 아닌 아이템으로 일반 클릭 시
+                        else if(!event.cursor.hasPersistent(Trinket.namespace)) {
+                            //빈손이 아니면 리턴
+                            if(isNotNull(event.cursor)) {
+                                return
+                            }
+                            player.setItemOnCursor(item)
+                            setItem(ItemStack(Material.GRAY_STAINED_GLASS_PANE), event.rawSlot)
+                        }
+                        //장신구를 들고 클릭 시
+                        else {
+                            val trinket = Trinket[event.cursor.getPersistent(Trinket.namespace)!!] ?: return
+                            //맞는 슬롯이 아니면 리턴
+                            if(trinket.slot != outTrinket.slot) {
+                                return
+                            }
+                            val outItem = item.clone()
+                            setItem(event.cursor, event.rawSlot)
+                            player.setItemOnCursor(outItem)
+
+                            //Passive 존재 시 발동
+                            if(trinket is Passive) {
+                                trinket.on(player)
+                            }
                         }
 
                         //Passive 존재 시 해제
@@ -103,30 +123,29 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
                         return
                     }
 
-                    //장신구 든 채로 클릭
-                    val trinket = Trinket[event.cursor.getPersistent(Trinket.namespace)!!] ?: return
-                    val outTrinket = Trinket[item.getPersistent(Trinket.namespace)!!] ?: return
-
-                    //맞는 슬롯이 아니면 리턴
-                    if(trinket.slot != outTrinket.slot) {
+                    //장신구가 없으면
+                    //빈손 or 장신구가 아닌 아이템으로 클릭 시 리턴
+                    if(!event.cursor.hasPersistent(Trinket.namespace)) {
                         return
                     }
 
-                    //이미 장신구가 있으면
-                    if(item.hasPersistent(Trinket.namespace)) {
-                        player.setItemOnCursor(item)
+                    //장신구 든 채로 클릭 시
+                    val trinket = Trinket[event.cursor.getPersistent(Trinket.namespace)!!] ?: return
+                    //쉬프트 클릭이면 리턴
+                    if(event.isShiftClick) {
+                        return
                     }
+                    //맞는 슬롯이 아니면 리턴
+                    if(trinket.slot.ordinal != event.rawSlot) {
+                        return
+                    }
+                    setItem(event.cursor, event.rawSlot)
+                    player.setItemOnCursor(null)
 
                     //Passive 존재 시 발동
                     if(trinket is Passive) {
                         trinket.on(player)
                     }
-
-                    //Passive 존재 시 해제
-                    if(outTrinket is Passive) {
-                        outTrinket.off(player)
-                    }
-                    setItem(event.cursor, event.rawSlot)
                 }
             }
             else -> return

@@ -1,22 +1,19 @@
 package com.github.zinc.module.item.`object`.trinket
 
-import com.github.zinc.NAMESPACE
-import com.github.zinc.mongodb.MongoDB
-import com.github.zinc.mongodb.findOne
+import com.github.zinc.plugin
+import com.github.zinc.util.*
 import com.github.zinc.util.item
 import com.github.zinc.util.list
+import com.github.zinc.util.plain
 import com.github.zinc.util.setPersistent
-import com.github.zinc.util.toItemStack
-import com.mongodb.DBRef
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
-import org.bson.types.ObjectId
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
+import java.util.UUID
 
 interface Trinket {
     val name: String
@@ -38,24 +35,26 @@ interface Trinket {
         material,
         displayName,
         list(
-            text("착용 가능 슬롯: ").append(text(availableSlot.korName, NamedTextColor.YELLOW, TextDecoration.BOLD)),
+            plain("착용 가능 슬롯: ").append(text(availableSlot.korName, NamedTextColor.YELLOW).bold()),
             empty(),
-            text("착용 시: ").append(whenEquip),
+            plain("착용 시: ").append(whenEquip),
             empty()
         ).apply {
             if(additionalLore != null) {
                 addAll(additionalLore)
             }
-        },
-        block = { it.setPersistent(namespace, name) }
-    )
+        }
+    ) { meta ->
+        meta.setPersistent(uniqueKey, UUID.randomUUID().toString())
+        meta.setPersistent(namespace, name)
+    }
 
     companion object {
         private val trinkets: MutableMap<String, Trinket> = HashMap()
         val names: List<String>
             get() = trinkets.values.map { it.name }
         val namespace: NamespacedKey
-            get() = NamespacedKey(NAMESPACE, "trinket")
+            get() = NamespacedKey(plugin, "trinket")
 
         operator fun get(name: String): Trinket? = trinkets[name]
         operator fun set(name: String, trinket: Trinket) {

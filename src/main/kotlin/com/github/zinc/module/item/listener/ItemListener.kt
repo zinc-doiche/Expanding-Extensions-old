@@ -1,11 +1,13 @@
 package com.github.zinc.module.item.listener
 
+import com.github.zinc.info
 import com.github.zinc.module.item.`object`.OnHit
 import com.github.zinc.module.item.`object`.OnHitDetection
 import com.github.zinc.module.user.`object`.user
-import org.bukkit.entity.AbstractArrow
+import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -18,6 +20,7 @@ class ItemListener: Listener {
 
         if(entity is Player) {
             val user = entity.user ?: return
+
             //근접공격 피격 시
             if(damager is LivingEntity) {
                 user.trinkets.values.forEach {
@@ -28,7 +31,7 @@ class ItemListener: Listener {
                 entity.sendMessage("${damager.name}에게 근접공격 피격: ${event.finalDamage}")
             }
             //원거리공격 피격 시
-            else if(damager is AbstractArrow) {
+            else if(damager is Projectile) {
                 val shooter = damager.shooter
                 if(shooter is LivingEntity) {
                     user.trinkets.values.forEach {
@@ -51,8 +54,8 @@ class ItemListener: Listener {
                 damager.sendMessage("${entity.name}에게 근접공격 타격: ${event.finalDamage}")
             }
             //원거리공격 타격 시
-            else if(damager is AbstractArrow) {
-                val shooter = damager.shooter
+            else if(damager is Projectile) {
+                val shooter = damager.shooter ?: return
                 if(shooter is Player) {
                     val user = shooter.user ?: return
                     user.trinkets.values.forEach {
@@ -60,7 +63,7 @@ class ItemListener: Listener {
                             it.onLongHit(shooter, entity, event)
                         }
                     }
-                    damager.sendMessage("${entity.name}에게 원거리공격 타격: ${event.finalDamage}")
+                    shooter.sendMessage("${entity.name}에게 원거리공격 타격: ${event.finalDamage}")
                 }
             }
         }

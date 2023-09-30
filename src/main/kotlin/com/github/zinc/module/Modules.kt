@@ -7,6 +7,7 @@ import kotlin.enums.EnumEntries
 interface Module {
     fun registerCommands()
     fun registerListeners()
+    fun onDisable()
 
     fun register() {
         registerCommands()

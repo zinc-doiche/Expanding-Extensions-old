@@ -169,16 +169,16 @@ class Status(
                 swiftness * .04 / INTERVAL1 //max 0.14 = .1 + .04
             // 0.03/150 ps
             in INTERVAL1 + 1..INTERVAL2 -> //250
-                .14 + (swiftness - INTERVAL1) * .02 / (INTERVAL2 - INTERVAL1) //max 0.16 = 0.1 + .04 + .02
+                .04 + (swiftness - INTERVAL1) * .02 / (INTERVAL2 - INTERVAL1) //max 0.16 = 0.1 + .04 + .02
             // 0.02/150 ps
             in INTERVAL2 + 1..INTERVAL3 -> //400
-                .16 + (swiftness - INTERVAL2) * .02 / (INTERVAL3 - INTERVAL2) //max 0.18 = 0.1 + .04 + .02 + .02
+                .06 + (swiftness - INTERVAL2) * .02 / (INTERVAL3 - INTERVAL2) //max 0.18 = 0.1 + .04 + .02 + .02
             // 0.04/150 ps
             in INTERVAL3 + 1..INTERVAL4 -> //550
-                .18 + (swiftness - INTERVAL3) * .04 / (INTERVAL4 - INTERVAL3) //max 0.22 = 0.1 + .04 + .02 + .02 + .04
+                .08 + (swiftness - INTERVAL3) * .04 / (INTERVAL4 - INTERVAL3) //max 0.22 = 0.1 + .04 + .02 + .02 + .04
             // 0.24/150 ps
             else -> //600
-                .22 + (swiftness - INTERVAL4) * .08 / (600 - INTERVAL4) //max 0.3 = 0.1 + .04 + .02 + .02 + .04 + .08
+                .12 + (swiftness - INTERVAL4) * .08 / (600 - INTERVAL4) //max 0.3 = 0.1 + .04 + .02 + .02 + .04 + .08
         }
 
     //활이 메인딜

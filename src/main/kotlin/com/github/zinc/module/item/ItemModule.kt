@@ -1,5 +1,6 @@
 package com.github.zinc.module.item
 
+import com.github.zinc.info
 import com.github.zinc.module.Module
 import com.github.zinc.module.item.listener.ItemListener
 import com.github.zinc.module.item.`object`.trinket.Trinket
@@ -38,13 +39,17 @@ class ItemModule: Module {
         }
     }
 
-    private fun loadItems() {
-        PowerRing().register()
+    override fun register() {
+        loadItems()
+        super.register()
     }
 
-    //include loadItems()
-    override fun register() {
-        super.register()
-        loadItems()
+    override fun onDisable() {
+
+    }
+
+    private fun loadItems() {
+        PowerRing().register()
+
     }
 }

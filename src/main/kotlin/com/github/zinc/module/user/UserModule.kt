@@ -1,15 +1,20 @@
 package com.github.zinc.module.user
 
 import com.github.zinc.module.Module
-import com.github.zinc.module.item.`object`.trinket.TrinketSlot
 import com.github.zinc.module.user.gui.StatusGUI
 import com.github.zinc.module.user.listener.UserListener
 import com.github.zinc.module.user.`object`.StatusType
 import com.github.zinc.module.user.`object`.User
+import com.github.zinc.mongodb.MongoDB
+import com.github.zinc.mongodb.toDocument
 import com.github.zinc.plugin
 import com.github.zinc.util.warn
+import com.mongodb.client.model.Filters
+import io.github.monun.heartbeat.coroutines.HeartbeatScope
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component.text
 
 class UserModule: Module {
@@ -18,7 +23,7 @@ class UserModule: Module {
             register("status", "스테이터스", "스탯") {
                 executes { StatusGUI(player.uniqueId.toString()).open() }
 
-                then("add", "status" to suggestion(TrinketSlot.entries), "amount" to int()) {
+                then("add", "status" to suggestion(StatusType.entries), "amount" to int()) {
                     requires { isOp }
                     executes {
                         val status: String by it
@@ -38,9 +43,6 @@ class UserModule: Module {
                 }
                 then("info") {
                     executes {
-                        player.sendMessage(User.users.toString())
-                        player.sendMessage(player.uniqueId.toString())
-
                         val user = User[player] ?: return@executes
                         val message = text("${player.name}의 스테이터스 :")
                             .appendNewline()
@@ -70,7 +72,7 @@ class UserModule: Module {
                     executes {
                         val amount: Long by it
                         val user = User[player] ?: return@executes
-                        user.level.addExperience(amount)
+                        user.level.addExperience(amount, user)
                     }
                 }
             }
@@ -80,6 +82,34 @@ class UserModule: Module {
     override fun registerListeners() {
         with(plugin.server.pluginManager) {
             registerEvents(UserListener(), plugin)
+        }
+    }
+
+    override fun register() {
+        super.register()
+        HeartbeatScope().async {
+            while (true) {
+                //for 10m
+                delay(1000 * 60 * 10)
+                plugin.server.broadcast(text("유저 정보 저장 중..."))
+                val start = System.currentTimeMillis()
+                saveUsers()
+                val end = System.currentTimeMillis()
+                plugin.server.broadcast(text("저장 완료! (${end - start}ms)"))
+            }
+        }
+    }
+
+    override fun onDisable() {
+        saveUsers()
+    }
+
+    private fun saveUsers() {
+        val collection = MongoDB["user"]
+        MongoDB.transaction {
+            User.getUsers().forEach { user ->
+                collection.replaceOne(Filters.eq("uuid", user.uuid), toDocument(user))
+            }
         }
     }
 }
