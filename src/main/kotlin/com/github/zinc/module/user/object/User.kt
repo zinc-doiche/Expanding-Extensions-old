@@ -4,6 +4,7 @@ import com.github.zinc.module.item.`object`.trinket.Trinket
 import com.github.zinc.module.item.`object`.trinket.TrinketSlot
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -19,11 +20,19 @@ class User(
     val name: String?
         get() = player?.name
 
+    var criticalChance: Double = .0
+        private set
+
+    fun updateCriticalChance() {
+        criticalChance = status.criticalChance
+    }
+
     companion object {
         @Transient
         private val users: HashMap<String, User> = HashMap()
 
         operator fun get(uuid: String): User? = users[uuid]
+        operator fun get(player: Player): User? = users[player.uniqueId.toString()]
         operator fun set(uuid: String, user: User) {
             users[uuid] = user
         }
@@ -55,3 +64,9 @@ class User(
 
 internal val Player.user: User?
     get() = User[uniqueId.toString()]
+
+internal val Player.speed: Double
+    get() = getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)?.value ?: -1.0
+
+internal val Player.damage: Double
+    get() = getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)?.value ?: -1.0

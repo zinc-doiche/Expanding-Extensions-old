@@ -12,7 +12,9 @@ import com.github.zinc.util.toItemStack
 import com.mongodb.client.model.Filters
 import io.github.monun.heartbeat.coroutines.HeartbeatScope
 import kotlinx.coroutines.async
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -28,14 +30,14 @@ class TrinketGUI(private val uuid: String): SquareGUI() {
     override fun open() {
         HeartbeatScope().async {
             val user = User[uuid]?: return@async
-
             TrinketSlot.entries.forEach { slot ->
-                with(user.trinkets) {
-                    val item = if(contains(slot)) get(slot)?.getItem() else ItemStack(Material.GRAY_STAINED_GLASS_PANE)
-                    setItem(item, slot.ordinal)
+                val item = if(user.trinkets.contains(slot)) {
+                    user.trinkets[slot]?.getItem()
+                } else {
+                    item(Material.GRAY_STAINED_GLASS_PANE, text("${slot.korName} 슬롯", NamedTextColor.GRAY))
                 }
+                setItem(item, slot.ordinal)
             }
-
             user.player?.openInventory(inventory)
         }
     }

@@ -25,6 +25,7 @@ class ItemListener: Listener {
                         it.onCloseHitDetection(damager, entity, event)
                     }
                 }
+                entity.sendMessage("${damager.name}에게 근접공격 피격: ${event.finalDamage}")
             }
             //원거리공격 피격 시
             else if(damager is AbstractArrow) {
@@ -35,6 +36,7 @@ class ItemListener: Listener {
                             it.onLongHitDetection(shooter, entity, event)
                         }
                     }
+                    entity.sendMessage("${shooter.name}에게 원거리공격 피격: ${event.finalDamage}")
                 }
             }
         } else if(entity is LivingEntity) {
@@ -46,6 +48,7 @@ class ItemListener: Listener {
                         it.onCloseHit(damager, entity, event)
                     }
                 }
+                damager.sendMessage("${entity.name}에게 근접공격 타격: ${event.finalDamage}")
             }
             //원거리공격 타격 시
             else if(damager is AbstractArrow) {
@@ -57,6 +60,7 @@ class ItemListener: Listener {
                             it.onLongHit(shooter, entity, event)
                         }
                     }
+                    damager.sendMessage("${entity.name}에게 원거리공격 타격: ${event.finalDamage}")
                 }
             }
         }

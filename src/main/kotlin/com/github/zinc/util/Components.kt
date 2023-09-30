@@ -6,6 +6,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration
+import java.text.DecimalFormat
 
 internal fun list(vararg components: Component): MutableList<Component> = components.toMutableList()
 internal fun texts(vararg texts: String): List<Component> = texts.map(Component::text)
@@ -17,3 +18,5 @@ internal fun Component.content(): String = (this as? TextComponent)?.content() ?
 
 internal fun warn(text: String): Component = Component.text(text, NamedTextColor.RED, TextDecoration.BOLD)
 internal fun italic(text: String): Component = Component.text(text, GRAY, TextDecoration.ITALIC)
+
+internal fun Double.format(format: String): String = DecimalFormat(format).format(this)

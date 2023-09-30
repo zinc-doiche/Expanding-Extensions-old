@@ -18,8 +18,8 @@ class ItemModule: Module {
                 //open
                 executes { TrinketGUI(player.uniqueId.toString()).open() }
 
-                then("get", "name" to string()) {
-                    requires { player.isOp }
+                then("get", "name" to string().apply { suggests { Trinket.names } }) {
+                    requires { isOp }
                     executes {
                         val name: String by it
                         val trinket = Trinket[name] ?: run {

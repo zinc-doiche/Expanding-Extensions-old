@@ -22,29 +22,27 @@ class Level(
     }
 
     fun addExperience(addedExperience: Long) {
-        var requiredExp = requiredExpForNextLevel(level)
+        var requiredExp = requiredExpForNextLevel
         experience += addedExperience
         while(experience >= requiredExp) {
             level++
             //call event
             experience -= requiredExp
-            requiredExp = requiredExpForNextLevel(level)
+            requiredExp = requiredExpForNextLevel
             Bukkit.getPluginManager().callEvent(AsyncUserLevelUpEvent(uuid))
         }
     }
 
-    private fun requiredExpForNextLevel(level: Int): Long {
-        return when(level){
-            in 0..99 ->
-                (-1 / 500.0) * level * level * (level - 150) + 100
-            //1100
-            in 100..199 ->
-                (-1 / 50.0) * (level - 100) * (level - 100) * (level - 250) + 1100
-            //11100
-            in 200..299 ->
-                (-1 / 5.0) * (level - 100) * (level - 100) * (level - 250) + 11100
-            //111100
-            else -> -1
-        }.toLong()
-    }
+    val requiredExpForNextLevel: Long = when(level) {
+        in 0..99 ->
+            (-1 / 500.0) * level * level * (level - 150) + 100
+        //1100
+        in 100..199 ->
+            (-1 / 50.0) * (level - 100) * (level - 100) * (level - 250) + 1100
+        //11100
+        in 200..299 ->
+            (-1 / 5.0) * (level - 100) * (level - 100) * (level - 250) + 11100
+        //111100
+        else -> -1
+    }.toLong()
 }

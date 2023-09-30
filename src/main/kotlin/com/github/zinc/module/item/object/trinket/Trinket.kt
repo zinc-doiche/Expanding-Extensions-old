@@ -52,6 +52,8 @@ interface Trinket {
 
     companion object {
         private val trinkets: MutableMap<String, Trinket> = HashMap()
+        val names: List<String>
+            get() = trinkets.values.map { it.name }
         val namespace: NamespacedKey
             get() = NamespacedKey(NAMESPACE, "trinket")
 

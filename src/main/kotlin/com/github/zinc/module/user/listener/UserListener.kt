@@ -81,7 +81,7 @@ class UserListener: Listener {
     fun onUserLevelUp(event: AsyncUserLevelUpEvent) {
         val user = User[event.uuid] ?: return
         val player = user.player ?: return
-        user.status.remains++
+        user.status.addRemains(1)
         player.sendMessage(text("레벨 업!").decoration(TextDecoration.BOLD, true)
                 .append(text(" (잔여 스텟 +1)", NamedTextColor.GRAY, TextDecoration.ITALIC)))
 
