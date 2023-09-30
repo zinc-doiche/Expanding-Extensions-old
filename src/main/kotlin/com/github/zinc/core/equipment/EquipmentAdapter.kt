@@ -23,7 +23,7 @@ abstract class EquipmentAdapter(
 
     override fun setStatus() {
         level = 0
-        status.setStatus(item)
+        //status.setStatus(item)
         if(item.hasPersistent(LEVEL_CONSTRAINT_KEY))
             level = item.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
     }
