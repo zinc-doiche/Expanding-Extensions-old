@@ -9,12 +9,6 @@ class DynamicSmitingRecipe(
     val origin: (ItemStack) -> Boolean,
     val ingredient: (ItemStack) -> Boolean
 ): DynamicRecipe {
-
-    /**
-     * Do auto storing to the set
-     */
-    init { Recipes.customRecipes.add(this) }
-
     override fun isCorrect(origin: ItemStack, ingredient: ItemStack): Boolean {
         return origin(origin) && ingredient(ingredient) &&
                 !origin.hasPersistent(DynamicRecipe.dynamicKey) && !ingredient.hasPersistent(DynamicRecipe.dynamicKey)

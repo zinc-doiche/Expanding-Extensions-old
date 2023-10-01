@@ -1,5 +1,6 @@
 package com.github.zinc.module.item.`object`.trinket
 
+import com.github.zinc.module.item.`object`.Item
 import com.github.zinc.plugin
 import com.github.zinc.util.*
 import com.github.zinc.util.item
@@ -15,13 +16,13 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import java.util.UUID
 
-interface Trinket {
+interface Trinket: Item {
     val name: String
     val slot: TrinketSlot
 
     fun getItem(): ItemStack
 
-    fun register() {
+    override fun register() {
         Trinket[name] = this
     }
 

@@ -1,13 +1,7 @@
 package com.github.zinc.module.user.`object`
 
-import com.github.zinc.core.equipment.LEVEL_CONSTRAINT_KEY
-import com.github.zinc.util.getPersistent
-import com.github.zinc.util.hasPersistent
-import com.github.zinc.util.setPersistent
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 
 class Status(
     strength: Int = 0,
@@ -380,18 +374,18 @@ class Status(
     }
 }
 
-private fun ItemStack.setLevelConstraint(level: Int) {
-    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) {
-        this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
-    } else 0
-    if(constraint < level) {
-        this.setPersistent(LEVEL_CONSTRAINT_KEY, level, PersistentDataType.INTEGER)
-    }
-}
-
-private fun ItemStack.addLevelConstraint(level: Int) {
-    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) {
-        this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
-    } else 0
-    this.setPersistent(LEVEL_CONSTRAINT_KEY, level + constraint, PersistentDataType.INTEGER)
-}
+//private fun ItemStack.setLevelConstraint(level: Int) {
+//    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) {
+//        this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
+//    } else 0
+//    if(constraint < level) {
+//        this.setPersistent(LEVEL_CONSTRAINT_KEY, level, PersistentDataType.INTEGER)
+//    }
+//}
+//
+//private fun ItemStack.addLevelConstraint(level: Int) {
+//    val constraint = if(this.hasPersistent(LEVEL_CONSTRAINT_KEY)) {
+//        this.getPersistent(LEVEL_CONSTRAINT_KEY, PersistentDataType.INTEGER)!!
+//    } else 0
+//    this.setPersistent(LEVEL_CONSTRAINT_KEY, level + constraint, PersistentDataType.INTEGER)
+//}

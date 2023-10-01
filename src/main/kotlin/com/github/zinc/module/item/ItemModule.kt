@@ -5,6 +5,8 @@ import com.github.zinc.module.Module
 import com.github.zinc.module.item.listener.ItemListener
 import com.github.zinc.module.item.`object`.trinket.Trinket
 import com.github.zinc.module.item.gui.TrinketGUI
+import com.github.zinc.module.item.`object`.equipment.Equipment
+import com.github.zinc.module.item.`object`.equipment.HeartChestPlate
 import com.github.zinc.module.item.`object`.trinket.PowerRing
 import com.github.zinc.plugin
 import com.github.zinc.util.addItem
@@ -50,6 +52,6 @@ class ItemModule: Module {
 
     private fun loadItems() {
         PowerRing().register()
-
+        HeartChestPlate().register()
     }
 }

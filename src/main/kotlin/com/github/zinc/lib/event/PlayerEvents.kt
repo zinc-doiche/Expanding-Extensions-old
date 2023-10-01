@@ -1,6 +1,6 @@
 package com.github.zinc.lib.event
 
-import com.github.zinc.core.equipment.Equipment
+import com.github.zinc.module.item.`object`.equipment.Equipment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 

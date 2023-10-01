@@ -12,7 +12,7 @@ interface Passive {
 /**
  * 타격 시 판정
  */
-interface OnHit: Passive {
+interface OnHit {
     fun onCloseHit(player: Player, entity: LivingEntity, event: EntityDamageByEntityEvent)
     fun onLongHit(player: Player, entity: LivingEntity, event: EntityDamageByEntityEvent)
 }
@@ -20,7 +20,7 @@ interface OnHit: Passive {
 /**
  * 피격 시 판정
  */
-interface OnHitDetection: Passive {
+interface OnHitDetection {
     fun onCloseHitDetection(damager: LivingEntity, player: Player, event: EntityDamageByEntityEvent)
     fun onLongHitDetection(damager: LivingEntity, player: Player, event: EntityDamageByEntityEvent)
 }

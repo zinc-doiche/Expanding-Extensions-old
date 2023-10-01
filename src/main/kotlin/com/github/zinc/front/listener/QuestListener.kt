@@ -26,10 +26,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 class QuestListener: Listener {
 
     @EventHandler
-    @PassedBy(PlayerListener::class, EntityDamageByEntityEvent::class)
+//    @PassedBy(PlayerListener::class, EntityDamageByEntityEvent::class)
     @ChainEventCall(PlayerGetExpEvent::class)
     fun onQuestClear(e: QuestClearEvent) {
-        val player = e.playerData.manager?.playerEntity ?: return
+//        val player = e.playerData.manager?.playerEntity ?: return
 //        QuestDAO().use { dao ->
 //            //info("qc, ${e.playerData.playerVO.playerId}, ${e.enemy.name}")
 //            val questDTO = dao.select(e.playerData.playerVO.playerId, e.enemy) ?: return@use

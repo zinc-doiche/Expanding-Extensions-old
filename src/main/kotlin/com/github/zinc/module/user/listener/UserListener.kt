@@ -1,15 +1,10 @@
 package com.github.zinc.module.user.listener
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
-import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
-import com.github.zinc.core.equipment.STATUS_KEY
 import com.github.zinc.core.recipe.DynamicRecipe
-import com.github.zinc.core.recipe.Recipes
-import com.github.zinc.info
 import com.github.zinc.lib.constant.Sounds
 import com.github.zinc.lib.event.*
 import com.github.zinc.module.item.`object`.trinket.Trinket
-import com.github.zinc.module.item.`object`.trinket.TrinketSlot
 import com.github.zinc.module.user.`object`.User
 import com.github.zinc.mongodb.MongoDB
 import com.github.zinc.mongodb.findOne
@@ -247,7 +242,6 @@ class UserListener: Listener {
      */
     @EventHandler
     fun onChangeEnchant(e: ItemChangeEnchantEvent) {
-        if(!e.item.hasPersistent(STATUS_KEY)) return
     }
 
     @EventHandler
@@ -289,21 +283,20 @@ class UserListener: Listener {
         val origin = e.inventory.getItem(0) ?: return
         val ingredient = e.inventory.getItem(1) ?: return
 
-        for (recipe in Recipes.customRecipes) {
-            if(recipe.isCorrect(origin, ingredient)) {
-                e.result = recipe.getResult(origin).apply {
-                    if(hasPersistent(DynamicRecipe.dynamicKey)) editMeta { it.displayName(displayName()) }
-                }
-                break
-            }
-        }
+//        for (recipe in Recipes.customRecipes) {
+//            if(recipe.isCorrect(origin, ingredient)) {
+//                e.result = recipe.getResult(origin).apply {
+//                    if(hasPersistent(DynamicRecipe.dynamicKey)) editMeta { it.displayName(displayName()) }
+//                }
+//                break
+//            }
+//        }
     }
 
     @EventHandler
     fun onItemRemove(e: EntityRemoveFromWorldEvent) {
         if(e.entity !is Item) return
         val entity = e.entity as Item
-        if(!entity.itemStack.hasPersistent(STATUS_KEY)) return
 //        EquipmentContainer.container.remove(entity.itemStack.getPersistent(STATUS_KEY))
     }
 }
