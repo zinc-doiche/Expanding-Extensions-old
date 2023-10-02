@@ -19,6 +19,8 @@ interface Equipment: Item {
 
     companion object {
         private val equipments = HashMap<String, Equipment>()
+        val names: Iterable<String>
+            get() = equipments.keys
         val namespace: NamespacedKey
             get() = NamespacedKey(plugin, "equipment")
 

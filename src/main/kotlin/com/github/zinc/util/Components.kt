@@ -12,8 +12,10 @@ internal fun plain(content: String): Component = Component.text(content)
     .color(NamedTextColor.WHITE)
     .decoration(TextDecoration.ITALIC, false)
 
+internal fun Component.italic(): Component = this.decoration(TextDecoration.ITALIC, true)
 internal fun Component.noItalic(): Component = this.decoration(TextDecoration.ITALIC, false)
 internal fun Component.bold(): Component = this.decoration(TextDecoration.BOLD, true)
+internal fun Component.noBold(): Component = this.decoration(TextDecoration.BOLD, false)
 
 internal fun list(vararg components: Component): MutableList<Component> = components.toMutableList()
 internal fun texts(vararg texts: String): List<Component> = texts.map(Component::text)

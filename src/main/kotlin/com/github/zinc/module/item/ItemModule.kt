@@ -1,12 +1,11 @@
 package com.github.zinc.module.item
 
-import com.github.zinc.info
 import com.github.zinc.module.Module
 import com.github.zinc.module.item.listener.ItemListener
 import com.github.zinc.module.item.`object`.trinket.Trinket
 import com.github.zinc.module.item.gui.TrinketGUI
 import com.github.zinc.module.item.`object`.equipment.Equipment
-import com.github.zinc.module.item.`object`.equipment.HeartChestPlate
+import com.github.zinc.module.item.`object`.equipment.HeartChestplate
 import com.github.zinc.module.item.`object`.trinket.PowerRing
 import com.github.zinc.plugin
 import com.github.zinc.util.addItem
@@ -32,6 +31,19 @@ class ItemModule: Module {
                     }
                 }
             }
+            register("equipment", "장비") {
+                then("get", "name" to suggestion(Equipment.names)) {
+                    requires { isOp }
+                    executes {
+                        val name: String by it
+                        val equipment = Equipment[name] ?: run {
+                            player.warn("존재하지 않는 장비입니다.")
+                            return@executes
+                        }
+                        player.addItem(equipment.item)
+                    }
+                }
+            }
         }
     }
 
@@ -52,6 +64,6 @@ class ItemModule: Module {
 
     private fun loadItems() {
         PowerRing().register()
-        HeartChestPlate().register()
+        HeartChestplate().register()
     }
 }

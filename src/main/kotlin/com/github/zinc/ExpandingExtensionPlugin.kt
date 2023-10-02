@@ -3,6 +3,7 @@ package com.github.zinc;
 import com.github.zinc.lib.LibraryModule
 import com.github.zinc.module.Module
 import com.github.zinc.module.item.ItemModule
+import com.github.zinc.module.recipe.RecipeModule
 import com.github.zinc.module.user.UserModule
 import com.github.zinc.mongodb.MongoDB
 import org.bukkit.command.CommandExecutor
@@ -18,6 +19,7 @@ class ExpandingExtensionPlugin: JavaPlugin() {
 
         modules.add(LibraryModule())
         modules.add(ItemModule())
+        modules.add(RecipeModule())
         modules.add(UserModule())
 
         modules.forEach(Module::register)
@@ -42,14 +44,6 @@ class ExpandingExtensionPlugin: JavaPlugin() {
 
     override fun onDisable() {
         modules.forEach(Module::onDisable)
-    }
-
-    private fun registerAll(vararg listener: Listener) {
-        listener.forEach { plugin.server.pluginManager.registerEvents(it, this) }
-    }
-
-    private fun executors(vararg executors: Pair<String, CommandExecutor>) {
-        executors.forEach { plugin.getCommand(it.first)!!.setExecutor(it.second) }
     }
 }
 
