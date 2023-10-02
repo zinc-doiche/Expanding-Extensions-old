@@ -44,7 +44,7 @@ class HeartChestplate: Equipment, OnHitDetection {
         get() = AttributeModifier(UUID.nameUUIDFromBytes(name.toByteArray()),
             name, 9.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.CHEST)
     private val armorToughnessModifier: AttributeModifier
-        get() = AttributeModifier(UUID.nameUUIDFromBytes(name.toByteArray()),
+        get() = AttributeModifier(UUID.nameUUIDFromBytes((name + "tough").toByteArray()),
             name, 2.5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.CHEST)
 
     override fun onEquip(player: Player) {
