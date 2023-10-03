@@ -3,6 +3,7 @@ package com.github.zinc;
 import com.github.zinc.lib.LibraryModule
 import com.github.zinc.module.Module
 import com.github.zinc.module.item.ItemModule
+import com.github.zinc.module.quest.QuestModule
 import com.github.zinc.module.recipe.RecipeModule
 import com.github.zinc.module.user.UserModule
 import com.github.zinc.module.world.WorldModule
@@ -21,7 +22,9 @@ class ExpandingExtensionPlugin: JavaPlugin() {
         modules.add(LibraryModule())
         modules.add(ItemModule())
         modules.add(RecipeModule())
+
         modules.add(UserModule())
+        modules.add(QuestModule())
         modules.add(WorldModule())
 
         modules.forEach(Module::register)
