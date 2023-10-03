@@ -6,7 +6,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import java.util.*
 
 class User(
@@ -18,15 +17,16 @@ class User(
     var trinkets: Map<TrinketSlot, Trinket> = EnumMap(TrinketSlot::class.java)
         private set
 
+    @Transient
+    var criticalChance: Double = .0
+        private set
+
     val player: Player?
         get() = Bukkit.getPlayer(UUID.fromString(uuid))
 
     val name: String?
         get() = player?.name
 
-    @Transient
-    var criticalChance: Double = .0
-        private set
 
     fun init() {
         trinkets = EnumMap(TrinketSlot::class.java)

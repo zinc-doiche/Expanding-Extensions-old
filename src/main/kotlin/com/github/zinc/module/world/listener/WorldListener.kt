@@ -24,19 +24,19 @@ class WorldListener: Listener {
 
         if(player.world.environment != World.Environment.NETHER) {
             player.fireTicks = 0
-            if(uuid in WorldObserver.nethers) {
-                WorldObserver.nethers.remove(uuid)
+            if(uuid in WorldObserver.nether) {
+                WorldObserver.nether.remove(uuid)
                 player.removePotionEffect(PotionEffectType.SLOW_DIGGING)
             }
             return
         }
 
-        if(!HeartChestplate.contains(uuid)) {
-            WorldObserver.nethers.add(uuid)
+        if(!HeartChestplate.isPutOn(uuid)) {
+            WorldObserver.nether.add(uuid)
             player.addPotionEffect(PotionEffect(PotionEffectType.SLOW_DIGGING, PotionEffect.INFINITE_DURATION, 2, false, false, false))
             player.fireTicks = infiniteFireTicks
             HeartbeatScope().async {
-                while (uuid in WorldObserver.nethers) {
+                while (uuid in WorldObserver.nether) {
                     player.damage(6.1)
                     delay(3000)
                 }
@@ -46,13 +46,10 @@ class WorldListener: Listener {
 
     @EventHandler
     fun onMilk(event: PlayerItemConsumeEvent) {
-        val uuid = event.player.uniqueId.toString()
-
         if(event.item.type != Material.MILK_BUCKET) {
             return
         }
-
-        if(uuid in WorldObserver.nethers) {
+        if(event.player.world.environment == World.Environment.NETHER) {
             event.isCancelled = true
         }
     }

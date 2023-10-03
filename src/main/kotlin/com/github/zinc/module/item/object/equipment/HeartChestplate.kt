@@ -1,5 +1,6 @@
 package com.github.zinc.module.item.`object`.equipment
 
+import com.github.zinc.lib.constant.Colors
 import com.github.zinc.module.item.`object`.OnHitDetection
 import com.github.zinc.util.*
 import com.github.zinc.util.item
@@ -28,12 +29,12 @@ class HeartChestplate: Equipment, OnHitDetection {
     override val item: ItemStack
         get() = item(
             Material.DIAMOND_CHESTPLATE,
-            text("바다의 심장 다이아몬드 흉갑").color(NamedTextColor.BLUE).bold().noItalic(),
+            text("바다의 심장 다이아몬드 흉갑").color(Colors.skyblue).noItalic(),
             list(
                 empty(),
-                text("보호됨", GRAY).noItalic().bold(),
-                plain("피격 시:").bold()
-                    .append(text(" 3초간 재생 II 획득 (10초)").color(GRAY).noBold()))
+                text("피격 시:").color(GRAY).noItalic(),
+                plain(" 3초간 재생 II 획득 (10초)")
+            )
         ) { meta ->
             meta.setPersistent(Equipment.namespace, name)
             meta.addAttributeModifier(Attribute.GENERIC_ARMOR, armorModifier)
@@ -78,6 +79,6 @@ class HeartChestplate: Equipment, OnHitDetection {
     companion object {
         private val users = HashSet<String>()
         private val cooldowns = HashSet<String>()
-        operator fun contains(uuid: String): Boolean = uuid in users
+        fun isPutOn(uuid: String): Boolean = users.contains(uuid)
     }
 }

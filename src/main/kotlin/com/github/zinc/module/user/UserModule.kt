@@ -2,7 +2,9 @@ package com.github.zinc.module.user
 
 import com.github.zinc.module.Module
 import com.github.zinc.module.user.gui.StatusGUI
+import com.github.zinc.module.user.listener.UserDamageListener
 import com.github.zinc.module.user.listener.UserListener
+import com.github.zinc.module.user.listener.toDocument
 import com.github.zinc.module.user.`object`.StatusType
 import com.github.zinc.module.user.`object`.User
 import com.github.zinc.mongodb.MongoDB
@@ -82,6 +84,7 @@ class UserModule: Module {
     override fun registerListeners() {
         with(plugin.server.pluginManager) {
             registerEvents(UserListener(), plugin)
+            registerEvents(UserDamageListener(), plugin)
         }
     }
 
@@ -108,7 +111,7 @@ class UserModule: Module {
         val collection = MongoDB["user"]
         MongoDB.transaction {
             User.getUsers().forEach { user ->
-                collection.replaceOne(Filters.eq("uuid", user.uuid), toDocument(user))
+                collection.replaceOne(Filters.eq("uuid", user.uuid), user.toDocument())
             }
         }
     }

@@ -1,7 +1,5 @@
 package com.github.zinc.module.user.listener
 
-import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
-import com.github.zinc.core.recipe.DynamicRecipe
 import com.github.zinc.lib.constant.Sounds
 import com.github.zinc.lib.event.*
 import com.github.zinc.module.item.`object`.trinket.Trinket
@@ -13,11 +11,9 @@ import com.github.zinc.mongodb.toObject
 import com.github.zinc.plugin
 import com.github.zinc.util.*
 import com.github.zinc.util.AIR
-import com.github.zinc.util.hasPersistent
 import com.github.zinc.util.isNull
 import com.mongodb.client.model.Filters
 import io.github.monun.heartbeat.coroutines.HeartbeatScope
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent
 import kotlinx.coroutines.async
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -26,11 +22,8 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bson.Document
-import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareSmithingEvent
@@ -38,34 +31,13 @@ import org.bukkit.event.player.*
 import java.time.Duration
 
 class UserListener: Listener {
-    private fun User.toDocument(): Document {
-        val document = toDocument(this)
-        val trinketMap = HashMap<String, String>()
-        trinkets.forEach { (slot, trinket) -> trinketMap[slot.name] = trinket.name }
-        document["trinkets"] = trinketMap
-        return document
-    }
-
-    private fun Document.toUser(): User {
-        val trinkets = get("trinkets") as Document
-        remove("trinkets")
-        val user = toObject(User::class)
-        user.init()
-        trinkets.values.forEach { name ->
-            name as String
-            val trinket = Trinket[name] ?: return@forEach
-            user.setTrinket(trinket)
-        }
-        return user
-    }
-
     @EventHandler
     fun onLogin(event: AsyncPlayerPreLoginEvent) {
         try {
             val collection = MongoDB["user"]
             val uuid = event.uniqueId.toString()
             val user: User = collection.findOne("uuid", uuid)?.toUser() ?: User(uuid).apply {
-                collection.insertOne(toDocument(this@apply))
+                collection.insertOne(this@apply.toDocument())
             }
             User[uuid] = user
         } catch (e: Exception) {
@@ -121,119 +93,6 @@ class UserListener: Listener {
         }
     }
 
-    @EventHandler
-    @ChainEventCall(QuestClearEvent::class)
-    fun onEntityDamage(e: EntityDamageByEntityEvent) {
-//        if(e.entity !is LivingEntity) return
-//
-//        val player: Player =
-//            when(e.damager) {
-//                is Player -> e.damager as Player
-//                is AbstractArrow -> {
-//                    val abstractArrow = e.damager as AbstractArrow
-//                    val shooter = abstractArrow.shooter ?: return
-//                    if(shooter !is Player) return
-//                    shooter
-//                }
-//                //check if player is blocking when player cant use the shield
-//                else -> {
-//                    if(e.entity is Player && (e.entity as Player).isBlocking) {
-//                        val playerData = PlayerContainer[(e.entity as Player).name] ?: return
-//                        val player = playerData.manager?.playerEntity ?: return
-//
-//                        val uuid =
-//                            if(player.inventory.itemInOffHand.type == Material.SHIELD)
-//                                player.inventory.itemInOffHand.getPersistent(STATUS_KEY)
-//                            else if(player.inventory.itemInMainHand.type == Material.SHIELD)
-//                                player.inventory.itemInMainHand.getPersistent(STATUS_KEY)
-//                            else return
-//
-//                        val equipment = EquipmentContainer[uuid ?: return] ?: return
-//
-//                        if(!equipment.isDeserved(playerData)) {
-//                            player.sendMessage("아직 사용하기엔 이르다.")
-//                            player.playSound(Sounds.ironGolemDamaged)
-//                            player.damage(e.damage, e.damager)
-//                        }
-//                    }
-//                return
-//                }
-//            }
-//        val playerData = PlayerContainer[player.name]!!
-//
-//        //checks if player can use the equipment
-//        run {
-//            ArrayList<String>().apply {
-//                if(player.inventory.itemInMainHand.hasPersistent(STATUS_KEY))
-//                    add(player.inventory.itemInMainHand.getPersistent(STATUS_KEY)!!)
-//
-//                if(player.inventory.itemInOffHand.hasPersistent(STATUS_KEY))
-//                    add(player.inventory.itemInOffHand.getPersistent(STATUS_KEY)!!)
-//            }.let { uuids ->
-//                if(uuids.isNotEmpty() && uuids
-//                        .map { EquipmentContainer[it] ?: return@run }
-//                        .all { it.isDeserved(playerData) }.not()
-//                ) {
-//                    player.sendMessage("아직 사용하기엔 이르다.")
-//                    e.isCancelled = true
-//                    return
-//                }
-//            }
-//        }
-//
-//        val manager = playerData.manager ?: return
-//        e.damage = if(manager.rollCritical()) {
-//            player.playSound(Sounds.ironGolemDamaged)
-//            e.damage * 1.8
-//        } else e.damage
-//
-//        player.sendMessage(text("${e.finalDamage}"))
-//
-//        if(e.entity !is Enemy) return
-//        val enemy = e.entity as Enemy
-//        if(enemy.health > e.finalDamage) return
-//
-//        if(QuestManager.clearMap[player.name]!!.contains(enemy.name)) {
-//            player.sendMessage("§6이미 ${enemy.name} 퀘스트를 완료하였습니다. 퀘스트는 매일 오전 2시에 초기화됩니다.")
-//            return
-//        }
-//        async { QuestClearEvent(playerData, enemy).callEvent() }
-    }
-
-    @EventHandler
-    @ChainEventCall(PlayerEquipEvent::class, EquipmentUpdateEvent::class)
-    fun onInvSlotChanged(e: PlayerInventorySlotChangeEvent) {
-//        e.player.inventory.getItem(e.slot)?.let { item ->
-//            if(isNull(item) || !item.isTool()) return
-//            return@let if(item.hasPersistent(STATUS_KEY)) {
-//                val uuid = item.getPersistent(STATUS_KEY)!!
-//                // will be extended with a map (namespaced key, ? extends ZincEq)
-//                //if(item.hasPersistent(OceanArmor.KEY)) EquipmentContainer[uuid] = OceanArmor(item)
-//                EquipmentContainer[uuid]?.let { equipment ->
-//                    //needs the custom overrode equals of itemMeta
-//                    if(isNull(equipment.item) || equipment.item.itemMeta != item.itemMeta) {
-//                        equipment.item = item
-//                        info("updated ${item.type.name}")
-//                        EquipmentUpdateEvent(equipment).callEvent()
-//                    }
-//                    equipment
-//                } ?: Equipment.register(uuid, ZincEquipment(item))
-//            }
-//            else {
-//                UUID.randomUUID().let { uuid ->
-//                    item.setPersistent(STATUS_KEY, uuid.toString())
-//
-//                    Equipment.register(uuid.toString(), ZincEquipment(item)).apply {
-//                        info("init new $uuid to ${item.type} with $status")
-//                    }
-//                }
-//            }
-//        }?.let { equipment ->
-//            if(e.slot in 36..39)
-//                async { PlayerEquipEvent(e.player, equipment, slots[e.slot - 36]).callEvent() }
-//        }
-    }
-
     /**
      * 1. 직접 인챈트시
      * 2. 모루 사용시
@@ -241,26 +100,8 @@ class UserListener: Listener {
      * 4. 도구 조합으로 인첸트 롤백시
      */
     @EventHandler
-    fun onChangeEnchant(e: ItemChangeEnchantEvent) {
-    }
-
-    @EventHandler
-    fun onIncrement(e: PlayerStatisticIncrementEvent) {
-
-    }
-
-    @EventHandler
     fun onLevelUp(e: PlayerLevelChangeEvent) {
 
-    }
-
-    @EventHandler
-    fun onClick(e: PlayerInteractEvent) {
-        when (e.action) {
-            Action.LEFT_CLICK_BLOCK, Action.LEFT_CLICK_AIR -> return
-            Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR -> return
-            Action.PHYSICAL -> return
-        }
     }
 
     @EventHandler
@@ -292,11 +133,27 @@ class UserListener: Listener {
 //            }
 //        }
     }
+}
 
-    @EventHandler
-    fun onItemRemove(e: EntityRemoveFromWorldEvent) {
-        if(e.entity !is Item) return
-        val entity = e.entity as Item
-//        EquipmentContainer.container.remove(entity.itemStack.getPersistent(STATUS_KEY))
+//for save
+fun User.toDocument(): Document {
+    val document = toDocument(this)
+    val trinketMap = HashMap<String, String>()
+    trinkets.forEach { (slot, trinket) -> trinketMap[slot.name] = trinket.name }
+    document["trinkets"] = trinketMap
+    return document
+}
+
+//for load
+fun Document.toUser(): User {
+    val trinkets = get("trinkets") as Document
+    remove("trinkets")
+    val user = toObject(User::class)
+    user.init()
+    trinkets.values.forEach { name ->
+        name as String
+        val trinket = Trinket[name] ?: return@forEach
+        user.setTrinket(trinket)
     }
+    return user
 }

@@ -5,6 +5,7 @@ import com.github.zinc.module.Module
 import com.github.zinc.module.item.ItemModule
 import com.github.zinc.module.recipe.RecipeModule
 import com.github.zinc.module.user.UserModule
+import com.github.zinc.module.world.WorldModule
 import com.github.zinc.mongodb.MongoDB
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
@@ -21,6 +22,7 @@ class ExpandingExtensionPlugin: JavaPlugin() {
         modules.add(ItemModule())
         modules.add(RecipeModule())
         modules.add(UserModule())
+        modules.add(WorldModule())
 
         modules.forEach(Module::register)
 
