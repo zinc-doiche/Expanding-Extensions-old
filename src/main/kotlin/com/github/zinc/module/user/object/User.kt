@@ -2,6 +2,7 @@ package com.github.zinc.module.user.`object`
 
 import com.github.zinc.module.item.`object`.trinket.Trinket
 import com.github.zinc.module.item.`object`.trinket.TrinketSlot
+import com.github.zinc.module.quest.`object`.Quest
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
@@ -35,6 +36,12 @@ class User(
 
     fun init() {
         trinkets = EnumMap(TrinketSlot::class.java)
+    }
+
+    fun questIncrement(name: String): Int {
+        val current = questProcesses[name] ?: return -1
+        questProcesses[name] = current + 1
+        return current + 1
     }
 
     fun updateCriticalChance() {

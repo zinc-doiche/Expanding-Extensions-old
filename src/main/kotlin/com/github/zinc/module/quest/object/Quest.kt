@@ -1,6 +1,9 @@
 package com.github.zinc.module.quest.`object`
 
 import com.github.zinc.module.user.`object`.User
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.entity.Player
 
 interface Quest {
     val name: String
@@ -22,6 +25,10 @@ class SimpleQuest(
     val requires: Int,
     val rewards: Int
 ): Quest {
+    fun onIncrement(player: Player, current: Int) {
+        player.sendMessage(Component.text("$name: $current/$requires", NamedTextColor.GREEN))
+    }
+
     override fun onClear(user: User) {
         user.level.addExperience(rewards, user)
     }
