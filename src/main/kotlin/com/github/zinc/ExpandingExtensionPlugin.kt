@@ -28,23 +28,6 @@ class ExpandingExtensionPlugin: JavaPlugin() {
         modules.add(WorldModule())
 
         modules.forEach(Module::register)
-
-        //QuestManager.registerAllQuestList()
-//        registerAll(
-//            ServerListener(),
-//            PlayerExpListener(),
-//            PlayerListener(),
-//            QuestListener(),
-//            PlayerToolListener(),
-//            PlayerWorldListener()
-//        )
-//        executors(
-//            "status" to StatusCommand(),
-//            "test" to TestCommand(),
-//            "quest" to QuestCommand()
-//        )
-//        QuestDAO().use(QuestDAO::questTimer)
-//        Recipes.registerAll()
     }
 
     override fun onDisable() {
