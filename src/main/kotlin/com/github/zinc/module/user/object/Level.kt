@@ -9,7 +9,7 @@ internal const val MAX_LEVEL = 300
 class Level {
     var level: Int = 0
         private set
-    var experience: Long = 0
+    var experience: Int = 0
         private set
 
     val isMax: Boolean
@@ -19,7 +19,7 @@ class Level {
         level += addedLevel
     }
 
-    fun addExperience(addedExperience: Long, user: User) {
+    fun addExperience(addedExperience: Int, user: User) {
         var requiredExp = requiredExpForNextLevel
         experience += addedExperience
         while(experience >= requiredExp) {

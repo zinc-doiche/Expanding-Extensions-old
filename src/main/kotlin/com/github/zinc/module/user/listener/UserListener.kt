@@ -44,14 +44,6 @@ class UserListener: Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("정보를 불러오는 데에 실패했어요.."))
             plugin.slF4JLogger.error("Failed to login: ${event.playerProfile.name}", e)
         }
-
-//        if(isNewbie) QuestManager.registerAllQuests(playerVO.playerId)
-//        PlayerContainer.add(playerName, PlayerData(playerVO))
-//
-//        QuestManager.clearMap[e.playerProfile.name!!] = QuestDAO().use { dao ->
-//            val questList = dao.selectList(playerVO.playerId) ?: return
-//            questList.filter { it.appendedQuestCleared }.map { it.appendedQuestName }.toHashSet()
-//        }
     }
 
     @EventHandler
@@ -62,9 +54,9 @@ class UserListener: Listener {
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
-        val uuid = event.player.uniqueId.toString()
         HeartbeatScope().async {
             try {
+                val uuid = event.player.uniqueId.toString()
                 val user = User[uuid] ?: return@async
                 MongoDB["user"].replaceOne(Filters.eq("uuid", uuid), user.toDocument())
                 User.remove(uuid)
@@ -72,7 +64,6 @@ class UserListener: Listener {
                 plugin.slF4JLogger.error("Failed to save user data: ${event.player.name}", e)
             }
         }
-//        QuestManager.clearMap.remove(e.player.name)
     }
 
     @EventHandler

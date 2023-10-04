@@ -7,26 +7,31 @@ import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import java.util.*
+import kotlin.collections.HashMap
 
 class User(
     val uuid: String,
     val status: Status = Status(),
     val level: Level = Level(),
+    val questProcesses: HashMap<String, Int> = HashMap()
 ) {
     @Transient
-    var trinkets: Map<TrinketSlot, Trinket> = EnumMap(TrinketSlot::class.java)
+    lateinit var trinkets: Map<TrinketSlot, Trinket>
         private set
 
     @Transient
     var criticalChance: Double = .0
         private set
 
+    init {
+        init()
+    }
+
     val player: Player?
         get() = Bukkit.getPlayer(UUID.fromString(uuid))
 
     val name: String?
         get() = player?.name
-
 
     fun init() {
         trinkets = EnumMap(TrinketSlot::class.java)
@@ -44,21 +49,8 @@ class User(
         (trinkets as MutableMap).remove(slot)
     }
 
-    companion object {
-        @Transient
-        private val users: HashMap<String, User> = HashMap()
-
-        fun getUsers() = users.values.toList()
-
-        operator fun get(uuid: String): User? = users[uuid]
-        operator fun get(player: Player): User? = users[player.uniqueId.toString()]
-        operator fun set(uuid: String, user: User) {
-            users[uuid] = user
-        }
-        operator fun contains(uuid: String): Boolean = users.containsKey(uuid)
-        fun remove(uuid: String) = users.remove(uuid)
-
-        fun getPlayer(uuid: String): Player? = Bukkit.getPlayer(UUID.fromString(uuid))
+    fun sendMessage(message: Component) {
+        player?.sendMessage(message)
     }
 
     override fun toString(): String {
@@ -76,8 +68,21 @@ class User(
         return uuid.hashCode()
     }
 
-    fun sendMessage(message: Component) {
-        player?.sendMessage(message)
+    companion object {
+        @Transient
+        private val users: HashMap<String, User> = HashMap()
+
+        fun getUsers() = users.values.toList()
+
+        operator fun get(uuid: String): User? = users[uuid]
+        operator fun get(player: Player): User? = users[player.uniqueId.toString()]
+        operator fun set(uuid: String, user: User) {
+            users[uuid] = user
+        }
+        operator fun contains(uuid: String): Boolean = users.containsKey(uuid)
+        fun remove(uuid: String) = users.remove(uuid)
+
+        fun getPlayer(uuid: String): Player? = Bukkit.getPlayer(UUID.fromString(uuid))
     }
 }
 

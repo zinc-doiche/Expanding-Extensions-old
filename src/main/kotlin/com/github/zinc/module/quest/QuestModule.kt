@@ -19,7 +19,7 @@ class QuestModule: Module {
     override fun register() {
         val initDate = LocalDateTime.of(LocalDate.now(), LocalTime.of(24, 0, 0))
         timer(startAt = Timestamp.valueOf(initDate), period = 1000 * 60 * 60 * 24) {
-            initQuests()
+            registerQuests()
         }
         super.register()
     }
@@ -28,7 +28,7 @@ class QuestModule: Module {
 
     }
 
-    private fun initQuests() {
+    private fun registerQuests() {
 
     }
 }
