@@ -15,7 +15,7 @@ class QuestModule: Module {
     override fun registerCommands() {
         plugin.kommand {
             register("quest") {
-                executes { QuestGUI().open() }
+                executes { QuestGUI(player.uniqueId.toString()).open() }
             }
         }
     }
