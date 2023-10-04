@@ -13,16 +13,18 @@ import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
 object MongoDB {
+    private const val MONGODB_FILE = "mongodb.yml"
+
     lateinit var client: MongoClient
         private set
     lateinit var database: MongoDatabase
         private set
 
     fun register() {
-        val yml = File(plugin.dataFolder, "mongodb.yml")
+        val yml = File(plugin.dataFolder, MONGODB_FILE)
 
         if(!yml.exists()) {
-            plugin.saveResource("mongodb.yml", false)
+            plugin.saveResource(MONGODB_FILE, false)
         }
 
         YamlConfiguration.loadConfiguration(yml).get("url").let { url ->

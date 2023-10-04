@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import org.bson.Document
+import org.bson.conversions.Bson
 import kotlin.reflect.KClass
 
 internal val gson: Gson = Gson()

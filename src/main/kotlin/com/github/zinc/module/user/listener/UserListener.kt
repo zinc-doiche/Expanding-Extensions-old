@@ -37,6 +37,7 @@ class UserListener: Listener {
             val collection = MongoDB["user"]
             val uuid = event.uniqueId.toString()
             val user: User = collection.findOne("uuid", uuid)?.toUser() ?: User(uuid).apply {
+                //
                 collection.insertOne(this@apply.toDocument())
             }
             User[uuid] = user

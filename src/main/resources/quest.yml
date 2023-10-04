@@ -1,0 +1,14 @@
+
+daily:
+  ZOMBIE:
+    requires: x
+    rewards: y
+  SKELETON:
+    requires: x`
+    rewards: y`
+
+special:
+  rare mobs...
+
+weekly:
+  boss...

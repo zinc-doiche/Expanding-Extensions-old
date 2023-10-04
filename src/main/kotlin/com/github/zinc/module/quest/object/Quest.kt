@@ -13,6 +13,9 @@ interface Quest {
     companion object {
         private val quests = HashMap<String, Quest>()
 
+        val list: List<Quest>
+            get() = quests.values.toList()
+
         operator fun get(name: String) = quests[name]
         operator fun set(name: String, quest: Quest) {
             quests[name] = quest
@@ -22,6 +25,7 @@ interface Quest {
 
 class SimpleQuest(
     override val name: String,
+    val type: QuestType,
     val requires: Int,
     val rewards: Int
 ): Quest {
@@ -32,6 +36,10 @@ class SimpleQuest(
     override fun onClear(user: User) {
         user.level.addExperience(rewards, user)
     }
+}
+
+enum class QuestType {
+    DAILY, WEEKLY, SPECIAL
 }
 
 /*
