@@ -8,7 +8,6 @@ import com.github.zinc.module.user.listener.toDocument
 import com.github.zinc.module.user.`object`.StatusType
 import com.github.zinc.module.user.`object`.User
 import com.github.zinc.mongodb.MongoDB
-import com.github.zinc.mongodb.toDocument
 import com.github.zinc.plugin
 import com.github.zinc.util.warn
 import com.mongodb.client.model.Filters
@@ -69,10 +68,10 @@ class UserModule: Module {
 
         plugin.kommand {
             register("exp", "경험치") {
-                then("add", "amount" to long()) {
+                then("add", "amount" to int()) {
                     requires { isOp }
                     executes {
-                        val amount: Long by it
+                        val amount: Int by it
                         val user = User[player] ?: return@executes
                         user.level.addExperience(amount, user)
                     }

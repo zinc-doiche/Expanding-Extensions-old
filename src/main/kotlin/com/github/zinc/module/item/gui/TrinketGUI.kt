@@ -6,13 +6,9 @@ import com.github.zinc.module.item.`object`.Passive
 import com.github.zinc.module.item.`object`.trinket.Trinket
 import com.github.zinc.module.item.`object`.trinket.TrinketSlot
 import com.github.zinc.module.user.`object`.User
-import com.github.zinc.mongodb.MongoDB
 import com.github.zinc.util.*
-import com.github.zinc.util.toItemStack
-import com.mongodb.client.model.Filters
 import io.github.monun.heartbeat.coroutines.HeartbeatScope
 import kotlinx.coroutines.async
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -26,7 +22,6 @@ import org.bukkit.inventory.ItemStack
 class TrinketGUI(private val uuid: String): SquareGUI() {
     private val inventory: Inventory = Bukkit.createInventory(this, 9, text("장신구"))
 
-    @Asynchronous
     override fun open() {
         HeartbeatScope().async {
             val user = User[uuid]?: return@async
