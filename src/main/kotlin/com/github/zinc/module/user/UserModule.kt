@@ -18,7 +18,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component.text
 
-class UserModule: Module {
+object UserModule: Module {
     override fun registerCommands() {
         plugin.kommand {
             register("status", "스테이터스", "스탯") {
@@ -106,7 +106,7 @@ class UserModule: Module {
         saveUsers()
     }
 
-    private fun saveUsers() {
+    fun saveUsers() {
         val collection = MongoDB["user"]
         MongoDB.transaction {
             User.getUsers().forEach { user ->

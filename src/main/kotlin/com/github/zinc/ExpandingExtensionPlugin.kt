@@ -19,22 +19,27 @@ class ExpandingExtensionPlugin: JavaPlugin() {
         plugin = this
         MongoDB.register()
 
-        modules.add(LibraryModule())
-        modules.add(ItemModule())
-        modules.add(RecipeModule())
-
-        modules.add(UserModule())
-        modules.add(QuestModule())
-        modules.add(WorldModule())
-
-        modules.forEach(Module::register)
+        register(
+            LibraryModule,
+            ItemModule,
+            RecipeModule,
+            UserModule,
+            QuestModule,
+            WorldModule
+        )
     }
 
     override fun onDisable() {
         modules.forEach(Module::onDisable)
+    }
+
+    private fun register(vararg arModule: Module) {
+        modules.addAll(arModule)
+        modules.forEach(Module::register)
     }
 }
 
 internal lateinit var plugin: JavaPlugin
 internal fun info(msg: Any) { plugin.logger.info(msg.toString()) }
 internal fun warn(msg: Any) { plugin.logger.warning(msg.toString()) }
+

@@ -10,7 +10,7 @@ import io.github.monun.kommand.kommand
 import net.kyori.adventure.text.Component.text
 import org.bukkit.attribute.Attribute
 
-class LibraryModule: Module {
+object LibraryModule: Module {
     override fun registerCommands() {
         plugin.kommand {
             register("test") {

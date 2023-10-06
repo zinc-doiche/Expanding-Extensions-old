@@ -13,7 +13,7 @@ import com.github.zinc.util.warn
 import io.github.monun.kommand.getValue
 import io.github.monun.kommand.kommand
 
-class ItemModule: Module {
+object ItemModule: Module {
     override fun registerCommands() {
         plugin.kommand {
             register("trinket", "장신구", "트링켓") {

@@ -64,31 +64,4 @@ object QuestManager {
         "Piglin" to Pair(20, 80),
         "PiglinBrute" to Pair(10, 150),
     )
-
-    val clearMap: HashMap<String, HashSet<String>> = hashMapOf()
-
-    fun saveAllQuestList() {
-//        QuestDAO().use { dao ->
-//            dailyQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "daily") }
-//            weekendQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "weekend") }
-//            randomQuests.forEach { dao.registerQuest(it.key, it.value.first, it.value.second, "limit") }
-//        }
-    }
-
-    fun registerAllQuests(playerId: Long) {
-//        QuestDAO().use { dao ->
-//            dailyQuests.keys.forEach { dao.insert(playerId, it) }
-//            weekendQuests.keys.forEach { dao.insert(playerId, it) }
-//            randomQuests.keys.toMutableList().run {
-//                this.shuffle()
-//                this.subList(0, 5).forEach { dao.insert(playerId, it) }
-//            }
-//        }
-    }
-
-//    fun registerChance(playerData: PlayerData) {
-//        QuestDAO().use { dao ->
-//            dao.insertChance(playerData.playerVO.playerId)
-//        }
-//    }
 }

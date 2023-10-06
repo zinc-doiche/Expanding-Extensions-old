@@ -1,6 +1,5 @@
 package com.github.zinc.module.recipe
 
-import com.github.zinc.info
 import com.github.zinc.module.Module
 import com.github.zinc.module.item.`object`.equipment.Equipment
 import com.github.zinc.plugin
@@ -17,7 +16,7 @@ import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.inventory.recipe.CraftingBookCategory
 
-class RecipeModule: Module {
+object RecipeModule: Module {
     override fun registerCommands() {
 
     }

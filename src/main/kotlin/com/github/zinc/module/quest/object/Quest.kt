@@ -9,18 +9,6 @@ interface Quest {
     val name: String
 
     fun onClear(user: User)
-
-    companion object {
-        private val quests = HashMap<String, Quest>()
-
-        val list: List<Quest>
-            get() = quests.values.toList()
-
-        operator fun get(name: String) = quests[name]
-        operator fun set(name: String, quest: Quest) {
-            quests[name] = quest
-        }
-    }
 }
 
 class SimpleQuest(
@@ -35,6 +23,40 @@ class SimpleQuest(
 
     override fun onClear(user: User) {
         user.level.addExperience(rewards, user)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SimpleQuest
+
+        if (name != other.name) return false
+        if (type != other.type) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + type.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "SimpleQuest(name='$name', type=$type, requires=$requires, rewards=$rewards)"
+    }
+
+    companion object {
+        private val quests = HashMap<String, SimpleQuest>()
+
+        val list: List<SimpleQuest>
+            get() = quests.values.toList()
+
+        operator fun get(name: String) = quests[name]
+        operator fun set(name: String, quest: SimpleQuest) {
+            quests[name] = quest
+        }
     }
 }
 

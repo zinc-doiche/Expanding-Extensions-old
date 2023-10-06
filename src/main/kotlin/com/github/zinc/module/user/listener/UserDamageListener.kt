@@ -3,7 +3,6 @@ package com.github.zinc.module.user.listener
 import com.github.zinc.module.item.`object`.OnHit
 import com.github.zinc.module.item.`object`.OnHitDetection
 import com.github.zinc.module.item.`object`.equipment.Equipment
-import com.github.zinc.module.quest.`object`.Quest
 import com.github.zinc.module.quest.`object`.SimpleQuest
 import com.github.zinc.module.user.`object`.user
 import com.github.zinc.util.getPersistent
@@ -17,7 +16,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
 import kotlin.random.Random
 
 class UserDamageListener: Listener {
@@ -115,10 +113,10 @@ class UserDamageListener: Listener {
             event.damage *= 1.8
         }
         if((entity as Damageable).health <= event.finalDamage && user.questProcesses.contains(entityName)) {
-            val quest = Quest[entityName] as? SimpleQuest ?: return
-            val current = user.questIncrement(entityName)
-            quest.onIncrement(player, current)
-            if(current == quest.requires) {
+            val quest = SimpleQuest[entityName] ?: return
+            val process = user.questProcesses[entityName] ?: return
+            quest.onIncrement(player, ++process.current)
+            if(process.current == quest.requires) {
                 quest.onClear(user)
                 user.questProcesses.remove(entityName)
             }
