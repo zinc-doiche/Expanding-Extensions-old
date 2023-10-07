@@ -2,17 +2,19 @@ package com.github.zinc.module.user.listener
 
 import com.github.zinc.lib.constant.Sounds
 import com.github.zinc.lib.event.*
-import com.github.zinc.module.item.`object`.trinket.Trinket
 import com.github.zinc.module.user.`object`.User
-import com.github.zinc.mongodb.MongoDB
+import com.github.zinc.module.user.util.toDocument
+import com.github.zinc.module.user.util.toUser
+import com.github.zinc.mongodb.*
 import com.github.zinc.mongodb.findOne
+import com.github.zinc.mongodb.lookup
 import com.github.zinc.mongodb.toDocument
-import com.github.zinc.mongodb.toObject
 import com.github.zinc.plugin
 import com.github.zinc.util.*
 import com.github.zinc.util.AIR
 import com.github.zinc.util.isNull
-import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.eq
 import io.github.monun.heartbeat.coroutines.HeartbeatScope
 import kotlinx.coroutines.async
 import net.kyori.adventure.text.Component.empty
@@ -34,12 +36,31 @@ class UserListener: Listener {
     @EventHandler
     fun onLogin(event: AsyncPlayerPreLoginEvent) {
         try {
-            val collection = MongoDB["user"]
             val uuid = event.uniqueId.toString()
-            val user: User = collection.findOne("uuid", uuid)?.toUser() ?: User(uuid).apply {
-                //
-                collection.insertOne(this@apply.toDocument())
-            }
+            val collection = MongoDB["user"]
+
+            val u = collection
+                .aggregate(listOf(
+                    lookup("quest", "uuid", "uuid", "quests"),
+                    Document("\$project", Document {
+                        put("uuid", 1)
+                        put("status", 1)
+                        put("level", 1)
+                        put("questRegistries", Document {
+                            put("DAILY", "\$quests[0]")
+                            put("WEEKLY", "\$quests[1]")
+                        })
+                    })
+                ))
+                .firstOrNull()
+
+            val user: User =
+                collection.findOne("uuid", uuid)?.toUser()
+                ?: User(uuid).apply {
+
+                    MongoDB["quest"].insertMany(questRegistries.values.map(::toDocument))
+                    collection.insertOne(this@apply.toDocument())
+                }
             User[uuid] = user
         } catch (e: Exception) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("정보를 불러오는 데에 실패했어요.."))
@@ -59,7 +80,12 @@ class UserListener: Listener {
             try {
                 val uuid = event.player.uniqueId.toString()
                 val user = User[uuid] ?: return@async
-                MongoDB["user"].replaceOne(Filters.eq("uuid", uuid), user.toDocument())
+                MongoDB["user"].replaceOne(eq("uuid", uuid), user.toDocument())
+                MongoDB["quest"].run {
+                    user.questRegistries.values.forEach {
+                        replaceOne(and(eq("uuid", uuid), eq("type", it.type.name)), toDocument(it))
+                    }
+                }
                 User.remove(uuid)
             } catch (e: Exception) {
                 plugin.slF4JLogger.error("Failed to save user data: ${event.player.name}", e)
@@ -125,27 +151,4 @@ class UserListener: Listener {
 //            }
 //        }
     }
-}
-
-//for save
-fun User.toDocument(): Document {
-    val document = toDocument(this)
-    val trinketMap = HashMap<String, String>()
-    trinkets.forEach { (slot, trinket) -> trinketMap[slot.name] = trinket.name }
-    document["trinkets"] = trinketMap
-    return document
-}
-
-//for load
-fun Document.toUser(): User {
-    val trinkets = get("trinkets") as Document
-    remove("trinkets")
-    val user = toObject(User::class)
-    user.init()
-    trinkets.values.forEach { name ->
-        name as String
-        val trinket = Trinket[name] ?: return@forEach
-        user.setTrinket(trinket)
-    }
-    return user
 }

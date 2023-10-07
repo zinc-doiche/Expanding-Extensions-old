@@ -2,7 +2,8 @@ package com.github.zinc.module.user.`object`
 
 import com.github.zinc.module.item.`object`.trinket.Trinket
 import com.github.zinc.module.item.`object`.trinket.TrinketSlot
-import com.github.zinc.module.quest.`object`.SimpleQuestProcess
+import com.github.zinc.module.quest.`object`.QuestType
+import com.github.zinc.module.quest.`object`.SimpleQuestRegistry
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
@@ -11,13 +12,14 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class User(
-    val uuid: String,
-    val status: Status = Status(),
-    val level: Level = Level(),
-    val questProcesses: HashMap<String, SimpleQuestProcess> = HashMap()
+    val uuid: String
 ) {
+    val status: Status = Status()
+    val level: Level = Level()
+    val questRegistries: MutableMap<QuestType, SimpleQuestRegistry> = EnumMap(QuestType::class.java)
+
     @Transient
-    lateinit var trinkets: Map<TrinketSlot, Trinket>
+    lateinit var trinkets: MutableMap<TrinketSlot, Trinket>
         private set
 
     @Transient
@@ -34,6 +36,8 @@ class User(
 
     fun init() {
         trinkets = EnumMap(TrinketSlot::class.java)
+        questRegistries[QuestType.DAILY] = SimpleQuestRegistry(uuid, QuestType.DAILY)
+        questRegistries[QuestType.WEEKLY] = SimpleQuestRegistry(uuid, QuestType.WEEKLY)
     }
 
     fun updateCriticalChance() {
@@ -41,11 +45,11 @@ class User(
     }
 
     fun setTrinket(trinket: Trinket) {
-        (trinkets as MutableMap)[trinket.slot] = trinket
+        trinkets[trinket.slot] = trinket
     }
 
     fun removeTrinket(slot: TrinketSlot) {
-        (trinkets as MutableMap).remove(slot)
+        trinkets.remove(slot)
     }
 
     fun sendMessage(message: Component) {

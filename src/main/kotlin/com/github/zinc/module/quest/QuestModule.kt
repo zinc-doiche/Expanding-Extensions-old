@@ -6,9 +6,12 @@ import com.github.zinc.module.quest.listener.SimpleQuestListener
 import com.github.zinc.module.quest.`object`.Quest
 import com.github.zinc.module.quest.`object`.QuestType
 import com.github.zinc.module.quest.`object`.SimpleQuest
+import com.github.zinc.module.quest.`object`.SimpleQuestRegistry
 import com.github.zinc.module.user.UserModule
 import com.github.zinc.module.user.`object`.User
+import com.github.zinc.mongodb.Document
 import com.github.zinc.mongodb.MongoDB
+import com.github.zinc.mongodb.set
 import com.github.zinc.plugin
 import com.github.zinc.util.async
 import com.mongodb.client.model.Filters
@@ -27,6 +30,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.concurrent.timer
 
 object QuestModule: Module {
@@ -82,12 +86,13 @@ object QuestModule: Module {
     }
 
     private fun initQuests(type: QuestType, count: Int) {
-        SimpleQuest.list.filter { it.type == type }.map(SimpleQuest::name).let { quests ->
-            val newSet = HashSet<String>()
-            while(newSet.size < count) {
-                newSet.add(quests.random())
+        SimpleQuest.list.filter { it.type == type }.let { quests ->
+            val newMap: MutableMap<String, SimpleQuest> = HashMap()
+            while(newMap.size < count) {
+                val quest = quests.random()
+                newMap[quest.name] = quest
             }
-            //TODO : MongoDB
+            SimpleQuest.Container[type] = newMap
         }
     }
 
@@ -108,12 +113,28 @@ object QuestModule: Module {
 
         YamlConfiguration.loadConfiguration(questFile).let { yml ->
             val dailyQuests = yml.getConfigurationSection("daily") ?: return
-            val specialQuests = yml.getConfigurationSection("special") ?: return
             val weekQuests = yml.getConfigurationSection("weekly") ?: return
 
             dailyQuests.getValues(true).forEach(register)
-            specialQuests.getValues(true).forEach(register)
             weekQuests.getValues(true).forEach(register)
+        }
+    }
+
+    fun updateQuests(type: QuestType) {
+        MongoDB["quest"].run {
+            MongoDB.transaction {
+                deleteMany(eq("type", type.name))
+
+                MongoDB["user"]
+                    .find()
+                    .map { user ->
+                        Document {
+                            put("uuid", user["uuid"])
+                            put("type", type.name)
+                            put("quests", SimpleQuest.Container[type])
+                        }
+                    }
+            }
         }
     }
 }

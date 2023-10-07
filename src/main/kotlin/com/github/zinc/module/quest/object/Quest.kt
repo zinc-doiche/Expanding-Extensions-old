@@ -4,6 +4,7 @@ import com.github.zinc.module.user.`object`.User
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
+import java.util.EnumMap
 
 interface Quest {
     val name: String
@@ -58,10 +59,25 @@ class SimpleQuest(
             quests[name] = quest
         }
     }
+
+    object Container {
+        private var dailyQuests: MutableMap<String, SimpleQuest> = HashMap()
+        private var weeklyQuests: MutableMap<String, SimpleQuest> = HashMap()
+
+        operator fun get(type: QuestType) = when(type) {
+            QuestType.DAILY -> dailyQuests
+            QuestType.WEEKLY -> weeklyQuests
+        }
+
+        operator fun set(type: QuestType, quests: MutableMap<String, SimpleQuest>) = when(type) {
+            QuestType.DAILY -> dailyQuests = quests
+            QuestType.WEEKLY -> weeklyQuests = quests
+        }
+    }
 }
 
 enum class QuestType {
-    DAILY, WEEKLY, SPECIAL
+    DAILY, WEEKLY
 }
 
 /*

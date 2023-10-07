@@ -7,6 +7,7 @@ import com.github.zinc.module.user.listener.UserListener
 import com.github.zinc.module.user.listener.toDocument
 import com.github.zinc.module.user.`object`.StatusType
 import com.github.zinc.module.user.`object`.User
+import com.github.zinc.module.user.util.toDocument
 import com.github.zinc.mongodb.MongoDB
 import com.github.zinc.plugin
 import com.github.zinc.util.warn
