@@ -11,7 +11,6 @@ internal fun User.toDocument(): Document {
     val trinketMap = HashMap<String, String>()
     trinkets.forEach { (slot, trinket) -> trinketMap[slot.name] = trinket.name }
     document["trinkets"] = trinketMap
-    document.remove("questRegistries")
     return document
 }
 

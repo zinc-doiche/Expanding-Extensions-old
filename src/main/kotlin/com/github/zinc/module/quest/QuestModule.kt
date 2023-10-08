@@ -1,22 +1,19 @@
 package com.github.zinc.module.quest
 
+import com.github.zinc.info
 import com.github.zinc.module.Module
 import com.github.zinc.module.quest.gui.QuestGUI
 import com.github.zinc.module.quest.listener.SimpleQuestListener
-import com.github.zinc.module.quest.`object`.Quest
 import com.github.zinc.module.quest.`object`.QuestType
 import com.github.zinc.module.quest.`object`.SimpleQuest
-import com.github.zinc.module.quest.`object`.SimpleQuestRegistry
-import com.github.zinc.module.user.UserModule
 import com.github.zinc.module.user.`object`.User
-import com.github.zinc.mongodb.Document
+import com.github.zinc.module.user.util.toDocument
+import com.github.zinc.mongodb.documentOf
 import com.github.zinc.mongodb.MongoDB
 import com.github.zinc.mongodb.set
+import com.github.zinc.mongodb.toObject
 import com.github.zinc.plugin
-import com.github.zinc.util.async
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Filters.eq
-import com.mongodb.client.model.Filters.`in`
+import com.mongodb.client.model.Filters.*
 import io.github.monun.heartbeat.coroutines.HeartbeatScope
 import io.github.monun.kommand.kommand
 import kotlinx.coroutines.async
@@ -25,22 +22,23 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.sql.Timestamp
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.concurrent.timer
 
 object QuestModule: Module {
     private const val QUEST_FILE = "quest.yml"
-    private const val DAILY_QUEST_COUNT = 6
-    private const val SPECIAL_QUEST_COUNT = 3
+    private const val DAILY_QUEST_COUNT = 7
     private const val WEEK_QUEST_COUNT = 3
 
     lateinit var initDate: LocalDateTime
+        private set
     lateinit var initWeekDate: LocalDateTime
+        private set
 
     override fun registerCommands() {
         plugin.kommand {
@@ -57,23 +55,26 @@ object QuestModule: Module {
     }
 
     override fun register() {
-        registerQuests()
-
+        val scope = HeartbeatScope()
         val today = LocalDate.now()
         initDate = LocalDateTime.of(today, LocalTime.of(24, 0, 0))
         initWeekDate = LocalDateTime.of(today.plusDays(7 - today.dayOfWeek.value.toLong()), LocalTime.of(24, 0, 0))
 
+        info("퀘스트를 불러오는 중...")
+        registerQuests()
+        info("퀘스트를 모두 불러왔습니다!")
+
         timer(startAt = Timestamp.valueOf(initDate), period = 1000 * 60 * 60 * 24) {
-            HeartbeatScope().async {
+            scope.async {
                 plugin.server.broadcast(Component.text("일일 임무 초기화 중..."))
-                initQuests(QuestType.DAILY, DAILY_QUEST_COUNT)
+                updateQuests(QuestType.DAILY, DAILY_QUEST_COUNT)
                 plugin.server.broadcast(Component.text("일일 임무가 초기화되었습니다."))
             }
         }
         timer(startAt = Timestamp.valueOf(initWeekDate), period = 1000 * 60 * 60 * 24 * 7) {
-            HeartbeatScope().async {
+            scope.async {
                 plugin.server.broadcast(Component.text("주간 임무 초기화 중..."))
-                initQuests(QuestType.WEEKLY, WEEK_QUEST_COUNT)
+                updateQuests(QuestType.WEEKLY, WEEK_QUEST_COUNT)
                 plugin.server.broadcast(Component.text("주간 임무가 초기화되었습니다."))
             }
         }
@@ -81,59 +82,58 @@ object QuestModule: Module {
         super.register()
     }
 
-    override fun onDisable() {
-
-    }
-
-    private fun initQuests(type: QuestType, count: Int) {
-        SimpleQuest.list.filter { it.type == type }.let { quests ->
-            val newMap: MutableMap<String, SimpleQuest> = HashMap()
-            while(newMap.size < count) {
-                val quest = quests.random()
-                newMap[quest.name] = quest
-            }
-            SimpleQuest.Container[type] = newMap
-        }
-    }
+    override fun onDisable() {}
 
     private fun registerQuests() {
         val questFile = File(plugin.dataFolder, QUEST_FILE)
-
+        val collection = MongoDB["quest"]
         if(!questFile.exists()) {
             plugin.saveResource(QUEST_FILE, false)
         }
-
         val register = register@{ name: String, section: Any ->
             section as ConfigurationSection
-            val questType = QuestType.valueOf((section.getString("") ?: return@register).uppercase(Locale.getDefault()))
-            val requires = section.getInt("requires")
-            val rewards = section.getInt("rewards")
-            SimpleQuest[name] = SimpleQuest(name, questType, requires, rewards)
+            collection
+                .find(eq("name", name))
+                .firstOrNull()
+                ?: run {
+                    val questType = QuestType.valueOf((section.getString("") ?: return@register).uppercase(Locale.getDefault()))
+                    val requires = section.getInt("requires")
+                    val rewards = section.getInt("rewards")
+                    collection.insertOne(documentOf(
+                        "name" to name,
+                        "questType" to questType,
+                        "requires" to requires,
+                        "rewards" to rewards,
+                        "activated" to false
+                    ))
+                }
         }
 
         YamlConfiguration.loadConfiguration(questFile).let { yml ->
             val dailyQuests = yml.getConfigurationSection("daily") ?: return
             val weekQuests = yml.getConfigurationSection("weekly") ?: return
-
             dailyQuests.getValues(true).forEach(register)
             weekQuests.getValues(true).forEach(register)
         }
     }
 
-    fun updateQuests(type: QuestType) {
-        MongoDB["quest"].run {
-            MongoDB.transaction {
-                deleteMany(eq("type", type.name))
-
-                MongoDB["user"]
-                    .find()
-                    .map { user ->
-                        Document {
-                            put("uuid", user["uuid"])
-                            put("type", type.name)
-                            put("quests", SimpleQuest.Container[type])
-                        }
-                    }
+    private fun updateQuests(type: QuestType, size: Int) {
+        MongoDB.transaction {
+            val newSet = HashSet<SimpleQuest>()
+            val questCollection = MongoDB["quest"]
+            val userCollection = MongoDB["user"]
+            val questList = questCollection
+                .find(eq("activated", false))
+                .toList()
+            while (newSet.size < size) {
+                val quest = questList.random().toObject(SimpleQuest::class)
+                newSet.add(quest)
+            }
+            questCollection.updateMany(and(eq("activated", true), eq("type", type)), set("activated", false))
+            questCollection.updateMany(`in`("name", newSet), set("activated", true))
+            User.getUsers().forEach { user ->
+                user.questRegistries[type]?.update(newSet)
+                userCollection.replaceOne(eq("uuid", user.uuid), user.toDocument())
             }
         }
     }

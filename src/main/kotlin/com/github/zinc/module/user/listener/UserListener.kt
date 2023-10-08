@@ -2,6 +2,8 @@ package com.github.zinc.module.user.listener
 
 import com.github.zinc.lib.constant.Sounds
 import com.github.zinc.lib.event.*
+import com.github.zinc.module.quest.`object`.QuestType
+import com.github.zinc.module.quest.`object`.SimpleQuest
 import com.github.zinc.module.user.`object`.User
 import com.github.zinc.module.user.util.toDocument
 import com.github.zinc.module.user.util.toUser
@@ -13,6 +15,7 @@ import com.github.zinc.plugin
 import com.github.zinc.util.*
 import com.github.zinc.util.AIR
 import com.github.zinc.util.isNull
+import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
 import io.github.monun.heartbeat.coroutines.HeartbeatScope
@@ -38,27 +41,12 @@ class UserListener: Listener {
         try {
             val uuid = event.uniqueId.toString()
             val collection = MongoDB["user"]
-
-            val u = collection
-                .aggregate(listOf(
-                    lookup("quest", "uuid", "uuid", "quests"),
-                    Document("\$project", Document {
-                        put("uuid", 1)
-                        put("status", 1)
-                        put("level", 1)
-                        put("questRegistries", Document {
-                            put("DAILY", "\$quests[0]")
-                            put("WEEKLY", "\$quests[1]")
-                        })
-                    })
-                ))
-                .firstOrNull()
-
             val user: User =
                 collection.findOne("uuid", uuid)?.toUser()
                 ?: User(uuid).apply {
-
-                    MongoDB["quest"].insertMany(questRegistries.values.map(::toDocument))
+                    val questCollection = MongoDB["quest"]
+                    updateQuests(questCollection, this, QuestType.DAILY)
+                    updateQuests(questCollection, this, QuestType.WEEKLY)
                     collection.insertOne(this@apply.toDocument())
                 }
             User[uuid] = user
@@ -66,6 +54,13 @@ class UserListener: Listener {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, text("정보를 불러오는 데에 실패했어요.."))
             plugin.slF4JLogger.error("Failed to login: ${event.playerProfile.name}", e)
         }
+    }
+
+    private fun updateQuests(collection: MongoCollection<Document>, user: User, type: QuestType) {
+        collection
+            .find(and(eq("activated", true), eq("type", type)))
+            .map { it.toObject(SimpleQuest::class) }
+            .let(user.questRegistries[type]!!::update)
     }
 
     @EventHandler
@@ -81,11 +76,6 @@ class UserListener: Listener {
                 val uuid = event.player.uniqueId.toString()
                 val user = User[uuid] ?: return@async
                 MongoDB["user"].replaceOne(eq("uuid", uuid), user.toDocument())
-                MongoDB["quest"].run {
-                    user.questRegistries.values.forEach {
-                        replaceOne(and(eq("uuid", uuid), eq("type", it.type.name)), toDocument(it))
-                    }
-                }
                 User.remove(uuid)
             } catch (e: Exception) {
                 plugin.slF4JLogger.error("Failed to save user data: ${event.player.name}", e)

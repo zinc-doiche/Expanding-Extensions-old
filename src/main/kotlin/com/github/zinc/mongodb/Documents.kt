@@ -8,7 +8,12 @@ import kotlin.reflect.KClass
 
 internal val gson: Gson = Gson()
 
-internal fun Document(init: Document.() -> Unit): Document = Document().apply(init)
+internal fun documentOf(init: Document.() -> Unit): Document = Document().apply(init)
+internal fun documentOf(vararg pairs: Pair<String, Any>): Document = documentOf {
+    for (pair in pairs) {
+        put(pair.first, pair.second)
+    }
+}
 
 internal fun <T : Any> Document.toObject(kclass: KClass<T>): T = gson.fromJson(toJson(), kclass.java)
 
@@ -31,8 +36,12 @@ internal fun lookup(from: String, localField: String, foreignField: String, `as`
     }
 }
 
+internal fun set(key: String, value: Any): Document {
+    return Document("\$set", Document(key, value))
+}
+
 internal fun set(vararg pairs: Pair<String, Any>): Document {
-    return Document("\$set", Document {
+    return Document("\$set", documentOf {
         pairs.forEach { (key, value) -> put(key, value) }
     })
 }
